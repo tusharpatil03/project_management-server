@@ -19,6 +19,12 @@ export default defineConfig([
 
   {
     // Note: there should be no other properties in this object
-    ignores: ["**/.github", "**/.vscode", "**/dist", "**/node_modules", "src/types"],
+    ignores: [
+      "**/.github",
+      "**/.vscode",
+      "**/dist",
+      "**/node_modules",
+      "src/types",
+    ],
   },
 ]);
