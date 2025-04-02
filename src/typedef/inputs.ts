@@ -2,6 +2,11 @@ import gql from "graphql-tag";
 
 export const inputs = gql`
   # Inputs for Mutations
+  input UserRegisterInput {
+    email: String!
+    password: String!
+    role: Role!
+  }
   input CreateProjectInput {
     name: String!
     description: String

@@ -4,16 +4,13 @@ export const types = gql`
   # Auth Data
   type AuthData {
     user: User!
-    appUserProfile: AppUserProfile!
     accessToken: String!
     refreshToken: String!
   }
 
   # User Type
   type User {
-    _id: ID!
-    identifier: Int!
-    appUserProfileId: AppUserProfile
+    id: ID!
     createdAt: DateTime
     email: EmailAddress!
     updatedAt: DateTime

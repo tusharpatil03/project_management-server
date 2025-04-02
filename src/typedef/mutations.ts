@@ -8,6 +8,6 @@ export const mutations = gql`
     createTask(input: CreateTaskInput!): Task
     createSprint(input: CreateSprintInput!): Sprint
     updateTaskStatus(taskId: ID!, status: TaskStatus!): ResponseMessage
-    assineTask(tasksId: ID!, assignee: ID!): ResponseMessage
+    assineTask(input: AssignTaskInput): ResponseMessage
   }
 `;
