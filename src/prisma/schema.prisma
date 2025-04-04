@@ -38,6 +38,8 @@ model Project {
   name        String
   description String
   creatorId   String        @map("creator_id")
+  goal        String?
+  plan        String?
   creator     User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
   status      ProjectStatus @default(Active)
   createdAt   DateTime      @default(now()) @map("created_at")
@@ -52,8 +54,7 @@ model Project {
 
 model Team {
   id          String   @id @unique @default(cuid())
-  name        String
-  description String?
+  name        String?
   creatorId   String   @map("creator_id")
   creator     User     @relation("TeamCreator", fields: [creatorId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
@@ -72,7 +73,7 @@ model Task {
   status      TaskStatus @default(TODO)
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  dueDate     DateTime?  @map("due_date")
+  dueDate     DateTime  @map("due_date")
 
   // Relations
   assigneeId String?
@@ -90,7 +91,7 @@ model Task {
 model Sprint {
   id          String       @id @unique @default(cuid())
   title       String
-  description String
+  description String?
   status      SprintStatus @default(Planned)
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
