@@ -9,7 +9,7 @@ export const inputs = gql`
   }
   input CreateProjectInput {
     name: String!
-    description: String
+    description: String!
     creatorId: ID!
     goal: String
     plan: String
@@ -29,14 +29,17 @@ export const inputs = gql`
     projectId: ID!
     sprintId: ID
     status: TaskStatus
+    dueDate: DateTime
   }
 
   input CreateSprintInput {
-    name: String!
+    title: String!
+    description: String
     creatorId: ID!
     projectId: ID!
     dueDate: DateTime!
     status: SprintStatus
+    tasks: [Task]
   }
 
   input AssignTaskInput {
