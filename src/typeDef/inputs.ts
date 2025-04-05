@@ -39,7 +39,7 @@ export const inputs = gql`
     projectId: ID!
     dueDate: DateTime!
     status: SprintStatus
-    tasks: [Task]
+    tasks: [ID!]
   }
 
   input AssignTaskInput {

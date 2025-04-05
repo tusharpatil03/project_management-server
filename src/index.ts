@@ -10,8 +10,8 @@ import { ApolloServerPluginLandingPageLocalDefault } from "@apollo/server/plugin
 import depthLimit from "graphql-depth-limit";
 import type { GraphQLFormattedError } from "graphql";
 import { expressMiddleware } from "@apollo/server/express4";
-import { Prisma } from "@prisma/client";
 import { client } from "./db";
+import "dotenv/config"
 
 const httpServer = http.createServer(app);
 
@@ -23,6 +23,21 @@ let schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   schema,
+  formatError: (
+    error: GraphQLFormattedError,
+  ): { message: string; status: number; data: string[] } => {
+    const message = error.message ?? "Something went wrong !";
+
+    const data: string[] = (error.extensions?.errors as string[]) ?? [];
+    const code: number = (error.extensions?.code as number) ?? 422;
+
+    return {
+      message,
+      status: code,
+      data,
+    };
+  },
+  validationRules: [depthLimit(6)],
   csrfPrevention: true,
   introspection: true, // Ensure introspection is enabled
   cache: "bounded",

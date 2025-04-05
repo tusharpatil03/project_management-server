@@ -11,15 +11,15 @@ export const types = gql`
   # User Type
   type User {
   id: ID!
-  createdAt: DateTime!   # Ensure it's always present
-  email: EmailAddress!
-  updatedAt: DateTime!   # Ensure it's always present
-  projects: [Project!]!  # Always an array (even if empty)
-  teams: [Team!]!
-  createdTeams: [Team!]!
-  createdTasks: [Task!]!
-  assignedTasks: [Task!]!
-  sprints: [Sprint!]!
+  createdAt: DateTime
+  email: EmailAddress
+  updatedAt: DateTime
+  projects: [Project]  # Always an array (even if empty)
+  teams: [Team]
+  createdTeams: [Team]
+  createdTasks: [Task]
+  assignedTasks: [Task]
+  sprints: [Sprint]
 }
 
   # Project Type

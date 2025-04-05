@@ -44,7 +44,7 @@ export type CreateSprintInput = {
   dueDate: Scalars['DateTime']['input'];
   projectId: Scalars['ID']['input'];
   status?: InputMaybe<SprintStatus>;
-  tasks?: InputMaybe<Array<InputMaybe<Task>>>;
+  tasks?: InputMaybe<Array<Scalars['ID']['input']>>;
   title: Scalars['String']['input'];
 };
 
@@ -72,7 +72,7 @@ export type Mutation = {
   createSprint: Sprint;
   createTask: Task;
   createTeam: Team;
-  registerUser: User;
+  registerUser: ResponseMessage;
   updateTaskStatus: ResponseMessage;
 };
 
@@ -242,16 +242,16 @@ export type Team = {
 
 export type User = {
   __typename?: 'User';
-  assignedTasks: Array<Task>;
-  createdAt: Scalars['DateTime']['output'];
-  createdTasks: Array<Task>;
-  createdTeams: Array<Team>;
-  email: Scalars['EmailAddress']['output'];
+  assignedTasks?: Maybe<Array<Maybe<Task>>>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  createdTasks?: Maybe<Array<Maybe<Task>>>;
+  createdTeams?: Maybe<Array<Maybe<Team>>>;
+  email?: Maybe<Scalars['EmailAddress']['output']>;
   id: Scalars['ID']['output'];
-  projects: Array<Project>;
-  sprints: Array<Sprint>;
-  teams: Array<Team>;
-  updatedAt: Scalars['DateTime']['output'];
+  projects?: Maybe<Array<Maybe<Project>>>;
+  sprints?: Maybe<Array<Maybe<Sprint>>>;
+  teams?: Maybe<Array<Maybe<Team>>>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type UserRegisterInput = {
@@ -398,7 +398,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createSprint?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<MutationCreateSprintArgs, 'input'>>;
   createTask?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
-  registerUser?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
+  registerUser?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'status' | 'taskId'>>;
 };
 
@@ -474,16 +474,16 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  assignedTasks?: Resolver<Array<ResolversTypes['Task']>, ParentType, ContextType>;
-  createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  createdTasks?: Resolver<Array<ResolversTypes['Task']>, ParentType, ContextType>;
-  createdTeams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType>;
-  email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>;
+  assignedTasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  createdTasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  createdTeams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  projects?: Resolver<Array<ResolversTypes['Project']>, ParentType, ContextType>;
-  sprints?: Resolver<Array<ResolversTypes['Sprint']>, ParentType, ContextType>;
-  teams?: Resolver<Array<ResolversTypes['Team']>, ParentType, ContextType>;
-  updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
+  sprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType>;
+  teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

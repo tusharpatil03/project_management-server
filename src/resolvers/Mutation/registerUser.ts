@@ -8,7 +8,7 @@ export const registerUser: MutationResolvers["registerUser"] = async (
 ) => {
   const { input } = args;
 
-  const user = await context.prisma.user.create({
+  const user = await context.client.user.create({
     data: {
       email: input.email,
       password: input.password,
@@ -25,5 +25,14 @@ export const registerUser: MutationResolvers["registerUser"] = async (
     },
   });
 
-  return user
+  if(!user){
+    throw new Error("unable to create user");
+  }
+
+  console.log(user.id);
+
+  return {
+    message: "",
+    success: true,
+  };
 };

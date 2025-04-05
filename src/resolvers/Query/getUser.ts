@@ -1,4 +1,3 @@
-import { User } from "@prisma/client";
 import { client } from "../../db";
 import { QueryResolvers, ResponseMessage } from "../../types/generatedGraphQLTypes";
 

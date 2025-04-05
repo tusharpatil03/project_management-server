@@ -4,5 +4,6 @@ import { mutations } from "./mutations";
 
 import { inputs } from "./inputs";
 import { scalars } from "./scalars";
+import { enums } from "./enums";
 
-export const typeDef = [types, inputs, scalars, queries, mutations];
+export const typeDef = [types, inputs, scalars, queries, mutations, enums];
