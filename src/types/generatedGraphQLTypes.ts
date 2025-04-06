@@ -26,8 +26,12 @@ export type AssignTaskInput = {
 export type AuthData = {
   __typename?: 'AuthData';
   accessToken: Scalars['String']['output'];
-  refreshToken: Scalars['String']['output'];
-  user: User;
+};
+
+export type AuthInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  role: Role;
 };
 
 export type CreateProjectInput = {
@@ -72,7 +76,8 @@ export type Mutation = {
   createSprint: Sprint;
   createTask: Task;
   createTeam: Team;
-  registerUser: ResponseMessage;
+  signin: AuthData;
+  signup: AuthData;
   updateTaskStatus: ResponseMessage;
 };
 
@@ -102,8 +107,13 @@ export type MutationCreateTeamArgs = {
 };
 
 
-export type MutationRegisterUserArgs = {
-  input: UserRegisterInput;
+export type MutationSigninArgs = {
+  input: AuthInput;
+};
+
+
+export type MutationSignupArgs = {
+  input: AuthInput;
 };
 
 
@@ -254,12 +264,6 @@ export type User = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-export type UserRegisterInput = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
-  role: Role;
-};
-
 
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -329,6 +333,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   AssignTaskInput: AssignTaskInput;
   AuthData: ResolverTypeWrapper<AuthData>;
+  AuthInput: AuthInput;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CreateProjectInput: CreateProjectInput;
   CreateSprintInput: CreateSprintInput;
@@ -350,13 +355,13 @@ export type ResolversTypes = {
   TaskStatus: TaskStatus;
   Team: ResolverTypeWrapper<Team>;
   User: ResolverTypeWrapper<User>;
-  UserRegisterInput: UserRegisterInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   AssignTaskInput: AssignTaskInput;
   AuthData: AuthData;
+  AuthInput: AuthInput;
   Boolean: Scalars['Boolean']['output'];
   CreateProjectInput: CreateProjectInput;
   CreateSprintInput: CreateSprintInput;
@@ -374,13 +379,10 @@ export type ResolversParentTypes = {
   Task: Task;
   Team: Team;
   User: User;
-  UserRegisterInput: UserRegisterInput;
 };
 
 export type AuthDataResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthData'] = ResolversParentTypes['AuthData']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -398,7 +400,8 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createSprint?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<MutationCreateSprintArgs, 'input'>>;
   createTask?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
-  registerUser?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationRegisterUserArgs, 'input'>>;
+  signin?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSigninArgs, 'input'>>;
+  signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'status' | 'taskId'>>;
 };
 
