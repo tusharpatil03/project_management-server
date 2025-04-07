@@ -10,7 +10,6 @@ export const inputs = gql`
   input CreateProjectInput {
     name: String!
     description: String!
-    creatorId: ID!
     goal: String
     plan: String
   }

@@ -3,13 +3,13 @@ import gql from "graphql-tag";
 export const queries = gql`
   # Queries
   type Query {
-    getUserById(id: ID!): User!
-    getProjectById(id: ID!): Project!
-    getTeamById(id: ID!): Team!
-    getTaskById(id: ID!): Task!
-    getSprintById(id: ID!): Sprint!
-    getAllProjects: [Project]
-    getAllTasks(projectId: ID!): [Task]!
-    getAllSprints(projectId: ID!): [Sprint]!
+    getUserByEmail(email: String!): User!  @auth
+    getProjectById(id: ID!): Project!  @auth
+    getTeamById(id: ID!): Team! @auth
+    getTaskById(id: ID!): Task! @auth
+    getSprintById(id: ID!, projectId: ID!): Sprint! @auth
+    getAllProjects: [Project] @auth
+    getAllTasks(projectId: ID!): [Task]! @auth
+    getAllSprints(projectId: ID!): [Sprint]! @auth
   }
 `;

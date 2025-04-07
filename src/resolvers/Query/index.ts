@@ -5,6 +5,6 @@ import { getProjectById } from "./getProject";
 import { getSprintById } from "./getSprint";
 import { getTaskById } from "./getTask";
 import { getTeamById } from "./getTeam";
-import { getUserById } from "./getUser";
+import { getUserByEmail } from "./getUser";
 
-export const Query = {getUserById, getTaskById, getSprintById, getProjectById, getAllSprints, getAllTasks, getTeamById, getAllProjects}
+export const Query = {getUserByEmail, getTaskById, getSprintById, getProjectById, getAllSprints, getAllTasks, getTeamById, getAllProjects}

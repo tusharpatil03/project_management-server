@@ -36,14 +36,16 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
     decodedToken = jwt.verify(
       token,
       ACCESS_TOKEN_SECRET as string,
-      (err:any, decoded:any) => {
+      (err: any, decoded: any) => {
         if (err) {
           console.log(err.message);
           return err;
         }
         return decoded;
-      },
+      }
     ); // If there is an error decoded token would contain it
+
+    console.log(decodedToken.userId);
 
     if (decodedToken.name === "TokenExpiredError") {
       authData.expired = true;
@@ -58,10 +60,11 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
     return authData;
   }
 
-  const user = await client.user.findUnique({where:{ id: decodedToken.userId }});
+  const user = await client.user.findUnique({ where: { id: decodedToken.userId } });
 
   if (!user) {
     authData.isAuth = false;
+    authData.expired = false;
     return authData;
   }
 
