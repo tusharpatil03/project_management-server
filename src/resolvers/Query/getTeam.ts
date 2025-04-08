@@ -2,7 +2,13 @@ import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import _ from "lodash";
 
 export const getTeamById:QueryResolvers["getTeamById"] = async (_, args, context)=> {
-    return context.prisma.team.findUnique({where: {
-        id: args.id,
-    }})
+    const team = await context.client.team.findUnique({
+        where: { creatorId: context.authData.userId },
+      });
+    
+      if (!team) {
+        throw new Error("team not found");
+      }
+    
+      return team;
 }

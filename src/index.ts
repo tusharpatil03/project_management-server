@@ -12,14 +12,19 @@ import type { GraphQLFormattedError } from "graphql";
 import { expressMiddleware } from "@apollo/server/express4";
 import { client } from "./db";
 import "dotenv/config"
+import { isAuth } from "./middlewares/isAuth";
+import authDirectiveTransformer from "./directives/directiveTransformers/authDirectiveTransformer";
+import { roleDirectiveTransformer } from "./directives/directiveTransformers/roleDirectiveTransformer";
 
 const httpServer = http.createServer(app);
-
 
 let schema = makeExecutableSchema({
   typeDefs: typeDef,
   resolvers: resolvers,
 });
+
+schema = authDirectiveTransformer(schema, "auth");
+schema = roleDirectiveTransformer(schema, "role");
 
 const server = new ApolloServer({
   schema,
@@ -58,6 +63,7 @@ async function startServer() {
       context: async ({ req, res }) => {
         serverHost = req.get("host") || "localhost";
         return {
+          authData: await isAuth(req),
           client,
           req,
           res,

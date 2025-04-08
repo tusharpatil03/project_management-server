@@ -2,7 +2,7 @@ import gql from "graphql-tag";
 
 export const inputs = gql`
   # Inputs for Mutations
-  input UserRegisterInput {
+  input AuthInput {
     email: String!
     password: String!
     role: Role!
@@ -10,7 +10,6 @@ export const inputs = gql`
   input CreateProjectInput {
     name: String!
     description: String!
-    creatorId: ID!
     goal: String
     plan: String
   }

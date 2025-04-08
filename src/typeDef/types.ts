@@ -3,9 +3,7 @@ import gql from "graphql-tag";
 export const types = gql`
   # Auth Data
   type AuthData {
-    user: User!
     accessToken: String!
-    refreshToken: String!
   }
 
   # User Type
@@ -24,7 +22,7 @@ export const types = gql`
 
   # Project Type
   type Project {
-    _id: ID!
+    id: ID!
     name: String!
     description: String!
     creator: User!
@@ -33,14 +31,14 @@ export const types = gql`
     teams: [Team]
     tasks: [Task]
     sprints: [Sprint]
-    status: ProjectStatus
+    status: ProjectStatus!
     goal: String
     plan: String
   }
 
   # Team Type
   type Team {
-    _id: ID!
+    id: ID!
     name: String!
     creator: User!
     members: [User]
@@ -51,7 +49,7 @@ export const types = gql`
 
   # Task Type
   type Task {
-    _id: ID!
+    id: ID!
     title: String!
     description: String
     creator: User!
@@ -65,8 +63,8 @@ export const types = gql`
 
   # Sprint Type
   type Sprint {
-    _id: ID!
-    name: String!
+    id: ID!
+    title: String!
     creatorId: User!
     createdAt: DateTime
     updatedAt: DateTime
