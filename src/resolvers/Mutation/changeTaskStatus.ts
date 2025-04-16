@@ -4,9 +4,9 @@ import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 export const updateTaskStatus: MutationResolvers["updateTaskStatus"] = async (
   parents,
   args,
-  context,
+  context
 ) => {
-  try {
+  try{
     const task = context.client.task.updated({
       where: {
         id: args.taskId,
@@ -15,9 +15,11 @@ export const updateTaskStatus: MutationResolvers["updateTaskStatus"] = async (
         status: args.status,
       },
     });
-  } catch (e) {
-    console.log("Task Update Error: ", e);
-    throw new Error("Unable to Update Task");
+  
+  }
+  catch(e){
+    console.log("Task Update Error: ",e)
+    throw new Error("Unable to Update Task")
   }
 
   return {

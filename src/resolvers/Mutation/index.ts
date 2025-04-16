@@ -8,13 +8,4 @@ import { createSprint } from "./createSprint";
 import { updateTaskStatus } from "./changeTaskStatus";
 import { signin } from "./signin";
 
-export const Mutation: MutationResolvers = {
-  signup,
-  signin,
-  assineTask,
-  createProject,
-  createTeam,
-  createTask,
-  createSprint,
-  updateTaskStatus,
-};
+export const Mutation:MutationResolvers = {signup, signin, assineTask, createProject, createTeam, createTask, createSprint, updateTaskStatus};

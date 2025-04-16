@@ -25,6 +25,6 @@ export const createAccessToken = (user: InterfaceUser): string => {
     ACCESS_TOKEN_SECRET as string,
     {
       expiresIn: 7 * 24 * 60 * 60 * 1000,
-    },
+    }
   );
 };

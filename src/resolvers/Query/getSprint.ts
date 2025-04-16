@@ -4,7 +4,7 @@ import _ from "lodash";
 export const getSprintById: QueryResolvers["getSprintById"] = async (
   _,
   args,
-  context,
+  context
 ) => {
   const sprint = await context.client.sprint.findUnique({
     where: { id: args.id, projectId: args.id },

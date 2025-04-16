@@ -2,7 +2,6 @@ import type { Request } from "express";
 import jwt from "jsonwebtoken";
 import { ACCESS_TOKEN_SECRET } from "../globals";
 import { client } from "../db";
-import { includes } from "lodash";
 
 // This interface represents the type of data object returned by isAuth function.
 export interface InterfaceAuthData {
@@ -17,7 +16,6 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
     expired: undefined,
     userId: undefined,
   };
-
 
   const authHeader = request.headers.authorization;
 
@@ -44,7 +42,7 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
           return err;
         }
         return decoded;
-      },
+      }
     ); // If there is an error decoded token would contain it
 
     console.log(decodedToken.userId);
@@ -62,9 +60,7 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
     return authData;
   }
 
-  const user = await client.user.findUnique({
-    where: { id: decodedToken.userId },
-  });
+  const user = await client.user.findUnique({ where: { id: decodedToken.userId } });
 
   if (!user) {
     authData.isAuth = false;

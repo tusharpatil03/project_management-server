@@ -7,13 +7,4 @@ import { getTaskById } from "./getTask";
 import { getTeamById } from "./getTeam";
 import { getUserByEmail } from "./getUser";
 
-export const Query = {
-  getUserByEmail,
-  getTaskById,
-  getSprintById,
-  getProjectById,
-  getAllSprints,
-  getAllTasks,
-  getTeamById,
-  getAllProjects,
-};
+export const Query = {getUserByEmail, getTaskById, getSprintById, getProjectById, getAllSprints, getAllTasks, getTeamById, getAllProjects}

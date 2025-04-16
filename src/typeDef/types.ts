@@ -8,17 +8,17 @@ export const types = gql`
 
   # User Type
   type User {
-    id: ID!
-    createdAt: DateTime
-    email: EmailAddress
-    updatedAt: DateTime
-    projects: [Project] # Always an array (even if empty)
-    teams: [Team]
-    createdTeams: [Team]
-    createdTasks: [Task]
-    assignedTasks: [Task]
-    sprints: [Sprint]
-  }
+  id: ID!
+  createdAt: DateTime
+  email: EmailAddress
+  updatedAt: DateTime
+  projects: [Project]  # Always an array (even if empty)
+  teams: [Team]
+  createdTeams: [Team]
+  createdTasks: [Task]
+  assignedTasks: [Task]
+  sprints: [Sprint]
+}
 
   # Project Type
   type Project {

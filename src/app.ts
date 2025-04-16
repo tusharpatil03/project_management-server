@@ -16,8 +16,8 @@ app.use("/voyager", voyagerMiddleware({ endpointUrl: "/graphql" }));
 //   res.json({ project: 'Project 03', status: 'healthy' })
 // })
 
+
 app.get("/hello", (req: Request, res: Response, next: NextFunction) => {
-  console.log("Hello");
   res.status(200).json({ message: "hello, welcome to project" });
 });
 

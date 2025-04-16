@@ -11,7 +11,7 @@ import depthLimit from "graphql-depth-limit";
 import type { GraphQLFormattedError } from "graphql";
 import { expressMiddleware } from "@apollo/server/express4";
 import { client } from "./db";
-import "dotenv/config";
+import "dotenv/config"
 import { isAuth } from "./middlewares/isAuth";
 import authDirectiveTransformer from "./directives/directiveTransformers/authDirectiveTransformer";
 import { roleDirectiveTransformer } from "./directives/directiveTransformers/roleDirectiveTransformer";
@@ -52,6 +52,7 @@ const server = new ApolloServer({
   ],
 });
 
+
 let serverHost = "localhost";
 
 async function startServer() {
@@ -69,7 +70,8 @@ async function startServer() {
           apiRootUrl: `${req.protocol}://${serverHost}/`,
         };
       },
-    }),
+    }
+    ),
   );
 
   const PORT = parseInt(SEVER_PORT || "4000", 10);
