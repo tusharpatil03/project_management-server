@@ -1,7 +1,11 @@
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import _ from "lodash";
 
-export const getTaskById: QueryResolvers["getTaskById"] = async (_, args, context) => {
+export const getTaskById: QueryResolvers["getTaskById"] = async (
+  _,
+  args,
+  context,
+) => {
   const task = await context.client.task.findUnique({
     where: { id: args.id, projectId: args.id },
   });

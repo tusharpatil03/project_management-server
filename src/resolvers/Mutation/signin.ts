@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { createAccessToken } from "../../utility/auth";
 
 export const signin: MutationResolvers["signin"] = async (_, args, context) => {
+  console.log(args.input)
   const user = await context.client.user.findUnique({
     where: { email: args.input.email },
   });
@@ -12,7 +13,7 @@ export const signin: MutationResolvers["signin"] = async (_, args, context) => {
 
   const hashedPassword = await bcrypt.hash(args.input.password, user.salt);
 
-  if(hashedPassword !== user.password){
+  if (hashedPassword !== user.password) {
     throw new Error("Wrong Password");
   }
 

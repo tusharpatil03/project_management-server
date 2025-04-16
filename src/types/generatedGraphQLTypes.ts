@@ -42,23 +42,19 @@ export type CreateProjectInput = {
 };
 
 export type CreateSprintInput = {
-  creatorId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate: Scalars['DateTime']['input'];
   projectId: Scalars['ID']['input'];
   status?: InputMaybe<SprintStatus>;
-  tasks?: InputMaybe<Array<Scalars['ID']['input']>>;
+  tasks?: InputMaybe<Array<CreateTaskInput>>;
   title: Scalars['String']['input'];
 };
 
 export type CreateTaskInput = {
   assigneeId?: InputMaybe<Scalars['ID']['input']>;
-  creatorId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate?: InputMaybe<Scalars['DateTime']['input']>;
   projectId: Scalars['ID']['input'];
-  sprintId?: InputMaybe<Scalars['ID']['input']>;
-  status?: InputMaybe<TaskStatus>;
   title: Scalars['String']['input'];
 };
 
@@ -207,10 +203,10 @@ export type Sprint = {
   creatorId: User;
   dueDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
   project?: Maybe<Project>;
   status?: Maybe<SprintStatus>;
   tasks?: Maybe<Array<Maybe<Task>>>;
+  title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -453,10 +449,10 @@ export type SprintResolvers<ContextType = any, ParentType extends ResolversParen
   creatorId?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   dueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['SprintStatus']>, ParentType, ContextType>;
   tasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

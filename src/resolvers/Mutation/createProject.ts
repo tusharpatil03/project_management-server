@@ -3,7 +3,7 @@ import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 export const createProject: MutationResolvers["createProject"] = async (
   _,
   args,
-  context
+  context,
 ) => {
   const { input } = args;
   try {

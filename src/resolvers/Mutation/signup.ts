@@ -1,17 +1,12 @@
-import {
-  MutationResolvers,
-} from "../../types/generatedGraphQLTypes";
+import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import bcrypt from "bcrypt";
 import { createAccessToken } from "../../utility/auth";
 
-export const signup: MutationResolvers["signup"] = async (
-  _,
-  args,
-  context
-) => {
+export const signup: MutationResolvers["signup"] = async (_, args, context) => {
   const existingUser = await context.client.user.findUnique({
     where: { email: args.input.email },
   });
+
   if (existingUser) {
     throw new Error("User already Exists");
   }
