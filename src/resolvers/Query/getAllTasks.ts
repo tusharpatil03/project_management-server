@@ -1,6 +1,10 @@
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
-export const getAllTasks: QueryResolvers["getAllTasks"] = async (_, args, context) => {
+export const getAllTasks: QueryResolvers["getAllTasks"] = async (
+  _,
+  args,
+  context,
+) => {
   const userId = context.authData.userId;
 
   const project = await context.client.project.findUnique({

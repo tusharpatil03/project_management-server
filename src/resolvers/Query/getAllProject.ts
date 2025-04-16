@@ -22,11 +22,10 @@ import _ from "lodash";
 //   return user.projects;
 // };
 
-
 export const getAllProjects: QueryResolvers["getAllProjects"] = async (
   _,
   __,
-  context
+  context,
 ) => {
   const userId = context.authData.userId;
 

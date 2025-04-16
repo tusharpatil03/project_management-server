@@ -7,4 +7,12 @@ import { scalars } from "./scalars";
 import { enums } from "./enums";
 import { directives } from "./directives";
 
-export const typeDef = [types, inputs, scalars, queries, mutations, enums, directives];
+export const typeDef = [
+  types,
+  inputs,
+  scalars,
+  queries,
+  mutations,
+  enums,
+  directives,
+];
