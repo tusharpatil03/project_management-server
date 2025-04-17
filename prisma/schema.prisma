@@ -4,7 +4,6 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,8 +14,8 @@ datasource db {
 }
 
 model User {
-  id        String   @id @unique @default(cuid())
-  email     String   @unique
+  id        String    @id @unique @default(cuid())
+  email     String    @unique
   password  String
   salt      String
   role      Role
@@ -24,21 +23,41 @@ model User {
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   // Relations
-  projects      Project[]  
-  teams         Team[]    @relation("TeamMembers")
-  createdTeams  Team[]    @relation("TeamCreator")
-  createdTasks  Task[]    @relation("CreatedTasks")
-  assignedTasks Task[]    @relation("AssignedTasks")
+  projects      Project[]
+  teams         Team[]     @relation("TeamMembers")
+  // createdTeams  Team[]    @relation("TeamCreator")
+  userTeam      UserTeam[]
+  createdTasks  Task[]     @relation("CreatedTasks")
+  assignedTasks Task[]     @relation("AssignedTasks")
   sprints       Sprint[]
 
-  @@map("users")
+  profile UserProfile?
+
+  @@map("users") //collection name : users
+}
+
+model UserProfile {
+  id        String   @id @unique @default(cuid())
+  firstName String   @map("first_name")
+  lastName  String   @map("last_name")
+  avatar    String?
+  phone     String?
+  gender    Gender
+  social    Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  @@map("userprofile")
 }
 
 model Project {
   id          String        @id @unique @default(cuid())
   name        String
   description String
-  creatorId   String        @map("creator_id")
+  creatorId   String        @unique @map("creator_id")
   goal        String?
   plan        String?
   creator     User          @relation(fields: [creatorId], references: [id], onDelete: Cascade)
@@ -46,25 +65,47 @@ model Project {
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
 
-  teams   Team[]   @relation("ProjectTeams") // Many-to-Many with Teams
-  tasks   Task[]   @relation("ProjectTasks")
-  sprints Sprint[]
+  projectTeams ProjectTeam[]
+  tasks        Task[]        @relation("ProjectTasks")
+  sprints      Sprint[]
 
   @@map("projects")
 }
 
 model Team {
-  id          String   @id @unique @default(cuid())
-  name        String?
-  creatorId   String   @map("creator_id")
-  creator     User     @relation("TeamCreator", fields: [creatorId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        String     @id @unique @default(cuid())
+  name      String?
+  creatorId String     @unique @map("creator_id")
+  // creator   User     @relation("TeamCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  userTeam  UserTeam[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
 
-  members  User[]    @relation("TeamMembers") // Many-to-Many with Users
-  projects Project[] @relation("ProjectTeams") // Many-to-Many with Projects
+  members      User[]        @relation("TeamMembers") // Many-to-Many with Users
+  projectTeams ProjectTeam[]
 
   @@map("teams")
+}
+
+model UserTeam {
+  id       String   @unique
+  userId   String
+  teamId   String
+  role     String? // optional: e.g. "contributor", "viewer"
+  joinedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  team Team @relation(fields: [teamId], references: [id])
+}
+
+model ProjectTeam {
+  id        String   @unique
+  projectId String   @unique
+  teamId    String   @unique
+  project   Project  @relation(fields: [projectId], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
+  role      String? // optional: e.g. "contributor", "viewer"
+  joinedAt  DateTime @default(now())
 }
 
 model Task {
@@ -74,16 +115,16 @@ model Task {
   status      TaskStatus @default(TODO)
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
-  dueDate     DateTime  @map("due_date")
+  dueDate     DateTime   @map("due_date")
 
   // Relations
   assigneeId String?
   assignee   User?   @relation("AssignedTasks", fields: [assigneeId], references: [id], onDelete: SetNull)
-  creatorId  String  @map("creator_id")
+  creatorId  String  @unique @map("creator_id")
   creator    User    @relation("CreatedTasks", fields: [creatorId], references: [id], onDelete: Cascade)
-  projectId  String  @map("project_id")
+  projectId  String  @unique @map("project_id")
   project    Project @relation("ProjectTasks", fields: [projectId], references: [id], onDelete: Cascade)
-  sprintId   String? @map("sprint_id")
+  sprintId   String? @unique @map("sprint_id")
   sprint     Sprint? @relation(fields: [sprintId], references: [id])
 
   @@map("tasks")
@@ -99,9 +140,9 @@ model Sprint {
   dueDate     DateTime?    @map("due_date")
 
   // Relations
-  creatorId String  @map("creator_id")
+  creatorId String  @unique @map("creator_id")
   creator   User    @relation(fields: [creatorId], references: [id])
-  projectId String  @map("project_id")
+  projectId String  @unique @map("project_id")
   project   Project @relation(fields: [projectId], references: [id])
   tasks     Task[]
 
@@ -131,4 +172,10 @@ enum ProjectStatus {
   OnHold
   Completed
   Cancelled
+}
+
+enum Gender {
+  Male
+  Female
+  Other
 }

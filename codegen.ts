@@ -1,12 +1,12 @@
-import type { CodegenConfig } from "@graphql-codegen/cli";
+import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
   // Points to our schema and the additional scalar Upload which is added by Apollo-Server at runtime
-  schema: ["./src/typeDef/**/*.ts"],
+  schema: ['./src/typeDef/**/*.ts'],
 
   generates: {
-    "./src/types/generatedGraphQLTypes.ts": {
-      plugins: ["typescript", "typescript-resolvers"],
+    './src/types/generatedGraphQLTypes.ts': {
+      plugins: ['typescript', 'typescript-resolvers'],
 
       config: {
         // Generates graphQL enums as typescript union types.
@@ -26,6 +26,6 @@ const config: CodegenConfig = {
       },
     },
   },
-};
+}
 
-export default config;
+export default config

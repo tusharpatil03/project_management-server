@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const types = gql`
   # Auth Data
@@ -8,18 +8,36 @@ export const types = gql`
 
   # User Type
   type User {
-  id: ID!
-  createdAt: DateTime
-  email: EmailAddress
-  updatedAt: DateTime
-  projects: [Project]  # Always an array (even if empty)
-  teams: [Team]
-  createdTeams: [Team]
-  createdTasks: [Task]
-  assignedTasks: [Task]
-  sprints: [Sprint]
-}
+    id: ID!
+    createdAt: DateTime
+    email: EmailAddress
+    updatedAt: DateTime
+    projects: [Project] # Always an array (even if empty)
+    teams: [Team]
+    createdTeams: [Team]
+    createdTasks: [Task]
+    assignedTasks: [Task]
+    sprints: [Sprint]
+  }
 
+  type UserProfile {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    avatar: String
+    phone: String
+    gender: Gender
+    social: Social
+    createdAt: DateTime
+    updatedAt: DateTime
+  }
+
+  type Social {
+    github: String
+    facebook: String
+    twitter: String
+    linkedin: String
+  }
   # Project Type
   type Project {
     id: ID!
@@ -76,6 +94,7 @@ export const types = gql`
 
   type ResponseMessage {
     success: Boolean!
-    message: String!
+    status: Int
+    message: String
   }
-`;
+`

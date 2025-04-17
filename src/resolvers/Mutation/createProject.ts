@@ -1,11 +1,11 @@
-import { MutationResolvers } from "../../types/generatedGraphQLTypes";
+import { MutationResolvers } from '../../types/generatedGraphQLTypes'
 
-export const createProject: MutationResolvers["createProject"] = async (
+export const createProject: MutationResolvers['createProject'] = async (
   _,
   args,
   context
 ) => {
-  const { input } = args;
+  const { input } = args
   try {
     const project = await context.client.project.create({
       data: {
@@ -19,11 +19,11 @@ export const createProject: MutationResolvers["createProject"] = async (
           },
         },
       },
-    });
+    })
 
-    return project;
+    return project
   } catch (e) {
-    console.log("Error in creating Project: ", e);
-    throw new Error("Unable to Create Project");
+    console.log('Error in creating Project: ', e)
+    throw new Error('Unable to Create Project')
   }
-};
+}

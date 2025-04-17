@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const mutations = gql`
   # Mutations
@@ -11,5 +11,9 @@ export const mutations = gql`
     assineTask(input: AssignTaskInput!): ResponseMessage!
     signup(input: AuthInput!): AuthData!
     signin(input: AuthInput!): AuthData!
+
+    removeProject(projectId: ID!): ResponseMessage
+    removeTask(taskId: ID!, projectId: ID!): ResponseMessage
+    removeSprint(sprintId: ID!, projectId: ID!): ResponseMessage
   }
-`;
+`
