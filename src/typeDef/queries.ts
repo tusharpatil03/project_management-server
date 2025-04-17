@@ -1,9 +1,9 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const queries = gql`
   # Queries
   type Query {
-    getUserByEmail(email: String!): User! @auth
+    getUserById(id: ID!): UserProfile! @auth
     getProjectById(id: ID!): Project! @auth
     getTeamById(id: ID!): Team! @auth
     getTaskById(id: ID!): Task! @auth
@@ -12,4 +12,4 @@ export const queries = gql`
     getAllTasks(projectId: ID!): [Task]! @auth
     getAllSprints(projectId: ID!): [Sprint]! @auth
   }
-`;
+`

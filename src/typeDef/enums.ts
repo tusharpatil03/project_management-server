@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const enums = gql`
   enum Role {
@@ -23,4 +23,10 @@ export const enums = gql`
     Completed
     Cancelled
   }
-`;
+
+  enum Gender {
+    Male
+    Female
+    Other
+  }
+`

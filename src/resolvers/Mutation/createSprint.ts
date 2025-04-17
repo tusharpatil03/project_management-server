@@ -1,11 +1,11 @@
-import { MutationResolvers } from "../../types/generatedGraphQLTypes";
+import { MutationResolvers } from '../../types/generatedGraphQLTypes'
 
-export const createSprint: MutationResolvers["createSprint"] = async (
+export const createSprint: MutationResolvers['createSprint'] = async (
   _,
   args,
-  context,
+  context
 ) => {
-  const { input } = args;
+  const { input } = args
   try {
     const sprint = context.prisma.sprint.create({
       data: {
@@ -20,11 +20,11 @@ export const createSprint: MutationResolvers["createSprint"] = async (
         tasks: input.tasks,
         projectId: input.projectId,
       },
-    });
+    })
 
-    return sprint;
+    return sprint
   } catch (e) {
-    console.log("Error in Creating Sprint: ", e);
-    throw new Error("unable to create Sprint");
+    console.log('Error in Creating Sprint: ', e)
+    throw new Error('unable to create Sprint')
   }
-};
+}

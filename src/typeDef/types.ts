@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const types = gql`
   # Auth Data
@@ -20,6 +20,24 @@ export const types = gql`
     sprints: [Sprint]
   }
 
+  type UserProfile {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    avatar: String
+    phone: String
+    gender: Gender
+    social: Social
+    createdAt: DateTime
+    updatedAt: DateTime
+  }
+
+  type Social {
+    github: String
+    facebook: String
+    twitter: String
+    linkedin: String
+  }
   # Project Type
   type Project {
     id: ID!
@@ -76,6 +94,7 @@ export const types = gql`
 
   type ResponseMessage {
     success: Boolean!
-    message: String!
+    status: Int
+    message: String
   }
-`;
+`

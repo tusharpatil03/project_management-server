@@ -1,17 +1,17 @@
-import { QueryResolvers } from "../../types/generatedGraphQLTypes";
+import { QueryResolvers } from '../../types/generatedGraphQLTypes'
 
-export const getUserByEmail: QueryResolvers["getUserByEmail"] = async (
+export const getUserById: QueryResolvers['getUserById'] = async (
   _,
   args,
-  context,
+  context
 ) => {
   const user = await context.user.findUnique({
     where: {
-      email: args.email,
+      email: args.id,
     },
-  });
+  })
   if (user == null) {
-    return { message: "failed to fetch user", success: false };
+    return { message: 'failed to fetch user', success: false }
   }
-  return user;
-};
+  return user
+}

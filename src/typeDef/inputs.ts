@@ -1,4 +1,4 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const inputs = gql`
   # Inputs for Mutations
@@ -41,4 +41,4 @@ export const inputs = gql`
     id: ID!
     assignee: ID!
   }
-`;
+`

@@ -1,6 +1,6 @@
-import gql from "graphql-tag";
+import gql from 'graphql-tag'
 
 export const scalars = gql`
   scalar DateTime
   scalar EmailAddress
-`;
+`
