@@ -1,30 +1,46 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
-import { ACCESS_TOKEN_SECRET } from '../globals'
+import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
 
-export interface InterfaceJwtPayload {
-  tokenVersion: number | string
-  userId: string
-  email: string
+export interface InterfaceCreateAccessToken {
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
 }
 
-export interface InterfaceUser {
-  id: string
-  email: string
-  password: string
-  role: string
-}
-
-export const createAccessToken = (user: InterfaceUser): string => {
+export const createAccessToken = (
+  payload: InterfaceCreateAccessToken
+): string => {
   return jwt.sign(
     {
-      userId: user.id.toString(),
-      email: user.email,
-      password: user.password,
+      userId: payload.userId.toString(),
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
     },
     ACCESS_TOKEN_SECRET as string,
     {
       expiresIn: 7 * 24 * 60 * 60 * 1000,
     }
-  )
-}
+  );
+};
+
+// export const createRefreshToken = (
+//   user: InterfaceUser,
+//   userProfile: InterfaceUserProfile,
+// ): string => {
+//   return user && userProfile ? jwt.sign(
+//     {
+//       tokenVersion: userProfile.tokenVersion,
+//       userId: user.id.toString(),
+//       firstName: userProfile.firstName,
+//       lastName: userProfile.lastName,
+//       email: user.email,
+//     },
+//     REFRESH_TOKEN_SECRET as string,
+//     {
+//       expiresIn: "30d",
+//     },
+//   ) : ""
+// };

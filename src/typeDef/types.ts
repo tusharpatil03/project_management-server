@@ -1,23 +1,39 @@
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
 
 export const types = gql`
   # Auth Data
   type AuthData {
+    user: User!
+    userProfile: UserProfile!
     accessToken: String!
+  }
+
+  type ExtendSession {
+    accessToken: String
+    refreshToken: String
   }
 
   # User Type
   type User {
     id: ID!
+    email: EmailAddress!
+    username: String!
+    role: Role!
     createdAt: DateTime
-    email: EmailAddress
     updatedAt: DateTime
-    projects: [Project] # Always an array (even if empty)
+    projects: [Project]
+    sprints: [Sprint]
     teams: [Team]
     createdTeams: [Team]
     createdTasks: [Task]
     assignedTasks: [Task]
-    sprints: [Sprint]
+    firstName: String
+    lastName: String
+    phone: String
+    gender: String
+    avatar: String
+    social: Social
+    userProfile: UserProfile
   }
 
   type UserProfile {
@@ -30,66 +46,106 @@ export const types = gql`
     social: Social
     createdAt: DateTime
     updatedAt: DateTime
+    user: User
   }
 
   type Social {
+    id: ID!
     github: String
     facebook: String
     twitter: String
     linkedin: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
   }
   # Project Type
   type Project {
     id: ID!
     name: String!
-    description: String!
-    creator: User!
+    description: String
     createdAt: DateTime
     updatedAt: DateTime
-    teams: [Team]
     tasks: [Task]
-    sprints: [Sprint]
     status: ProjectStatus!
     goal: String
     plan: String
+    creatorId: String!
+  }
+
+  type ProjectTeam {
+    id: ID!
+    projectId: ID!
+    teamId: ID!
+    project: Project
+    team: Team
+    joinedAt: DateTime
+  }
+
+  type UserTeam {
+    id: ID!
+    userId: ID!
+    teamId: ID!
+    role: MemberRole
+    joinedAt: DateTime
+    user: User
+    team: Team
   }
 
   # Team Type
   type Team {
     id: ID!
-    name: String!
+    name: String
     creator: User!
     members: [User]
-    projects: [Project]
     createdAt: DateTime
     updatedAt: DateTime
   }
 
   # Task Type
   type Task {
-    id: ID!
+    id: String!
     title: String!
     description: String
-    creator: User!
-    assignee: User
-    project: Project
-    sprint: Sprint
+    creator: TaskCreator
+    assignee: TaskAssignee
+    projectId: String!
+    sprintId: String
+    createdAt: Date
+    updatedAt: Date
+    status: TaskStatus
+    dueDate: Date!
+  }
+
+  type TaskCreator {
+    id: ID!
+    firstName: String
+    lastName: String
+    email: String
+  }
+
+  type TaskAssignee {
+    id: ID!
+    firstName: String
+    lastName: String
+    email: String
+    avatar: String
     createdAt: DateTime
     updatedAt: DateTime
-    status: TaskStatus
+    role: Role
   }
 
   # Sprint Type
   type Sprint {
     id: ID!
     title: String!
-    creatorId: User!
+    description: String
+    status: SprintStatus
     createdAt: DateTime
     updatedAt: DateTime
     dueDate: DateTime
-    tasks: [Task]
+    creator: User!
     project: Project
-    status: SprintStatus
+    tasks: [Task]
   }
 
   type ResponseMessage {
@@ -97,4 +153,24 @@ export const types = gql`
     status: Int
     message: String
   }
-`
+
+  # Auth Type
+  type Auth {
+    user: User
+    token: String
+    accessToken: String
+    expiresIn: Int
+    tokenType: String
+    scope: String
+    idToken: String
+    authData: AuthData
+    userId: String
+    email: String
+    role: Role
+    createdAt: DateTime
+    updatedAt: DateTime
+    firstName: String
+    lastName: String
+    phone: String
+  }
+`;

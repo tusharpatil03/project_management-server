@@ -1,13 +1,19 @@
-import { MutationResolvers } from '../../types/generatedGraphQLTypes'
+import { client } from '../../db';
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
+export interface InterfaceProject {
+  id: string;
+  name: string;
+  description: string;
+}
 export const createProject: MutationResolvers['createProject'] = async (
   _,
   args,
   context
 ) => {
-  const { input } = args
+  const { input } = args;
   try {
-    const project = await context.client.project.create({
+    const project = await client.project.create({
       data: {
         name: input.name,
         description: input.description,
@@ -19,11 +25,11 @@ export const createProject: MutationResolvers['createProject'] = async (
           },
         },
       },
-    })
+    });
 
-    return project
+    return project;
   } catch (e) {
-    console.log('Error in creating Project: ', e)
-    throw new Error('Unable to Create Project')
+    console.log('Error in creating Project: ', e);
+    throw new Error('Unable to Create Project');
   }
-}
+};

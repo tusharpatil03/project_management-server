@@ -1,5 +1,5 @@
-import _, { assign } from 'lodash'
-import { MutationResolvers } from '../../types/generatedGraphQLTypes'
+import _, { assign } from 'lodash';
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export const assineTask: MutationResolvers['assineTask'] = async (
   parents,
@@ -14,14 +14,14 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       data: {
         assign: args.input.assignee,
       },
-    })
+    });
   } catch (e) {
-    console.log('Task Assing Error: ', e)
-    throw new Error('Failed to assign Task')
+    console.log('Task Assing Error: ', e);
+    throw new Error('Failed to assign Task');
   }
 
   return {
     message: '',
     success: true,
-  }
-}
+  };
+};

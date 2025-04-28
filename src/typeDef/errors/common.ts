@@ -1,4 +1,4 @@
-import { gql } from 'graphql-tag'
+import { gql } from 'graphql-tag';
 
 /**
  * GraphQL schema definition for common error types.
@@ -20,4 +20,4 @@ export const commonErrors = gql`
   type UnauthorizedError implements Error {
     message: String!
   }
-`
+`;

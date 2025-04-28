@@ -1,4 +1,4 @@
-import { ApplicationError } from './applicationError'
+import { ApplicationError } from './applicationError';
 
 export class UnauthorizedError extends ApplicationError {
   constructor(
@@ -14,7 +14,7 @@ export class UnauthorizedError extends ApplicationError {
         param,
         metadata,
       },
-    ]
-    super(errorJson, 403, message)
+    ];
+    super(errorJson, 403, message);
   }
 }
