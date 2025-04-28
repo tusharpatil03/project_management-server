@@ -1,6 +1,6 @@
-import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils'
-import { defaultFieldResolver, GraphQLSchema } from 'graphql'
-import { client } from '../../db'
+import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
+import { defaultFieldResolver, GraphQLSchema } from 'graphql';
+import { client } from '../../db';
 
 export function roleDirectiveTransformer(
   schema: GraphQLSchema,
@@ -8,14 +8,15 @@ export function roleDirectiveTransformer(
 ) {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
+      console.log('Field Config: ', fieldConfig);
       const roleDirective = getDirective(
         schema,
         fieldConfig,
         directiveName
-      )?.[0]
+      )?.[0];
 
       if (roleDirective) {
-        const { resolve = defaultFieldResolver } = fieldConfig
+        const { resolve = defaultFieldResolver } = fieldConfig;
 
         fieldConfig.resolve = async (
           root,
@@ -28,20 +29,20 @@ export function roleDirectiveTransformer(
             where: {
               id: context.userId,
             },
-          })
+          });
 
           if (!currentUser) {
-            throw new Error('User not found by tushar patil')
+            throw new Error('User not found');
           }
 
           // Add the current user to the context for use in the resolver
-          context.user = currentUser
+          context.user = currentUser;
 
           // Call the original resolver with the updated context
-          return resolve(root, args, context, info) as string
-        }
-        return fieldConfig
+          return resolve(root, args, context, info) as string;
+        };
+        return fieldConfig;
       }
     },
-  })
+  });
 }

@@ -1,6 +1,6 @@
-import { MutationResolvers } from '../../types/generatedGraphQLTypes'
-import { client } from '../../db'
-import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError'
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { client } from '../../db';
+import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 
 export const removeProject: MutationResolvers['removeProject'] = async (
   _,
@@ -17,20 +17,20 @@ export const removeProject: MutationResolvers['removeProject'] = async (
         tasks: true,
         projectTeams: true,
       },
-    })
+    });
 
     if (!project) {
-      throw new Error('Project Not found')
+      throw new Error('Project Not found');
     }
 
     if (project.creatorId !== context.authData.userId) {
       throw new UnauthorizedError(
         'You are not the creator of this project',
         '403'
-      )
+      );
     }
 
-    const operations = []
+    const operations = [];
     if (project.sprints.length > 0) {
       operations.push(
         client.sprint.deleteMany({
@@ -40,7 +40,7 @@ export const removeProject: MutationResolvers['removeProject'] = async (
             },
           },
         })
-      )
+      );
     }
 
     if (project.tasks.length > 0) {
@@ -52,7 +52,7 @@ export const removeProject: MutationResolvers['removeProject'] = async (
             },
           },
         })
-      )
+      );
     }
 
     if (project.projectTeams.length > 0) {
@@ -62,7 +62,7 @@ export const removeProject: MutationResolvers['removeProject'] = async (
             projectId: project.id,
           },
         })
-      )
+      );
     }
 
     operations.push(
@@ -71,21 +71,21 @@ export const removeProject: MutationResolvers['removeProject'] = async (
           id: args.projectId,
         },
       })
-    )
+    );
 
-    await client.$transaction(operations)
+    await client.$transaction(operations);
 
     return {
       success: true,
       status: 200,
-    }
+    };
   } catch (e) {
-    console.error('Error removing project:', e)
+    console.error('Error removing project:', e);
 
     return {
       success: false,
       status: 500,
       message: e instanceof Error ? e.message : 'Internal Server Error',
-    }
+    };
   }
-}
+};

@@ -1,20 +1,23 @@
-import { signup } from './signup'
-import { assineTask } from './assignTask'
-import { MutationResolvers } from '../../types/generatedGraphQLTypes'
-import { createProject } from './createProject'
-import { createTeam } from './createTeam'
-import { createTask } from './createTasks'
-import { createSprint } from './createSprint'
-import { updateTaskStatus } from './changeTaskStatus'
-import { signin } from './signin'
+import { signup } from './signup';
+import { assineTask } from './assignTask';
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { createProject } from './createProject';
+import { createTeam } from './createTeam';
+import { createTask } from './createTasks';
+import { createSprint } from './createSprint';
+import { updateTaskStatus } from './changeTaskStatus';
+import { login } from './login';
 
-import { removeProject } from './removeProject'
-import { removeTask } from './removeTask'
-import { removeSprint } from './removeSprint'
+import { removeProject } from './removeProject';
+import { removeTask } from './removeTask';
+import { removeSprint } from './removeSprint';
+
+import { removeAssineeOfTask } from './removeAssigneeOfTask';
+import { addTeamMember } from './addTeamMember';
 
 export const Mutation: MutationResolvers = {
   signup,
-  signin,
+  login,
   assineTask,
   createProject,
   createTeam,
@@ -25,4 +28,7 @@ export const Mutation: MutationResolvers = {
   removeProject,
   removeSprint,
   removeTask,
-}
+
+  removeAssineeOfTask,
+  addTeamMember,
+};

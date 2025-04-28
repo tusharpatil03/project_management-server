@@ -1,5 +1,5 @@
-import _ from 'lodash'
-import { MutationResolvers } from '../../types/generatedGraphQLTypes'
+import _ from 'lodash';
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
   parents,
@@ -14,14 +14,14 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
       data: {
         status: args.status,
       },
-    })
+    });
   } catch (e) {
-    console.log('Task Update Error: ', e)
-    throw new Error('Unable to Update Task')
+    console.log('Task Update Error: ', e);
+    throw new Error('Unable to Update Task');
   }
 
   return {
     message: 'Task Updated',
     success: true,
-  }
-}
+  };
+};

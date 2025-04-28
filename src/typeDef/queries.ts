@@ -1,4 +1,4 @@
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
 
 export const queries = gql`
   # Queries
@@ -12,4 +12,4 @@ export const queries = gql`
     getAllTasks(projectId: ID!): [Task]! @auth
     getAllSprints(projectId: ID!): [Sprint]! @auth
   }
-`
+`;

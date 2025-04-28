@@ -1,11 +1,17 @@
-import gql from 'graphql-tag'
+import gql from 'graphql-tag';
 
 export const inputs = gql`
   # Inputs for Mutations
-  input AuthInput {
-    email: String!
+  input LoginInput {
+    username: String!
     password: String!
-    role: Role!
+  }
+  input SignupInput {
+    email: EmailAddress!
+    username: String!
+    password: String!
+    firstName: String!
+    lastName: String!
   }
   input CreateProjectInput {
     name: String!
@@ -26,6 +32,8 @@ export const inputs = gql`
     assigneeId: ID
     projectId: ID!
     dueDate: DateTime
+    status: String
+    sprintId: ID!
   }
 
   input CreateSprintInput {
@@ -41,4 +49,4 @@ export const inputs = gql`
     id: ID!
     assignee: ID!
   }
-`
+`;
