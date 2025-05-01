@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export const inputs = gql`
   # Inputs for Mutations
   input LoginInput {
-    username: String!
+    email: EmailAddress!
     password: String!
   }
   input SignupInput {
