@@ -8,7 +8,6 @@ export function roleDirectiveTransformer(
 ) {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
-      console.log('Field Config: ', fieldConfig);
       const roleDirective = getDirective(
         schema,
         fieldConfig,

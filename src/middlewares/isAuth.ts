@@ -46,7 +46,7 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
       }
     ); // If there is an error decoded token would contain it
 
-    console.log(decodedToken.userId);
+    //console.log(decodedToken.userId);
 
     if (decodedToken.name === 'TokenExpiredError') {
       authData.expired = true;

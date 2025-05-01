@@ -52,7 +52,7 @@ export interface InterfaceUserProfile {
 
 export const login: MutationResolvers['login'] = async (_, args, context) => {
   const user = await client.user.findUnique({
-    where: { email: args.input.username },
+    where: { email: args.input.email },
     include: {
       profile: {
         select: {

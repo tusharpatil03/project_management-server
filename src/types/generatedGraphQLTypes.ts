@@ -105,8 +105,8 @@ export type Gender =
   | 'Other';
 
 export type LoginInput = {
+  email: Scalars['EmailAddress']['input'];
   password: Scalars['String']['input'];
-  username: Scalars['String']['input'];
 };
 
 export type MemberRole =

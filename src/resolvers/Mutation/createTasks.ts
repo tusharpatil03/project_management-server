@@ -3,7 +3,7 @@ import { client } from '../../db';
 import { MutationResolvers, User } from '../../types/generatedGraphQLTypes';
 
 // Align InterfaceTask with GraphQL Task type
-interface InterfaceTask {
+export interface InterfaceTask {
   id: string;
   title: string;
   description: string | null;
@@ -99,6 +99,37 @@ export const createTask: MutationResolvers['createTask'] = async (
 
       if (!task) {
         throw new Error('Task creation failed');
+      }
+
+      // Remove redundant connect calls for tasks
+      if (input.sprintId) {
+        await prisma.sprint.update({
+          where: {
+            id: input.sprintId,
+          },
+          data: {
+            tasks: {
+              connect: {
+                id: task.id,
+              },
+            },
+          },
+        });
+      }
+
+      if (input.assigneeId) {
+        await prisma.user.update({
+          where: {
+            id: input.assigneeId,
+          },
+          data: {
+            assignedTasks: {
+              connect: {
+                id: task.id,
+              },
+            },
+          },
+        });
       }
 
       return {

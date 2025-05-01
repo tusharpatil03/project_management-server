@@ -6,15 +6,21 @@ import { client } from '../../db';
 import { InterfaceCreateAccessToken } from '../../utility/auth';
 
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
-  const existingUser = await context.client.user.findUnique({
-    where: { email: args.input.email },
+  const existingUser = await client.user.findFirst({
+    where: {
+      OR: [{ email: args.input.email }, { username: args.input.username }],
+    },
+    include: {
+      profile: true,
+    },
   });
+
 
   if (existingUser) {
     throw new Error('User already Exists');
   }
 
-  const salt:string = await bcrypt.genSalt(12);
+  const salt: string = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(args.input.password, salt);
 
   if (!hashedPassword) {
@@ -54,7 +60,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     const accessToken = createAccessToken(accessTokenPayload);
 
     // Remove sensitive fields before returning the user
-    const { password, salt:string, ...safeUser } = result.user;
+    const { password, salt: string, ...safeUser } = result.user;
 
     return {
       accessToken,

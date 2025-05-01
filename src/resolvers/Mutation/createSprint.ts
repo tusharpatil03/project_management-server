@@ -1,4 +1,17 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { InterfaceTask } from './createTasks';
+
+export interface InterfaceSprint {
+  sprints: {
+    id: string;
+    title: string;
+    description: string;
+    projectId: string;
+    dueDate: string;
+    status: string;
+    tasks: InterfaceTask[]
+  };
+}
 
 export const createSprint: MutationResolvers['createSprint'] = async (
   _,

@@ -10,74 +10,74 @@ export const removeTask: MutationResolvers['removeTask'] = async (
   const { taskId, projectId } = args;
 
   try {
-    const task = await client.task.findUnique({
-      where: { id: taskId },
-      include: { project: true },
-    });
+    return await client.$transaction(async (prisma) => {
+      // Fetch the task with its project
+      const task = await prisma.task.findUnique({
+        where: { id: taskId },
+        include: { project: true },
+      });
 
-    if (!task || task.projectId !== projectId) {
-      throw new Error('Task is not part of this project');
-    }
-
-    // Only allow project creator to delete
-    const project = await client.project.findUnique({
-      where: { id: projectId },
-      include: { tasks: true },
-    });
-
-    let operations = [];
-
-    if (!project) {
-      throw new Error('Project does not exists');
-    } else {
-      operations.push(
-        client.project.update({
-          where: { id: projectId },
-          data: {
-            tasks: {
-              disconnect: { id: args.taskId },
-            },
-          },
-        })
-      );
-    }
-
-    if (task.sprintId) {
-      operations.push(
-        client.sprint.update({
-          where: {
-            id: task.sprintId,
-          },
-          data: {
-            tasks: {
-              disconnect: {
-                id: args.taskId,
-              },
-            },
-          },
-        })
-      );
-    }
-
-    if (task.creatorId !== context.authData.userId) {
-      if (project.creatorId !== context.authData.userId) {
-        throw new UnauthorizedError('You are not creator of this project');
-      } else {
-        throw new UnauthorizedError('You are not creator of this task');
+      if (!task || task.projectId !== projectId) {
+        throw new Error('Task is not part of this project');
       }
-    } else {
-      operations.push(client.task.delete({ where: { id: args.taskId } }));
-    }
 
-    await client.$transaction(operations);
+      // Fetch the project to verify the creator
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+      });
 
-    return {
-      success: true,
-      message: 'Task removed successfully.',
-      status: 200,
-    };
+      if (!project) {
+        throw new Error('Project does not exist');
+      }
+
+      // Authorization checks
+      if (
+        task.creatorId !== context.authData.userId &&
+        project.creatorId !== context.authData.userId
+      ) {
+        throw new UnauthorizedError(
+          'You are not authorized to remove this task',
+          '403'
+        );
+      }
+
+      // Disconnect task from sprint if it belongs to one
+      if (task.sprintId) {
+        await prisma.sprint.update({
+          where: { id: task.sprintId },
+          data: {
+            tasks: {
+              disconnect: { id: taskId },
+            },
+          },
+        });
+      }
+
+      // Disconnect task from assignee if it has one
+      if (task.assigneeId) {
+        await prisma.user.update({
+          where: { id: task.assigneeId },
+          data: {
+            assignedTasks: {
+              disconnect: { id: taskId },
+            },
+          },
+        });
+      }
+
+      // Delete the task (this automatically removes it from the project)
+      await prisma.task.delete({
+        where: { id: taskId },
+      });
+
+      return {
+        success: true,
+        message: 'Task removed successfully.',
+        status: 200,
+      };
+    });
   } catch (error) {
     console.error('Error removing task:', error);
-    throw new Error('Unable to Delete Taks');
+    throw new Error('Unable to delete task');
   }
 };
