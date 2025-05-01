@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma, Role } from '@prisma/client';
 import { client } from '../../db';
 import { MutationResolvers, Project } from '../../types/generatedGraphQLTypes';
 
@@ -17,9 +17,9 @@ export const createProject: MutationResolvers['createProject'] = async (
   const { input } = args;
 
   try {
-    
-    await client.$transaction(async (prisma) => {
-      const project = await prisma.project.create({
+    const project = await client.$transaction(async (prisma) => {
+      // Create the project
+      const createdProject = await prisma.project.create({
         data: {
           name: input.name,
           description: input.description,
@@ -33,37 +33,35 @@ export const createProject: MutationResolvers['createProject'] = async (
         },
       });
 
-      if (!project) {
-        throw new Error('Project creation failed');
-      }
-
-      await prisma.user.update({
-        where: {
-          id: context.authData.userId,
-        },
+      // Create a team for the project creator
+      const createdTeam = await prisma.team.create({
         data: {
-          projects: {
-            connect: {
-              id: project.id,
-            },
-          },
-        },
-      });
-
-      await prisma.projectTeam.create({
-        data: {
-          project: {
-            connect: {
-              id: project.id,
-            },
-          },
-          team: {
+          name: `${input.name} Team`,
+          creator: {
             connect: {
               id: context.authData.userId,
             },
           },
         },
       });
+
+      // Link the team to the project
+      await prisma.projectTeam.create({
+        data: {
+          project: {
+            connect: {
+              id: createdProject.id,
+            },
+          },
+          team: {
+            connect: {
+              id: createdTeam.id,
+            },
+          },
+        },
+      });
+
+      // Add the creator to the team
       await prisma.userTeam.create({
         data: {
           user: {
@@ -73,23 +71,21 @@ export const createProject: MutationResolvers['createProject'] = async (
           },
           team: {
             connect: {
-              id: context.authData.userId,
+              id: createdTeam.id,
             },
           },
+          role: Role.Admin,
         },
       });
 
+      return createdProject;
     });
 
-    await client.$disconnect();
-    const project = await client.project.findUnique({
-      where: { id: context.authData.userId },
+    // Fetch the created project with all relations for the response
+    const fetchedProject = await client.project.findUnique({
+      where: { id: project.id },
       include: {
-        creator: {
-          include: {
-            profile: true,
-          },
-        },
+        creator: true,
         tasks: {
           include: {
             assignee: {
@@ -110,11 +106,12 @@ export const createProject: MutationResolvers['createProject'] = async (
         },
       },
     });
-    if (!project) {
+
+    if (!fetchedProject) {
       throw new Error('Unable to fetch created project');
     }
 
-    return project;
+    return fetchedProject;
   } catch (e) {
     console.error('Error in creating Project:', e);
     throw new Error('Unable to Create Project');

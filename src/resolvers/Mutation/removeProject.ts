@@ -12,80 +12,84 @@ export const removeProject: MutationResolvers['removeProject'] = async (
       where: {
         id: args.projectId,
       },
-      include: {
-        sprints: true,
-        tasks: true,
-        projectTeams: true,
+      select: {
+        id: true,
+        creatorId: true,
       },
     });
 
     if (!project) {
-      throw new Error('Project Not found');
+      throw new Error('Project not found');
     }
 
     if (project.creatorId !== context.authData.userId) {
       throw new UnauthorizedError(
-        'You are not the creator of this project',
+        'You are not authorized to delete this project',
         '403'
       );
     }
 
-    const operations = [];
-    if (project.sprints.length > 0) {
-      operations.push(
-        client.sprint.deleteMany({
-          where: {
-            id: {
-              in: project?.sprints.map((sprint) => sprint.id),
-            },
-          },
-        })
-      );
-    }
+    await client.$transaction(async (prisma) => {
+      // Delete tasks associated with the project
+      await prisma.task.deleteMany({
+        where: {
+          projectId: args.projectId,
+        },
+      });
 
-    if (project.tasks.length > 0) {
-      operations.push(
-        client.task.deleteMany({
-          where: {
-            id: {
-              in: project.tasks.map((t) => t.id),
-            },
-          },
-        })
-      );
-    }
+      // Delete sprints associated with the project
+      await prisma.sprint.deleteMany({
+        where: {
+          projectId: args.projectId,
+        },
+      });
 
-    if (project.projectTeams.length > 0) {
-      operations.push(
-        client.projectTeam.deleteMany({
-          where: {
-            projectId: project.id,
-          },
-        })
-      );
-    }
+      // Delete project-team relationships
+      await prisma.projectTeam.deleteMany({
+        where: {
+          projectId: args.projectId,
+        },
+      });
 
-    operations.push(
-      client.project.delete({
+      // Delete user-team relationships for teams tied to the project
+      const projectTeams = await prisma.projectTeam.findMany({
+        where: { projectId: args.projectId },
+        select: { teamId: true },
+      });
+
+      const teamIds = projectTeams.map((pt) => pt.teamId);
+      await prisma.userTeam.deleteMany({
+        where: {
+          teamId: { in: teamIds },
+        },
+      });
+
+      // Delete teams tied to the project
+      await prisma.team.deleteMany({
+        where: {
+          id: { in: teamIds },
+        },
+      });
+
+      // Finally, delete the project
+      await prisma.project.delete({
         where: {
           id: args.projectId,
         },
-      })
-    );
-
-    await client.$transaction(operations);
+      });
+    });
 
     return {
       success: true,
       status: 200,
+      message: 'Project deleted successfully',
     };
-  } catch (e) {
-    console.error('Error removing project:', e);
-
+  } catch (error) {
+    console.error('Error removing project:', error);
     return {
       success: false,
       status: 500,
-      message: e instanceof Error ? e.message : 'Internal Server Error',
+      message: 'Failed to remove project',
     };
   }
 };
