@@ -16,7 +16,7 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
       },
     });
   } catch (e) {
-    console.log('Task Update Error: ', e);
+    //console.log('Task Update Error: ', e);
     throw new Error('Unable to Update Task');
   }
 

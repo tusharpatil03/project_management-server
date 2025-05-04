@@ -31,9 +31,9 @@ export const inputs = gql`
     description: String
     assigneeId: ID
     projectId: ID!
-    dueDate: DateTime
-    status: String
-    sprintId: ID!
+    dueDate: DateTime!
+    status: TaskStatus
+    sprintId: ID
   }
 
   input CreateSprintInput {

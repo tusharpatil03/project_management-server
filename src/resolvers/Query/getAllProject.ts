@@ -68,7 +68,7 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
     },
   });
 
-  console.log(projects);
+  //console.log(projects);
 
   return projects;
 };

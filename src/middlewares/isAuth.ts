@@ -39,7 +39,7 @@ export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
       ACCESS_TOKEN_SECRET as string,
       (err: any, decoded: any) => {
         if (err) {
-          console.log(err.message);
+          //console.log(err.message);
           return err;
         }
         return decoded;

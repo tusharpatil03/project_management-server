@@ -71,10 +71,10 @@ export type CreateSprintInput = {
 export type CreateTaskInput = {
   assigneeId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
-  dueDate?: InputMaybe<Scalars['DateTime']['input']>;
+  dueDate: Scalars['DateTime']['input'];
   projectId: Scalars['ID']['input'];
-  sprintId: Scalars['ID']['input'];
-  status?: InputMaybe<Scalars['String']['input']>;
+  sprintId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<TaskStatus>;
   title: Scalars['String']['input'];
 };
 
@@ -313,13 +313,13 @@ export type Social = {
 export type Sprint = {
   __typename?: 'Sprint';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  creator: User;
+  creator?: Maybe<User>;
   description?: Maybe<Scalars['String']['output']>;
-  dueDate?: Maybe<Scalars['DateTime']['output']>;
+  dueDate: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   project?: Maybe<Project>;
-  status?: Maybe<SprintStatus>;
-  tasks?: Maybe<Array<Maybe<Task>>>;
+  status: SprintStatus;
+  tasks: Array<Maybe<Task>>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -338,7 +338,7 @@ export type Task = {
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['Date']['output'];
   id: Scalars['String']['output'];
-  projectId: Scalars['String']['output'];
+  projectId?: Maybe<Scalars['String']['output']>;
   sprintId?: Maybe<Scalars['String']['output']>;
   status?: Maybe<TaskStatus>;
   title: Scalars['String']['output'];
@@ -404,7 +404,7 @@ export type User = {
   lastName?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
   projects?: Maybe<Array<Maybe<Project>>>;
-  role: Role;
+  role?: Maybe<Role>;
   social?: Maybe<Social>;
   sprints?: Maybe<Array<Maybe<Sprint>>>;
   teams?: Maybe<Array<Maybe<Team>>>;
@@ -736,13 +736,13 @@ export type SocialResolvers<ContextType = any, ParentType extends ResolversParen
 
 export type SprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Sprint'] = ResolversParentTypes['Sprint']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  creator?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  dueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  dueDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['SprintStatus']>, ParentType, ContextType>;
-  tasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  status?: Resolver<ResolversTypes['SprintStatus'], ParentType, ContextType>;
+  tasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -755,7 +755,7 @@ export type TaskResolvers<ContextType = any, ParentType extends ResolversParentT
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  projectId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sprintId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['TaskStatus']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -816,7 +816,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
-  role?: Resolver<ResolversTypes['Role'], ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   social?: Resolver<Maybe<ResolversTypes['Social']>, ParentType, ContextType>;
   sprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;

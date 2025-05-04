@@ -1,16 +1,13 @@
+import { SprintStatus, TaskStatus } from '@prisma/client';
+import { client } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceTask } from './createTasks';
 
 export interface InterfaceSprint {
-  sprints: {
-    id: string;
-    title: string;
-    description: string;
-    projectId: string;
-    dueDate: string;
-    status: string;
-    tasks: InterfaceTask[]
-  };
+  id: string;
+  title: string;
+  description: string;
+  status: SprintStatus; // Fixed type to SprintStatus
+  dueDate: Date;
 }
 
 export const createSprint: MutationResolvers['createSprint'] = async (
@@ -18,26 +15,62 @@ export const createSprint: MutationResolvers['createSprint'] = async (
   args,
   context
 ) => {
-  const { input } = args;
+  const input = args.input;
+
+  // Validate user authentication
+  if (!context.authData?.userId) {
+    throw new Error('Unauthorized: User must be logged in to create a sprint.');
+  }
+
   try {
-    const sprint = context.prisma.sprint.create({
+
+    // Create the sprint
+    const sprint = await client.sprint.create({
       data: {
         title: input.title,
         description: input.description,
         dueDate: input.dueDate,
+        status: input.status || SprintStatus.Planned,
         creator: {
           connect: {
-            id: context.authData.userId,
-          },
+            id: context.authData.userId
+          }
         },
-        tasks: input.tasks,
-        projectId: input.projectId,
+        project: {
+          connect: {
+            id: input.projectId,
+          },
+        }
       },
+      include: {
+        creator: true,
+        project: true,
+        tasks: true,
+      }
     });
 
-    return sprint;
-  } catch (e) {
-    console.log('Error in Creating Sprint: ', e);
-    throw new Error('unable to create Sprint');
+    // Prepare tasks with the created sprint ID
+    if (input.tasks && input.tasks.length > 0) {
+      const tasksInput = input.tasks.map((task) => ({
+        title: task.title,
+        description: task.description,
+        status: task.status || TaskStatus.TODO,
+        dueDate: task.dueDate,
+        creatorId: context.authData.userId,
+        projectId: input.projectId,
+        sprintId: sprint.id,
+        assigneeId: task.assigneeId,
+      }));
+
+      // Create tasks
+      await client.task.createMany({
+        data: tasksInput,
+      });
+    }
+
+    return sprint; // Removed unnecessary sprint update for task connection
+  } catch (error: any) {
+    console.error('Error in Creating Sprint:', error.message); // Improved error logging
+    throw new Error(`Unable to create Sprint: ${error.message}`); // More specific error message
   }
 };

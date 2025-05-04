@@ -18,7 +18,7 @@ export const types = gql`
     id: ID!
     email: EmailAddress!
     username: String!
-    role: Role!
+    role: Role
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]
@@ -108,7 +108,7 @@ export const types = gql`
     description: String
     creator: TaskCreator
     assignee: TaskAssignee
-    projectId: String!
+    projectId: String
     sprintId: String
     createdAt: Date
     updatedAt: Date
@@ -139,13 +139,13 @@ export const types = gql`
     id: ID!
     title: String!
     description: String
-    status: SprintStatus
+    status: SprintStatus!
     createdAt: DateTime
     updatedAt: DateTime
-    dueDate: DateTime
-    creator: User!
+    dueDate: DateTime!
+    creator: User
     project: Project
-    tasks: [Task]
+    tasks: [Task]!
   }
 
   type ResponseMessage {
