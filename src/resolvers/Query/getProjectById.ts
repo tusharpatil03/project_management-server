@@ -40,13 +40,37 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   if (!user) {
     throw new Error('User not found');
   }
-  const project = await client.project.findFirst({
-    where: { creatorId: context.authData.userId },
-  });
 
+  const project = await client.project.findUnique({
+    where: {
+      id: args.id,
+    },
+    include: {
+      creator: true,
+      tasks: true,
+      sprints: true,
+    }
+  });
   if (!project) {
-    throw new Error('project not found');
+    throw new Error('Project not found');
   }
 
-  return project;
+  const isAuthorized = context.authData.userId === project.creatorId ? true : user.projects.some((p) => p.id === project.id) ? true : false;
+  if (!isAuthorized) {
+    throw new Error('You are not authorized to view this project');
+  }
+  const tasks = await client.task.findMany({
+    where: {
+      projectId: project.id,
+    },
+    include: {
+      assignee: true,
+      sprint: true,
+      project: true,
+    }
+  });
+  return {
+    ...project,
+    tasks: tasks,
+  }
 };

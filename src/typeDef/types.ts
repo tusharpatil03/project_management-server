@@ -58,15 +58,15 @@ export const types = gql`
     createdAt: DateTime!
     updatedAt: DateTime!
   }
-  # Project Type
+  
   type Project {
     id: ID!
-    name: String!
+    name: String
     description: String
     createdAt: DateTime
     updatedAt: DateTime
     tasks: [Task]
-    status: ProjectStatus!
+    status: ProjectStatus
     goal: String
     plan: String
     creatorId: String!
@@ -127,6 +127,7 @@ export const types = gql`
     id: ID!
     firstName: String
     lastName: String
+    username: String
     email: String
     avatar: String
     createdAt: DateTime
@@ -145,6 +146,8 @@ export const types = gql`
     dueDate: DateTime!
     creator: User
     project: Project
+    projectId: String
+    creatorId: String
     tasks: [Task]!
   }
 

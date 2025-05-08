@@ -209,9 +209,9 @@ export type Project = {
   description?: Maybe<Scalars['String']['output']>;
   goal?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
+  name?: Maybe<Scalars['String']['output']>;
   plan?: Maybe<Scalars['String']['output']>;
-  status: ProjectStatus;
+  status?: Maybe<ProjectStatus>;
   tasks?: Maybe<Array<Maybe<Task>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -314,10 +314,12 @@ export type Sprint = {
   __typename?: 'Sprint';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creator?: Maybe<User>;
+  creatorId?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
   project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['String']['output']>;
   status: SprintStatus;
   tasks: Array<Maybe<Task>>;
   title: Scalars['String']['output'];
@@ -355,6 +357,7 @@ export type TaskAssignee = {
   lastName?: Maybe<Scalars['String']['output']>;
   role?: Maybe<Role>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
 };
 
 export type TaskCreator = {
@@ -687,9 +690,9 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   goal?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   plan?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<ResolversTypes['ProjectStatus'], ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['ProjectStatus']>, ParentType, ContextType>;
   tasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -737,10 +740,12 @@ export type SocialResolvers<ContextType = any, ParentType extends ResolversParen
 export type SprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Sprint'] = ResolversParentTypes['Sprint']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['SprintStatus'], ParentType, ContextType>;
   tasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -772,6 +777,7 @@ export type TaskAssigneeResolvers<ContextType = any, ParentType extends Resolver
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

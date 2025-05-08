@@ -1,4 +1,3 @@
-import { ProjectStatus } from '@prisma/client';
 import { client } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
@@ -19,37 +18,88 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
     throw new Error('Project Does not Exist');
   }
 
-  const sprintId = project.sprints.map((s) => s.id == args.sprintId);
+  const sprintId = project.sprints.some((s) => s.id == args.sprintId);
 
   if (!sprintId) {
     throw new Error('Sprint is not part of this Project');
   }
   const sprint = await client.sprint.findUnique({
     where: { id: args.sprintId },
-    include: { tasks: true },
+    include: {
+      tasks: {
+        select: {
+          id: true,
+          assignee: {
+            select: {
+              id: true
+            }
+          }
+        }
+      }
+    }
   });
+
   if (!sprint) {
     throw new Error('Sprint Not Found');
   }
-  if (context.authData.userId === sprint?.creatorId) {
-    throw new UnauthorizedError('You are not Creator of this Sprint', '403');
-  }
 
-  let operations = [];
-  if (sprint) {
-    operations.push(client.sprint.deleteMany({ where: { id: args.sprintId } }));
-  }
-  if (sprint.tasks.length > 0) {
-    operations.push(client.sprint.deleteMany({ where: { id: args.sprintId } }));
+  const isAuthorized =
+    context.authData.userId === sprint.creatorId ||
+    context.authData.userId === project.creatorId;
+
+  if (!isAuthorized) {
+    throw new UnauthorizedError('You are not authorized to remove this Sprint', '403');
   }
 
   try {
+    await client.$transaction(async (prisma) => {
+      const assigneeTaskMap: Record<string, { id: string }[]> = {};
+
+      for (const task of sprint.tasks) {
+        if (task.assignee?.id) {
+          const assigneeId = task.assignee.id;
+          if (!assigneeTaskMap[assigneeId]) {
+            assigneeTaskMap[assigneeId] = [];
+          }
+          assigneeTaskMap[assigneeId].push({ id: task.id });
+        }
+      }
+
+      for (const [assigneeId, tasks] of Object.entries(assigneeTaskMap)) {
+        await prisma.user.update({
+          where: { id: assigneeId },
+          data: {
+            assignedTasks: {
+              disconnect: tasks
+            }
+          }
+        });
+      }
+
+      if (sprint.tasks.length > 0) {
+        await prisma.task.deleteMany({
+          where: {
+            id: {
+              in: sprint.tasks.map(t => t.id)
+            }
+          }
+        });
+      }
+
+      await prisma.sprint.delete({
+        where: {
+          id: args.sprintId
+        }
+      });
+
+    });
+
     return {
       success: true,
       status: 200,
     };
   } catch (e) {
-    console.log('Delete Sprint Failed');
-    throw new Error('tarnsaction Failed');
+    console.error('Delete Sprint Failed:', e);
+    throw new Error('Transaction Failed');
   }
 };
