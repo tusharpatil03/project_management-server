@@ -58,18 +58,31 @@ export const removeProject: MutationResolvers['removeProject'] = async (
       });
 
       const teamIds = projectTeams.map((pt) => pt.teamId);
-      await prisma.userTeam.deleteMany({
-        where: {
-          teamId: { in: teamIds },
-        },
-      });
+      // await prisma.userTeam.deleteMany({
+      //   where: {
+      //     teamId: { in: teamIds },
+      //   },
+      // });
 
       // Delete teams tied to the project
-      await prisma.team.deleteMany({
+      await prisma.projectTeam.deleteMany({
         where: {
           id: { in: teamIds },
         },
       });
+
+      for (let team in teamIds) {
+        await prisma.team.update({
+          where: { id: teamIds[team] },
+          data: {
+            projects: {
+              disconnect: {
+                id: args.projectId,
+              },
+            }
+          },
+        });
+      }
 
       // Finally, delete the project
       await prisma.project.delete({

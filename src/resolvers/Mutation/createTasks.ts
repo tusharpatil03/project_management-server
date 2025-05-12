@@ -67,11 +67,7 @@ export const createTask: MutationResolvers['createTask'] = async (
               connect: { id: input.assigneeId },
             },
           }),
-          creator: {
-            connect: {
-              id: context.authData.userId,
-            },
-          },
+          creatorId: context.authData.userId,
           project: {
             connect: {
               id: input.projectId,
@@ -84,11 +80,6 @@ export const createTask: MutationResolvers['createTask'] = async (
           }),
         },
         include: {
-          creator: {
-            include: {
-              profile: true,
-            },
-          },
           assignee: {
             include: {
               profile: true,
@@ -136,7 +127,7 @@ export const createTask: MutationResolvers['createTask'] = async (
         id: task.id,
         title: task.title,
         description: task.description,
-        creator: task.creator,
+        creatorId: task.creatorId,
         assignee: task.assignee,
         projectId: task.projectId,
         sprintId: task.sprintId,

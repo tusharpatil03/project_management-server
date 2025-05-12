@@ -6,7 +6,7 @@ const getUserWithTeams = async (userId: string) => {
   const user = await client.user.findUnique({
     where: { id: userId },
     include: {
-      userTeams: {
+      teams: {
         select: { teamId: true },
       },
     },
@@ -36,9 +36,6 @@ const getProjectWithSprints = async (projectId: string) => {
               },
             },
           },
-          creator: {
-            select: { id: true, email: true, username: true },
-          },
         },
       },
     },
@@ -55,7 +52,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (_, args, co
   const userId = context.authData.userId;
 
   const user = await getUserWithTeams(userId);
-  const userTeamIds = user.userTeams.map((userTeam) => userTeam.teamId);
+  const userTeamIds = user.teams.map((team) => team.teamId);
 
   const projectTeams = await client.projectTeam.findMany({
     where: { projectId: args.projectId },

@@ -35,7 +35,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
           password: hashedPassword,
           username: args.input.username,
           salt: salt,
-          role: 'Admin',
         },
       });
 

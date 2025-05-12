@@ -79,8 +79,6 @@ export type CreateTaskInput = {
 };
 
 export type CreateTeamInput = {
-  creatorId: Scalars['ID']['input'];
-  memberIds?: InputMaybe<Array<Scalars['ID']['input']>>;
   name: Scalars['String']['input'];
 };
 
@@ -128,6 +126,7 @@ export type Mutation = {
   removeProject?: Maybe<ResponseMessage>;
   removeSprint?: Maybe<ResponseMessage>;
   removeTask?: Maybe<ResponseMessage>;
+  removeTeamMember: Team;
   signup: AuthData;
   updateTaskStatus: ResponseMessage;
 };
@@ -189,6 +188,12 @@ export type MutationRemoveSprintArgs = {
 export type MutationRemoveTaskArgs = {
   projectId: Scalars['ID']['input'];
   taskId: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveTeamMemberArgs = {
+  memberId: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
 };
 
 
@@ -376,10 +381,11 @@ export type TaskStatus =
 export type Team = {
   __typename?: 'Team';
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  creator: User;
+  creatorId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   members?: Maybe<Array<Maybe<User>>>;
   name?: Maybe<Scalars['String']['output']>;
+  projects?: Maybe<Array<Maybe<Project>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -680,6 +686,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeProject?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveProjectArgs, 'projectId'>>;
   removeSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveSprintArgs, 'projectId' | 'sprintId'>>;
   removeTask?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTaskArgs, 'projectId' | 'taskId'>>;
+  removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'memberId' | 'teamId'>>;
   signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'status' | 'taskId'>>;
 };
@@ -791,10 +798,11 @@ export type TaskCreatorResolvers<ContextType = any, ParentType extends Resolvers
 
 export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  creator?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

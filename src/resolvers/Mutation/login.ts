@@ -2,7 +2,6 @@ import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
 import { createAccessToken } from '../../utility/auth';
 import { client } from '../../db';
-import { Role } from '@prisma/client';
 
 export interface InterfaceUser {
   id: string;
@@ -10,7 +9,6 @@ export interface InterfaceUser {
   username: string;
   password: string;
   salt: string;
-  role: Role;
   createdAt: Date;
   updatedAt: Date;
 }

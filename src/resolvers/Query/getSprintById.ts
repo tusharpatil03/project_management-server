@@ -25,7 +25,6 @@ export const getSprintById: QueryResolvers["getSprintById"] = async (_, args, co
               id: true,
               username: true,
               email: true,
-              role: true,
             }
           }
         }

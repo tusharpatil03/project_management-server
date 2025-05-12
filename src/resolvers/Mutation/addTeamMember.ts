@@ -8,69 +8,88 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   context
 ) => {
   try {
-    const result = await client.$transaction(async (tx) => {
-      // Validate team and user existence in parallel for efficiency
-      const [team, user] = await Promise.all([
-        tx.team.findUnique({ where: { id: args.teamId } }),
-        tx.user.findUnique({ where: { id: args.memberId } }),
-      ]);
-
-      if (!team) {
-        throw new Error(`No Team Found with id: ${args.teamId}`);
-      }
-      if (!user) {
-        throw new Error(`User Not Found with id: ${args.memberId}`);
-      }
-
-      // Check if user is already a member (unique constraint assumed)
-      const existingMember = await tx.userTeam.findFirst({
-        where: {
-          userId: args.memberId,
-          teamId: args.teamId,
+    const team = await client.team.findUnique({
+      where: { id: args.teamId },
+      include: {
+        users: {
+          select: { userId: true },
         },
-      });
-
-      if (existingMember) {
-        throw new Error('User is already a member of the team');
-      }
-
-      await tx.userTeam.create({
-        data: {
-          userId: args.memberId,
-          teamId: args.teamId,
-          role: args.role as MemberRole,
-        },
-      });
-
-      const updatedTeam = await tx.team.findUnique({
-        where: { id: args.teamId },
-        include: {
-          creator: true,
-          userTeams: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      });
-
-      if (!updatedTeam) {
-        throw new Error('Failed to fetch updated team after adding member');
-      }
-
-      return updatedTeam;
+      },
     });
 
+    if (!team) {
+      throw new Error(`No Team Found with id: ${args.teamId}`);
+    }
+
+    const user = await client.user.findUnique({
+      where: { id: args.memberId },
+    });
+
+    if (!user) {
+      throw new Error(`User Not Found with id: ${args.memberId}`);
+    }
+
+    const isAlreadyMember = team.users.some(
+      (team) => team.userId === args.memberId
+    );
+
+    if (isAlreadyMember) {
+      throw new Error('User is already a member of the team');
+    }
+
+    const userTeam = await client.userTeam.create({
+      data: {
+        userId: args.memberId,
+        teamId: args.teamId,
+        role: args.role as MemberRole,
+      },
+    });
+
+    await client.user.update({
+      where: { id: args.memberId },
+      data: {
+        teams: {
+          connect: {
+            id: userTeam.id,
+          },
+        },
+      },
+    });
+
+    const updatedTeam = await client.team.findUnique({
+      where: { id: args.teamId },
+      select: {
+        id: true,
+        name: true,
+        users: {
+          select: {
+            id: true,
+            user: {
+              select: {
+                id: true,
+                username: true,
+                email: true
+              }
+            },
+            role: true
+          },
+        },
+        updatedAt: true
+      }
+    });
+
+    if (!updatedTeam) {
+      throw new Error('Failed to fetch updated team after adding member');
+    }
+
     return {
-      id: result.id,
-      name: result.name,
-      creator: result.creator,
-      members: result.userTeams.map((ut) => ut.user),
-      createdAt: result.createdAt,
-      updatedAt: result.updatedAt,
+      id: updatedTeam.id,
+      name: updatedTeam.name,
+      members: updatedTeam.users.map((ut) => ut.user),
+      updatedAt: updatedTeam.updatedAt,
     };
   } catch (error: any) {
-    // Log error if needed
+    console.error('Failed to add team member:', error);
     throw new Error(`Failed to add team member: ${error.message || error}`);
   }
 };

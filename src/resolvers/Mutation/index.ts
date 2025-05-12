@@ -14,6 +14,7 @@ import { removeSprint } from './removeSprint';
 
 import { removeAssineeOfTask } from './removeAssigneeOfTask';
 import { addTeamMember } from './addTeamMember';
+import { removeTeamMember } from './removeTeamMember';
 
 export const Mutation: MutationResolvers = {
   signup,
@@ -31,4 +32,5 @@ export const Mutation: MutationResolvers = {
 
   removeAssineeOfTask,
   addTeamMember,
+  removeTeamMember,
 };

@@ -31,11 +31,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
         description: input.description,
         dueDate: input.dueDate,
         status: input.status || SprintStatus.Planned,
-        creator: {
-          connect: {
-            id: context.authData.userId
-          }
-        },
+        creatorId: context.authData.userId,
         project: {
           connect: {
             id: input.projectId,
@@ -43,7 +39,6 @@ export const createSprint: MutationResolvers['createSprint'] = async (
         }
       },
       include: {
-        creator: true,
         project: true,
         tasks: true,
       }

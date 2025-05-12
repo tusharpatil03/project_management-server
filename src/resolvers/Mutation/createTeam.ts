@@ -1,6 +1,7 @@
 import { MemberRole } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { InterfaceUser } from './login';
+import { client } from '../../db';
 
 export interface InterfaceTeam {
   id: string;
@@ -21,14 +22,11 @@ export const createTeam: MutationResolvers['createTeam'] = async (
   args,
   context
 ) => {
-  const { input } = args;
-  const sprint = context.prisma.sprint.create({
+  const team = await client.team.create({
     data: {
-      name: input.name,
-      creatorId: input.creatorId,
-      members: input.memberIds,
-    },
+      name: args.input.name,
+      creatorId: context.authData.userId,
+    }
   });
-
-  return sprint;
+  return team;
 };

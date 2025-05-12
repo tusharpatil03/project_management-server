@@ -95,8 +95,9 @@ export const types = gql`
   type Team {
     id: ID!
     name: String
-    creator: User!
+    creatorId: String
     members: [User]
+    projects: [Project]
     createdAt: DateTime
     updatedAt: DateTime
   }

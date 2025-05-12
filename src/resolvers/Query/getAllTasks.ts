@@ -12,7 +12,7 @@ export const getAllTasks: QueryResolvers['getAllTasks'] = async (
   const user = await client.user.findUnique({
     where: { id: userId },
     include: {
-      userTeams: {
+      teams: {
         select: {
           teamId: true,
         },
@@ -35,7 +35,7 @@ export const getAllTasks: QueryResolvers['getAllTasks'] = async (
     select: { teamId: true },
   });
 
-  const userTeamIds = user.userTeams.map((userTeam) => userTeam.teamId);
+  const userTeamIds = user.teams.map((userTeam) => userTeam.teamId);
   const isUserPartOfProject = projectTeams.some((team) =>
     userTeamIds.includes(team.teamId)
   );

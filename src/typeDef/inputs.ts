@@ -22,8 +22,6 @@ export const inputs = gql`
 
   input CreateTeamInput {
     name: String!
-    creatorId: ID!
-    memberIds: [ID!]
   }
 
   input CreateTaskInput {

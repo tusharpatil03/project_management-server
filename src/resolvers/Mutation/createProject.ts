@@ -1,4 +1,4 @@
-import { Prisma, Role } from '@prisma/client';
+import { MemberRole } from '@prisma/client';
 import { client } from '../../db';
 import { MutationResolvers, Project } from '../../types/generatedGraphQLTypes';
 
@@ -37,11 +37,7 @@ export const createProject: MutationResolvers['createProject'] = async (
       const createdTeam = await prisma.team.create({
         data: {
           name: `${input.name} Team`,
-          creator: {
-            connect: {
-              id: context.authData.userId,
-            },
-          },
+          creatorId: context.authData.userId
         },
       });
 
@@ -74,7 +70,7 @@ export const createProject: MutationResolvers['createProject'] = async (
               id: createdTeam.id,
             },
           },
-          role: Role.Admin,
+          role: MemberRole.Admin
         },
       });
 
