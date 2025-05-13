@@ -14,7 +14,7 @@ export interface InterfaceTeam {
     teamId: string;
     role: MemberRole;
     joinedAt: Date;
-  }
+  };
 }
 
 export const createTeam: MutationResolvers['createTeam'] = async (
@@ -26,7 +26,7 @@ export const createTeam: MutationResolvers['createTeam'] = async (
     data: {
       name: args.input.name,
       creatorId: context.authData.userId,
-    }
+    },
   });
   return team;
 };

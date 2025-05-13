@@ -30,11 +30,11 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   }
   const user = await client.user.findUnique({
     where: {
-      id: context.authData.userId
+      id: context.authData.userId,
     },
     include: {
       projects: true,
-    }
+    },
   });
 
   if (!user) {
@@ -49,13 +49,18 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
       creator: true,
       tasks: true,
       sprints: true,
-    }
+    },
   });
   if (!project) {
     throw new Error('Project not found');
   }
 
-  const isAuthorized = context.authData.userId === project.creatorId ? true : user.projects.some((p) => p.id === project.id) ? true : false;
+  const isAuthorized =
+    context.authData.userId === project.creatorId
+      ? true
+      : user.projects.some((p) => p.id === project.id)
+        ? true
+        : false;
   if (!isAuthorized) {
     throw new Error('You are not authorized to view this project');
   }
@@ -67,10 +72,10 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
       assignee: true,
       sprint: true,
       project: true,
-    }
+    },
   });
   return {
     ...project,
     tasks: tasks,
-  }
+  };
 };

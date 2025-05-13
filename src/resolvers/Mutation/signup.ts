@@ -15,11 +15,9 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     },
   });
 
-
   if (existingUser) {
     throw new Error('User already Exists');
   }
-
 
   try {
     const salt: string = await bcrypt.genSalt(12);
@@ -30,7 +28,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     }
 
     const result = await client.$transaction(async (prisma) => {
-
       const userProfile = await prisma.userProfile.create({
         data: {
           firstName: args.input.firstName,
@@ -46,16 +43,16 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
           salt: salt,
           profile: {
             connect: {
-              id: userProfile.id
-            }
-          }
+              id: userProfile.id,
+            },
+          },
         },
       });
     });
 
     const user = await client.user.findUnique({
       where: {
-        email: args.input.email
+        email: args.input.email,
       },
       select: {
         id: true,
@@ -65,20 +62,20 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
           select: {
             id: true,
             firstName: true,
-            lastName: true
-          }
-        }
-      }
-    })
+            lastName: true,
+          },
+        },
+      },
+    });
 
     if (!user) {
-      throw new Error("Unable to create User")
+      throw new Error('Unable to create User');
     }
 
     const accessTokenPayload: InterfaceCreateAccessToken = {
       userId: user.id,
       email: user.email,
-      username: user.username
+      username: user.username,
     };
 
     const accessToken = createAccessToken(accessTokenPayload);
@@ -86,7 +83,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     return {
       accessToken,
       user,
-      userProfile: user.profile
+      userProfile: user.profile,
     };
   } catch (error) {
     console.error('Error during signup:', error);

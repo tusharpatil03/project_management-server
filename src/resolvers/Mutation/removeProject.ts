@@ -79,7 +79,7 @@ export const removeProject: MutationResolvers['removeProject'] = async (
               disconnect: {
                 id: args.projectId,
               },
-            }
+            },
           },
         });
       }

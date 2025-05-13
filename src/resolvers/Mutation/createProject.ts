@@ -12,9 +12,8 @@ interface CreateProjectInput {
 export const createProject: MutationResolvers['createProject'] = async (
   _,
   args,
-  context,
+  context
 ) => {
-
   try {
     await client.$transaction(async (prisma) => {
       const creator = await prisma.user.findUnique({
@@ -36,7 +35,7 @@ export const createProject: MutationResolvers['createProject'] = async (
         },
         select: {
           id: true,
-        }
+        },
       });
 
       await prisma.userTeam.create({
@@ -46,23 +45,21 @@ export const createProject: MutationResolvers['createProject'] = async (
           role: MemberRole.Admin,
         },
       });
-    }
-    );
-  }
-  catch {
+    });
+  } catch {
     throw new Error('Error creating project');
   }
 
   const project = await client.project.findUnique({
     where: {
-      key: args.input.key
+      key: args.input.key,
     },
     select: {
       id: true,
       name: true,
       creatorId: true,
-      key: true
-    }
+      key: true,
+    },
   });
 
   if (!project) {

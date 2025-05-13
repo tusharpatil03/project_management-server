@@ -31,12 +31,12 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
           id: true,
           assignee: {
             select: {
-              id: true
-            }
-          }
-        }
-      }
-    }
+              id: true,
+            },
+          },
+        },
+      },
+    },
   });
 
   if (!sprint) {
@@ -48,7 +48,10 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
     context.authData.userId === project.creatorId;
 
   if (!isAuthorized) {
-    throw new UnauthorizedError('You are not authorized to remove this Sprint', '403');
+    throw new UnauthorizedError(
+      'You are not authorized to remove this Sprint',
+      '403'
+    );
   }
 
   try {
@@ -70,9 +73,9 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
           where: { id: assigneeId },
           data: {
             assignedTasks: {
-              disconnect: tasks
-            }
-          }
+              disconnect: tasks,
+            },
+          },
         });
       }
 
@@ -80,18 +83,17 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
         await prisma.task.deleteMany({
           where: {
             id: {
-              in: sprint.tasks.map(t => t.id)
-            }
-          }
+              in: sprint.tasks.map((t) => t.id),
+            },
+          },
         });
       }
 
       await prisma.sprint.delete({
         where: {
-          id: args.sprintId
-        }
+          id: args.sprintId,
+        },
       });
-
     });
 
     return {

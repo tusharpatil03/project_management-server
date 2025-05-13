@@ -11,7 +11,11 @@ export const mutations = gql`
 
     createSprint(input: CreateSprintInput!): Sprint! @auth
 
-    updateTaskStatus(projectId: ID!, taskId: ID!, status: TaskStatus!): ResponseMessage! @auth
+    updateTaskStatus(
+      projectId: ID!
+      taskId: ID!
+      status: TaskStatus!
+    ): ResponseMessage! @auth
 
     assineTask(input: AssignTaskInput!): ResponseMessage! @auth
 
@@ -31,6 +35,6 @@ export const mutations = gql`
 
     logout: Boolean! @auth
 
-    removeTeamMember(memberId: ID!, teamId: ID!): Team !@auth
+    removeTeamMember(memberId: ID!, teamId: ID!): Team! @auth
   }
 `;

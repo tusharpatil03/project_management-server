@@ -12,8 +12,8 @@ export const assineTask: MutationResolvers['assineTask'] = async (
     const assignee = await client.user.findUnique({
       where: { id: args.input.assigneeId },
       select: {
-        id: true
-      }
+        id: true,
+      },
     });
 
     if (!assignee) {
@@ -31,7 +31,7 @@ export const assineTask: MutationResolvers['assineTask'] = async (
             id: true,
             assigneeId: true,
             projectId: true,
-          }
+          },
         },
         teams: {
           select: {
@@ -46,15 +46,14 @@ export const assineTask: MutationResolvers['assineTask'] = async (
                     id: true,
                     userId: true,
                     role: true,
-                  }
-                }
-              }
-            }
-          }
-        }
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
-
 
     if (!project) {
       throw new Error(`Project Not Found with id: ${args.input.projectId}`);
@@ -76,7 +75,7 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       team.team.users.some((user) => {
         if (user.userId === assignee.id) {
           role = user.role;
-          return true
+          return true;
         }
       })
     );
@@ -85,37 +84,36 @@ export const assineTask: MutationResolvers['assineTask'] = async (
     }
 
     if (role === MemberRole.Viewer) {
-      throw new Error("Assignee is not a contributor of this project")
+      throw new Error('Assignee is not a contributor of this project');
     }
 
     await client.$transaction(async (prisma) => {
       await prisma.task.update({
         where: {
-          id: task.id
+          id: task.id,
         },
         data: {
           assignee: {
             connect: {
-              id: assignee.id
-            }
-          }
-        }
-      })
+              id: assignee.id,
+            },
+          },
+        },
+      });
 
       await prisma.user.update({
         where: {
-          id: assignee.id
+          id: assignee.id,
         },
         data: {
           assignedTasks: {
             connect: {
-              id: task.id
-            }
-          }
-        }
-      })
-    })
-
+              id: task.id,
+            },
+          },
+        },
+      });
+    });
   } catch (e) {
     console.log('Task Assing Error: ', e);
     throw new Error('Failed to assign Task');

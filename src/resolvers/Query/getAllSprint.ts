@@ -19,7 +19,10 @@ const getUserWithTeams = async (userId: string) => {
   return user;
 };
 
-const isUserPartOfProject = (userTeamIds: string[], projectTeams: { teamId: string }[]) => {
+const isUserPartOfProject = (
+  userTeamIds: string[],
+  projectTeams: { teamId: string }[]
+) => {
   return projectTeams.some((team) => userTeamIds.includes(team.teamId));
 };
 
@@ -48,7 +51,11 @@ const getProjectWithSprints = async (projectId: string) => {
   return project;
 };
 
-export const getAllSprints: QueryResolvers['getAllSprints'] = async (_, args, context) => {
+export const getAllSprints: QueryResolvers['getAllSprints'] = async (
+  _,
+  args,
+  context
+) => {
   const userId = context.authData.userId;
 
   const user = await getUserWithTeams(userId);
@@ -61,7 +68,10 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (_, args, co
 
   const project = await getProjectWithSprints(args.projectId);
 
-  if (project.creatorId !== userId && !isUserPartOfProject(userTeamIds, projectTeams)) {
+  if (
+    project.creatorId !== userId &&
+    !isUserPartOfProject(userTeamIds, projectTeams)
+  ) {
     throw new Error('You are not authorized to view this project');
   }
 

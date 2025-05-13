@@ -8,11 +8,10 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
   context
 ) => {
   try {
-
     //check wether the user is part of project or not
     const project = await client.project.findUnique({
       where: {
-        id: args.projectId
+        id: args.projectId,
       },
       select: {
         id: true,
@@ -23,34 +22,34 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
               select: {
                 users: {
                   where: {
-                    id: context.authData.userId
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+                    id: context.authData.userId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     const isMember = project?.teams.some((team) => {
-      team.team.users.some((user) => user.id === context.authData.userId)
-    })
+      team.team.users.some((user) => user.id === context.authData.userId);
+    });
 
     if (!isMember) {
-      throw new Error("User is not part of this project")
+      throw new Error('User is not part of this project');
     }
 
     await client.$transaction(async (t) => {
       t.task.update({
         where: {
-          id: args.taskId
+          id: args.taskId,
         },
         data: {
-          status: args.status
-        }
-      })
-    })
+          status: args.status,
+        },
+      });
+    });
   } catch (e) {
     throw new Error('Unable to Update Task');
   }

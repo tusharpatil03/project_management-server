@@ -58,7 +58,7 @@ export const types = gql`
     createdAt: DateTime!
     updatedAt: DateTime!
   }
-  
+
   type Project {
     id: ID!
     key: String!

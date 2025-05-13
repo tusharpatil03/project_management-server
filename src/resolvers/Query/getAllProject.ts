@@ -2,7 +2,6 @@ import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _, { includes } from 'lodash';
 
-
 export const getAllProjects: QueryResolvers['getAllProjects'] = async (
   _,
   __,

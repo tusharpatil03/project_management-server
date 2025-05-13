@@ -5,7 +5,7 @@ import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
 export interface InterfaceCreateAccessToken {
   userId: string;
   email: string;
-  username: string
+  username: string;
 }
 
 export const createAccessToken = (
@@ -15,7 +15,7 @@ export const createAccessToken = (
     {
       userId: payload.userId.toString(),
       email: payload.email,
-      username: payload.username
+      username: payload.username,
     },
     ACCESS_TOKEN_SECRET as string,
     {

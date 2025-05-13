@@ -68,14 +68,14 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
               select: {
                 id: true,
                 username: true,
-                email: true
-              }
+                email: true,
+              },
             },
-            role: true
+            role: true,
           },
         },
-        updatedAt: true
-      }
+        updatedAt: true,
+      },
     });
 
     if (!updatedTeam) {

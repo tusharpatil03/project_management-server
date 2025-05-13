@@ -6,7 +6,7 @@ export interface InterfaceSprint {
   id: string;
   title: string;
   description: string;
-  status: SprintStatus; 
+  status: SprintStatus;
   dueDate: Date;
 }
 
@@ -23,7 +23,6 @@ export const createSprint: MutationResolvers['createSprint'] = async (
   }
 
   try {
-
     const sprint = await client.sprint.create({
       data: {
         title: input.title,
@@ -34,12 +33,12 @@ export const createSprint: MutationResolvers['createSprint'] = async (
           connect: {
             id: input.projectId,
           },
-        }
+        },
       },
       include: {
         project: true,
         tasks: true,
-      }
+      },
     });
 
     // Prepare tasks with the created sprint ID
@@ -57,13 +56,13 @@ export const createSprint: MutationResolvers['createSprint'] = async (
       // Create tasks
       await client.task.createMany({
         data: tasksInput,
-        skipDuplicates: true, 
+        skipDuplicates: true,
       });
     }
 
-    return sprint; 
+    return sprint;
   } catch (error: any) {
     console.error('Error in Creating Sprint:', error.message);
-    throw new Error(`Unable to create Sprint: ${error.message}`); 
+    throw new Error(`Unable to create Sprint: ${error.message}`);
   }
 };
