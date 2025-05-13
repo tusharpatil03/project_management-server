@@ -1,6 +1,6 @@
 import { MemberRole } from '@prisma/client';
 import { client } from '../../db';
-import { MutationResolvers, Project } from '../../types/generatedGraphQLTypes';
+import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 interface CreateProjectInput {
   name: string;
@@ -11,105 +11,63 @@ interface CreateProjectInput {
 
 export const createProject: MutationResolvers['createProject'] = async (
   _,
-  args: { input: CreateProjectInput },
-  context: { authData: { userId: string } }
-): Promise<Project> => {
-  const { input } = args;
+  args,
+  context,
+) => {
 
   try {
-    const project = await client.$transaction(async (prisma) => {
-      // Create the project
-      const createdProject = await prisma.project.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          goal: input.goal,
-          plan: input.plan,
-          creator: {
-            connect: {
-              id: context.authData.userId,
-            },
-          },
+    await client.$transaction(async (prisma) => {
+      const creator = await prisma.user.findUnique({
+        where: {
+          id: context.authData.userId,
         },
       });
 
-      // Create a team for the project creator
-      const createdTeam = await prisma.team.create({
+      if (!creator) {
+        throw new Error('Unauthorized: Creator not found');
+      }
+
+      const project = await prisma.project.create({
         data: {
-          name: `${input.name} Team`,
-          creatorId: context.authData.userId
+          name: args.input.name,
+          description: args.input.description,
+          creatorId: context.authData.userId,
+          key: args.input.key,
         },
+        select: {
+          id: true,
+        }
       });
 
-      // Link the team to the project
-      await prisma.projectTeam.create({
-        data: {
-          project: {
-            connect: {
-              id: createdProject.id,
-            },
-          },
-          team: {
-            connect: {
-              id: createdTeam.id,
-            },
-          },
-        },
-      });
-
-      // Add the creator to the team
       await prisma.userTeam.create({
         data: {
-          user: {
-            connect: {
-              id: context.authData.userId,
-            },
-          },
-          team: {
-            connect: {
-              id: createdTeam.id,
-            },
-          },
-          role: MemberRole.Admin
+          userId: context.authData.userId,
+          teamId: project.id,
+          role: MemberRole.Admin,
         },
       });
-
-      return createdProject;
-    });
-
-    // Fetch the created project with all relations for the response
-    const fetchedProject = await client.project.findUnique({
-      where: { id: project.id },
-      include: {
-        creator: true,
-        tasks: {
-          include: {
-            assignee: {
-              include: {
-                profile: true,
-              },
-            },
-          },
-        },
-        sprints: {
-          include: {
-            tasks: {
-              include: {
-                assignee: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!fetchedProject) {
-      throw new Error('Unable to fetch created project');
     }
-
-    return fetchedProject;
-  } catch (e) {
-    console.error('Error in creating Project:', e);
-    throw new Error('Unable to Create Project');
+    );
   }
+  catch {
+    throw new Error('Error creating project');
+  }
+
+  const project = await client.project.findUnique({
+    where: {
+      key: args.input.key
+    },
+    select: {
+      id: true,
+      name: true,
+      creatorId: true,
+      key: true
+    }
+  });
+
+  if (!project) {
+    throw new Error('Error creating project');
+  }
+
+  return project;
 };

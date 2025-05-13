@@ -11,7 +11,7 @@ export const mutations = gql`
 
     createSprint(input: CreateSprintInput!): Sprint! @auth
 
-    updateTaskStatus(taskId: ID!, status: TaskStatus!): ResponseMessage! @auth
+    updateTaskStatus(projectId: ID!, taskId: ID!, status: TaskStatus!): ResponseMessage! @auth
 
     assineTask(input: AssignTaskInput!): ResponseMessage! @auth
 

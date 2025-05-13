@@ -34,6 +34,7 @@ export const getSprintById: QueryResolvers["getSprintById"] = async (_, args, co
         select: {
           id: true,
           creatorId: true,
+          key: true,
         }
       }
     }

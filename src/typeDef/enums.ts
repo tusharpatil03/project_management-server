@@ -11,17 +11,15 @@ export const enums = gql`
     DONE
   }
   enum SprintStatus {
-    Planned
-    Active
-    Completed
-    Cancelled
+    TODO
+    IN_PROGRESS
+    DONE
   }
 
   enum ProjectStatus {
-    Active
-    OnHold
-    Completed
-    Cancelled
+    TODO
+    IN_PROGRESS
+    DONE
   }
 
   enum Gender {

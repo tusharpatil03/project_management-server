@@ -2,26 +2,6 @@ import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _, { includes } from 'lodash';
 
-// export const getAllProjects: QueryResolvers["getAllProjects"] = async (
-//   _,
-//   __,
-//   context
-// ) => {
-//   const userId = context.authData.userId;
-
-//   const user = await context.client.user.findUnique({
-//     where: { id: userId },
-//     include: {
-//       projects: true,
-//     },
-//   });
-
-//   if (!user) {
-//     throw new Error("User not found");
-//   }
-
-//   return user.projects;
-// };
 
 export const getAllProjects: QueryResolvers['getAllProjects'] = async (
   _,

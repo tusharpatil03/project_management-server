@@ -28,7 +28,6 @@ export const removeTeamMember: MutationResolvers["removeTeamMember"] = async (_,
     }
 
     try {
-
         await client.$transaction(async (prisma) => {
             await prisma.user.update({
                 where: { id: args.memberId },

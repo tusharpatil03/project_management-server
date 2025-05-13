@@ -15,9 +15,8 @@ export const inputs = gql`
   }
   input CreateProjectInput {
     name: String!
-    description: String!
-    goal: String
-    plan: String
+    key: String!
+    description: String
   }
 
   input CreateTeamInput {
@@ -44,7 +43,8 @@ export const inputs = gql`
   }
 
   input AssignTaskInput {
-    id: ID!
-    assignee: ID!
+    taskId: ID!
+    assigneeId: ID!
+    projectId: ID!
   }
 `;

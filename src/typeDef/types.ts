@@ -61,14 +61,13 @@ export const types = gql`
   
   type Project {
     id: ID!
+    key: String!
     name: String
     description: String
     createdAt: DateTime
     updatedAt: DateTime
     tasks: [Task]
     status: ProjectStatus
-    goal: String
-    plan: String
     creatorId: String!
   }
 

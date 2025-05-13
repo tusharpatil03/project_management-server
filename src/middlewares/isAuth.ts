@@ -2,7 +2,6 @@ import type { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../globals';
 import { client } from '../db';
-import { includes } from 'lodash';
 
 // This interface represents the type of data object returned by isAuth function.
 export interface InterfaceAuthData {

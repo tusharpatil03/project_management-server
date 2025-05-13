@@ -20,51 +20,73 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     throw new Error('User already Exists');
   }
 
-  const salt: string = await bcrypt.genSalt(12);
-  const hashedPassword = await bcrypt.hash(args.input.password, salt);
-
-  if (!hashedPassword) {
-    throw new Error('Unable to hash password');
-  }
 
   try {
+    const salt: string = await bcrypt.genSalt(12);
+    const hashedPassword = await bcrypt.hash(args.input.password, salt);
+
+    if (!hashedPassword) {
+      throw new Error('Unable to hash password');
+    }
+
     const result = await client.$transaction(async (prisma) => {
-      const user = await prisma.user.create({
-        data: {
-          email: args.input.email,
-          password: hashedPassword,
-          username: args.input.username,
-          salt: salt,
-        },
-      });
 
       const userProfile = await prisma.userProfile.create({
         data: {
           firstName: args.input.firstName,
           lastName: args.input.lastName,
-          userId: user.id,
         },
       });
 
-      return { user, userProfile };
+      await prisma.user.create({
+        data: {
+          email: args.input.email,
+          password: hashedPassword,
+          username: args.input.username,
+          salt: salt,
+          profile: {
+            connect: {
+              id: userProfile.id
+            }
+          }
+        },
+      });
     });
 
+    const user = await client.user.findUnique({
+      where: {
+        email: args.input.email
+      },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        profile: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true
+          }
+        }
+      }
+    })
+
+    if (!user) {
+      throw new Error("Unable to create User")
+    }
+
     const accessTokenPayload: InterfaceCreateAccessToken = {
-      userId: result.user.id,
-      email: result.user.email,
-      firstName: result.userProfile.firstName,
-      lastName: result.userProfile.lastName,
+      userId: user.id,
+      email: user.email,
+      username: user.username
     };
 
     const accessToken = createAccessToken(accessTokenPayload);
 
-    // Remove sensitive fields before returning the user
-    const { password, salt: string, ...safeUser } = result.user;
-
     return {
       accessToken,
-      user: safeUser,
-      userProfile: result.userProfile,
+      user,
+      userProfile: user.profile
     };
   } catch (error) {
     console.error('Error during signup:', error);
