@@ -2,9 +2,9 @@ import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _, { includes } from 'lodash';
 
-export const getAllProjects: QueryResolvers['getAllProjects'] = async (
+export const getAllProjects:QueryResolvers['getAllProjects'] = async (
   _,
-  __,
+  args,
   context
 ) => {
   const userId = context.authData.userId;
@@ -17,6 +17,7 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
   if (!userExists) {
     throw new Error('User not found');
   }
+
 
   const projects = await client.project.findMany({
     where: { creatorId: userId },
@@ -46,8 +47,6 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
       },
     },
   });
-
-  //console.log(projects);
 
   return projects;
 };

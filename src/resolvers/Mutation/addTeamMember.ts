@@ -8,6 +8,20 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   context
 ) => {
   try {
+    const AdminUserTeam = await client.userTeam.findFirst({
+      where: {
+        teamId: args.teamId,
+        userId: context.authData.userId,
+      },
+      select: {
+        id: true,
+        role: true,
+      },
+    });
+    if (AdminUserTeam?.role !== MemberRole.Admin) {
+      throw new Error('Unauthorized access');
+    }
+
     const team = await client.team.findUnique({
       where: { id: args.teamId },
       include: {
@@ -21,11 +35,11 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
       throw new Error(`No Team Found with id: ${args.teamId}`);
     }
 
-    const user = await client.user.findUnique({
+    const member = await client.user.findUnique({
       where: { id: args.memberId },
     });
 
-    if (!user) {
+    if (!member) {
       throw new Error(`User Not Found with id: ${args.memberId}`);
     }
 
@@ -69,6 +83,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
                 id: true,
                 username: true,
                 email: true,
+                teams: true,
               },
             },
             role: true,
@@ -85,7 +100,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     return {
       id: updatedTeam.id,
       name: updatedTeam.name,
-      members: updatedTeam.users.map((ut) => ut.user),
+      userTeams: updatedTeam.users.map((ut) => ut),
       updatedAt: updatedTeam.updatedAt,
     };
   } catch (error: any) {

@@ -126,6 +126,7 @@ export type Mutation = {
   removeProject?: Maybe<ResponseMessage>;
   removeSprint?: Maybe<ResponseMessage>;
   removeTask?: Maybe<ResponseMessage>;
+  removeTeam?: Maybe<ResponseMessage>;
   removeTeamMember: Team;
   signup: AuthData;
   updateTaskStatus: ResponseMessage;
@@ -134,7 +135,7 @@ export type Mutation = {
 
 export type MutationAddTeamMemberArgs = {
   memberId: Scalars['ID']['input'];
-  role?: InputMaybe<Scalars['String']['input']>;
+  role: Scalars['String']['input'];
   teamId: Scalars['ID']['input'];
 };
 
@@ -191,6 +192,11 @@ export type MutationRemoveTaskArgs = {
 };
 
 
+export type MutationRemoveTeamArgs = {
+  teamId: Scalars['ID']['input'];
+};
+
+
 export type MutationRemoveTeamMemberArgs = {
   memberId: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
@@ -241,11 +247,12 @@ export type Query = {
   getAllProjects?: Maybe<Array<Maybe<Project>>>;
   getAllSprints: Array<Maybe<Sprint>>;
   getAllTasks: Array<Maybe<Task>>;
+  getAllUserTeams: Array<Maybe<Team>>;
   getProjectById: Project;
   getSprintById: Sprint;
   getTaskById: Task;
   getTeamById: Team;
-  getUserById: UserProfile;
+  getUserById: User;
 };
 
 
@@ -259,8 +266,13 @@ export type QueryGetAllTasksArgs = {
 };
 
 
+export type QueryGetAllUserTeamsArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
 export type QueryGetProjectByIdArgs = {
-  id: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
 };
 
 
@@ -271,17 +283,17 @@ export type QueryGetSprintByIdArgs = {
 
 
 export type QueryGetTaskByIdArgs = {
-  id: Scalars['ID']['input'];
+  taskId: Scalars['ID']['input'];
 };
 
 
 export type QueryGetTeamByIdArgs = {
-  id: Scalars['ID']['input'];
+  teamId: Scalars['ID']['input'];
 };
 
 
 export type QueryGetUserByIdArgs = {
-  id: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 export type ResponseMessage = {
@@ -672,7 +684,7 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 }
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
-  addTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'memberId' | 'teamId'>>;
+  addTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'memberId' | 'role' | 'teamId'>>;
   assineTask?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAssineTaskArgs, 'input'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createSprint?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<MutationCreateSprintArgs, 'input'>>;
@@ -684,6 +696,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeProject?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveProjectArgs, 'projectId'>>;
   removeSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveSprintArgs, 'projectId' | 'sprintId'>>;
   removeTask?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTaskArgs, 'projectId' | 'taskId'>>;
+  removeTeam?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTeamArgs, 'teamId'>>;
   removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'memberId' | 'teamId'>>;
   signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'projectId' | 'status' | 'taskId'>>;
@@ -716,11 +729,12 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllSprints?: Resolver<Array<Maybe<ResolversTypes['Sprint']>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
   getAllTasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType, RequireFields<QueryGetAllTasksArgs, 'projectId'>>;
-  getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'id'>>;
+  getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['Team']>>, ParentType, ContextType, RequireFields<QueryGetAllUserTeamsArgs, 'userId'>>;
+  getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'projectId'>>;
   getSprintById?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<QueryGetSprintByIdArgs, 'id' | 'projectId'>>;
-  getTaskById?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<QueryGetTaskByIdArgs, 'id'>>;
-  getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'id'>>;
-  getUserById?: Resolver<ResolversTypes['UserProfile'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'id'>>;
+  getTaskById?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<QueryGetTaskByIdArgs, 'taskId'>>;
+  getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
+  getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'userId'>>;
 };
 
 export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {

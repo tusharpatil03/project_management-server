@@ -31,7 +31,9 @@ export const mutations = gql`
 
     removeAssineeOfTask(taskId: ID!): Task! @auth
 
-    addTeamMember(memberId: ID!, teamId: ID!, role: String): Team! @auth
+    removeTeam(teamId: ID!): ResponseMessage @auth
+
+    addTeamMember(memberId: ID!, teamId: ID!, role: String!): Team! @auth
 
     logout: Boolean! @auth
 

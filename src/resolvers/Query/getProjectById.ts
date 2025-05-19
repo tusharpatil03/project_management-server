@@ -43,7 +43,7 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
 
   const project = await client.project.findUnique({
     where: {
-      id: args.id,
+      id: args.projectId,
     },
     include: {
       creator: true,

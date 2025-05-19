@@ -1,3 +1,4 @@
+import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 
 export const getUserById: QueryResolvers['getUserById'] = async (
@@ -5,13 +6,21 @@ export const getUserById: QueryResolvers['getUserById'] = async (
   args,
   context
 ) => {
-  const user = await context.user.findUnique({
+  if (context.authData.role !== "Admin") {
+    throw new Error("Unauthorized")
+  }
+  const user = await client.user.findUnique({
     where: {
-      email: args.id,
+      id: args.userId,
     },
+    select: {
+      id: true,
+      username: true,
+      email: true
+    }
   });
   if (user == null) {
-    return { message: 'failed to fetch user', success: false };
+    throw new Error("Unable to Find User")
   }
   return user;
 };

@@ -62,6 +62,9 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       throw new Error(`Task Not Found with id: ${args.input.taskId}`);
     }
     const task = project.tasks[0];
+    if (!task) {
+      throw new Error("Project Has no Tasks")
+    }
     if (task.assigneeId === args.input.assigneeId) {
       throw new Error('Task is already assigned to this user');
     }

@@ -1,5 +1,6 @@
 import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
+import { getUserWithTeams, isUserPartOfProject } from './getAllSprint';
 
 export const getSprintById: QueryResolvers['getSprintById'] = async (
   _,
@@ -47,12 +48,22 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
     throw new Error('Sprint not found');
   }
 
-  const isAuthorized =
-    context.authData.userId === sprint.creatorId
-      ? true
-      : context.authData.userId === sprint.project.creatorId
-        ? true
-        : false;
+  const user = await getUserWithTeams(context.authData.userId)
+  if(!user){
+    throw new Error("User Not Found")
+  }
+
+  const userTeamIds = user.teams.map((t)=> t.teamId)
+  const projectTeamIds = await client.projectTeam.findMany({
+    where: {
+      projectId: args.projectId
+    },
+    select: {
+      teamId: true
+    }
+  });
+
+  const isAuthorized = isUserPartOfProject(userTeamIds, projectTeamIds)
 
   if (!isAuthorized) {
     throw new Error('You are not authorized to view this Sprint');

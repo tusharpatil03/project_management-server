@@ -5,7 +5,7 @@ import { client } from '../../db';
 
 import { InterfaceCreateAccessToken } from '../../utility/auth';
 
-export const signup: MutationResolvers['signup'] = async (_, args, context) => {
+export const signup: MutationResolvers['signup'] = async (_, args) => {
   const existingUser = await client.user.findFirst({
     where: {
       OR: [{ email: args.input.email }, { username: args.input.username }],

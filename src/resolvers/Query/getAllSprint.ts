@@ -2,7 +2,7 @@ import _ from 'lodash';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import { client } from '../../db';
 
-const getUserWithTeams = async (userId: string) => {
+export const getUserWithTeams = async (userId: string) => {
   const user = await client.user.findUnique({
     where: { id: userId },
     include: {
@@ -19,7 +19,7 @@ const getUserWithTeams = async (userId: string) => {
   return user;
 };
 
-const isUserPartOfProject = (
+export const isUserPartOfProject = (
   userTeamIds: string[],
   projectTeams: { teamId: string }[]
 ) => {
@@ -68,11 +68,8 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
 
   const project = await getProjectWithSprints(args.projectId);
 
-  if (
-    project.creatorId !== userId &&
-    !isUserPartOfProject(userTeamIds, projectTeams)
-  ) {
-    throw new Error('You are not authorized to view this project');
+  if(!isUserPartOfProject(userTeamIds, projectTeams)){
+    throw new Error("You Are Authorized person to view this project")
   }
 
   if (!project.sprints || project.sprints.length === 0) {
