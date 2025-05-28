@@ -1,6 +1,5 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
-import { client } from '../../db';
 
 export function roleDirectiveTransformer(
   schema: GraphQLSchema,
@@ -24,7 +23,7 @@ export function roleDirectiveTransformer(
           info
         ): Promise<string> => {
           // Fetch the current user from the database using the userId from the context
-          const currentUser = await client.user.findUnique({
+          const currentUser = await context.client.user.findUnique({
             where: {
               id: context.userId,
             },

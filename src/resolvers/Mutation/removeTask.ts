@@ -1,6 +1,6 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { client } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
+import { PrismaClientType } from '../../db';
 
 export const removeTask: MutationResolvers['removeTask'] = async (
   _,
@@ -10,7 +10,7 @@ export const removeTask: MutationResolvers['removeTask'] = async (
   const { taskId, projectId } = args;
 
   try {
-    return await client.$transaction(async (prisma) => {
+    return await context.client.$transaction(async (prisma: PrismaClientType) => {
       // Fetch the task with its project
       const task = await prisma.task.findUnique({
         where: { id: taskId },

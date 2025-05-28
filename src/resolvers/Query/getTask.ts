@@ -1,20 +1,19 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _ from 'lodash';
 import { getUserWithTeams, isUserPartOfProject } from './getAllSprint';
-import { client } from '../../db';
 
 export const getTaskById: QueryResolvers['getTaskById'] = async (
   _,
   args,
   context
 ) => {
-  const user = await getUserWithTeams(context.authData.userId)
+  const user = await getUserWithTeams(context.authData.userId, context.client)
   if (!user) {
     throw new Error("User Not Found")
   }
 
   const userTeamIds = user.teams.map((t) => t.teamId)
-  const projectTeamIds = await client.projectTeam.findMany({
+  const projectTeamIds = await context.client.projectTeam.findMany({
     where: {
       projectId: args.taskId
     },
@@ -27,7 +26,7 @@ export const getTaskById: QueryResolvers['getTaskById'] = async (
     throw new Error('You are not authorized to view this Project');
   }
 
-  const task = await client.task.findUnique({
+  const task = await context.client.task.findUnique({
     where: { id: args.taskId },
     select: {
       id: true,

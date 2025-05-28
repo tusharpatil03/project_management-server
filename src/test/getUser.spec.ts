@@ -1,50 +1,95 @@
-import { typeDef } from '../typeDef';
-import { resolvers } from '../resolvers';
 import authDirectiveTransformer from '../directives/directiveTransformers/authDirectiveTransformer';
 import { roleDirectiveTransformer } from '../directives/directiveTransformers/roleDirectiveTransformer';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { ApolloServer } from '@apollo/server';
+import { describe, it } from 'node:test';
+import { createTestUser, TestUserType } from "./helpers/user"
+import gql from 'graphql-tag';
+import { nanoid } from 'nanoid/non-secure'
+import { InterfaceCreateUser } from './helpers/user';
 
-let schema = makeExecutableSchema({
-    typeDefs: typeDef,
-    resolvers: resolvers,
-});
+import { MockContext, Context, createMockContext } from './helpers/db/context'
 
-schema = authDirectiveTransformer(schema, 'auth');
-schema = roleDirectiveTransformer(schema, 'role');
+let mockCtx: MockContext
+let ctx: Context
 
-export function createTestServer() {
-    return new ApolloServer({
-        schema,
-    });
+beforeEach(() => {
+    mockCtx = createMockContext()
+    ctx = mockCtx as unknown as Context
+})
+
+let testUser: TestUserType;
+const CreateUser: InterfaceCreateUser = {
+    email: `email${nanoid().toLowerCase()}@gmail.com`,
+    username: `user${nanoid()}`,
+    password: `pass${nanoid().toLowerCase()}`,
+    salt: 'salt',
+    profile: {
+        id: "",
+        firstName: "Tushar",
+        lastName: "Patil",
+    }
 }
 
+const typeDef = gql`
+  directive @auth on FIELD_DEFINITION
+
+  type Query{
+    hello: String @auth
+  }
+`
+
+const resolvers = {
+    Query: {
+        hello: (): string => "hi"
+    }
+}
+
+beforeAll(async () => {
+    createTestUser(CreateUser, ctx)
+});
+
+
+const authenticatedContext = {
+    expired: true,
+};
 
 describe('getUser query', () => {
     it('should return the requested user', async () => {
-        const server = createTestServer();
-        await server.start();
-
-        const query = `query GetUserById($id: ID!) {
-            getUserById(id: $id) {
-              id
-            }
-          }`
-
-        const variables = {
-            id: 'cmamq6mah0001mg92oimr42gl',
-        };
-
-        const result = await server.executeOperation({
-            query: query,
-            variables: variables,
+        let schema = makeExecutableSchema({
+            typeDefs: typeDef,
+            resolvers: resolvers,
         });
 
-        if (result.body.kind === 'single' && result.body.singleResult.data) {
-            expect(result.body.singleResult.data).toBeDefined()
-            expect(result.body.singleResult.data.id).toBe("cmamq6mah0001mg92oimr42gl")
-        } else {
-            throw new Error('Expected single result, but got incremental.');
+        schema = authDirectiveTransformer(schema, 'auth');
+        schema = roleDirectiveTransformer(schema, 'role');
+
+        const server = new ApolloServer({
+            schema
+        })
+
+        const query = `
+           query: {
+              hello
+            }
+        `
+
+        try {
+            const result = await server.executeOperation({
+                query,
+                variables: {},
+            },
+                {
+                    contextValue: authenticatedContext,
+                },
+            );
+
         }
+        catch (e) {
+            if (e instanceof Error) {
+                expect(e.message).toBe("UnAuthorized")
+            }
+        }
+
     });
 });

@@ -1,6 +1,6 @@
 import { MemberRole } from '@prisma/client';
-import { client } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { PrismaClientType } from '../../db';
 
 interface CreateProjectInput {
   name: string;
@@ -15,7 +15,7 @@ export const createProject: MutationResolvers['createProject'] = async (
   context
 ) => {
   try {
-    await client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma:PrismaClientType) => {
       const creator = await prisma.user.findUnique({
         where: {
           id: context.authData.userId,
@@ -50,7 +50,7 @@ export const createProject: MutationResolvers['createProject'] = async (
     throw new Error('Error creating project');
   }
 
-  const project = await client.project.findUnique({
+  const project = await context.client.project.findUnique({
     where: {
       key: args.input.key,
     },

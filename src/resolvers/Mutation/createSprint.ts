@@ -1,5 +1,4 @@
 import { SprintStatus, TaskStatus } from '@prisma/client';
-import { client } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export interface InterfaceSprint {
@@ -23,7 +22,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
   }
 
   try {
-    const sprint = await client.sprint.create({
+    const sprint = await context.client.sprint.create({
       data: {
         title: input.title,
         description: input.description,
@@ -54,7 +53,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
       }));
 
       // Create tasks
-      await client.task.createMany({
+      await context.client.task.createMany({
         data: tasksInput,
         skipDuplicates: true,
       });

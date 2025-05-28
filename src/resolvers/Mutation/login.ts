@@ -1,14 +1,11 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
 import { createAccessToken } from '../../utility/auth';
-import { client } from '../../db';
 
 export interface InterfaceUser {
   id: string;
   email: string;
   username: string;
-  password: string;
-  salt: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -49,7 +46,7 @@ export interface InterfaceUserProfile {
 }
 
 export const login: MutationResolvers['login'] = async (_, args, context) => {
-  const user = await client.user.findUnique({
+  const user = await context.client.user.findUnique({
     where: { email: args.input.email },
     include: {
       profile: {
@@ -65,7 +62,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
     throw new Error('User does not exist');
   }
 
-  const userProfile = await client.userProfile.findUnique({
+  const userProfile = await context.client.userProfile.findUnique({
     where: {
       userId: user.id,
     },

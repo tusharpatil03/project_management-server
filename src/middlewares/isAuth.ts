@@ -1,7 +1,8 @@
 import type { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../globals';
-import { client } from '../db';
+import { PrismaClientType } from '../db';
+
 
 // This interface represents the type of data object returned by isAuth function.
 export interface InterfaceAuthData {
@@ -10,7 +11,7 @@ export interface InterfaceAuthData {
   userId: string | undefined;
 }
 
-export const isAuth = async (request: Request): Promise<InterfaceAuthData> => {
+export const isAuth = async (request: Request, client:PrismaClientType): Promise<InterfaceAuthData> => {
   const authData: InterfaceAuthData = {
     isAuth: false,
     expired: undefined,

@@ -1,4 +1,3 @@
-import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _ from 'lodash';
 import { InterfaceUser } from '../Mutation/login';
@@ -28,7 +27,7 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   if (!context.authData) {
     throw new Error('Unauthorized');
   }
-  const user = await client.user.findUnique({
+  const user = await context.client.user.findUnique({
     where: {
       id: context.authData.userId,
     },
@@ -41,7 +40,7 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
     throw new Error('User not found');
   }
 
-  const project = await client.project.findUnique({
+  const project = await context.client.project.findUnique({
     where: {
       id: args.projectId,
     },
@@ -58,13 +57,13 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   const isAuthorized =
     context.authData.userId === project.creatorId
       ? true
-      : user.projects.some((p) => p.id === project.id)
+      : user.projects.some((p:InterfaceProject) => p.id === project.id)
         ? true
         : false;
   if (!isAuthorized) {
     throw new Error('You are not authorized to view this project');
   }
-  const tasks = await client.task.findMany({
+  const tasks = await context.client.task.findMany({
     where: {
       projectId: project.id,
     },

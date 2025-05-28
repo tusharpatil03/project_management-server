@@ -1,6 +1,6 @@
 import { MemberRole } from '@prisma/client';
-import { client } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { InterfaceUserTeam } from './createTeam';
 
 export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   _,
@@ -8,7 +8,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   context
 ) => {
   try {
-    const AdminUserTeam = await client.userTeam.findFirst({
+    const AdminUserTeam = await context.client.userTeam.findFirst({
       where: {
         teamId: args.teamId,
         userId: context.authData.userId,
@@ -22,7 +22,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
       throw new Error('Unauthorized access');
     }
 
-    const team = await client.team.findUnique({
+    const team = await context.client.team.findUnique({
       where: { id: args.teamId },
       include: {
         users: {
@@ -35,7 +35,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
       throw new Error(`No Team Found with id: ${args.teamId}`);
     }
 
-    const member = await client.user.findUnique({
+    const member = await context.client.user.findUnique({
       where: { id: args.memberId },
     });
 
@@ -44,14 +44,14 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     }
 
     const isAlreadyMember = team.users.some(
-      (team) => team.userId === args.memberId
+      (team: InterfaceUserTeam) => team.userId === args.memberId
     );
 
     if (isAlreadyMember) {
       throw new Error('User is already a member of the team');
     }
 
-    const userTeam = await client.userTeam.create({
+    const userTeam = await context.client.userTeam.create({
       data: {
         userId: args.memberId,
         teamId: args.teamId,
@@ -59,7 +59,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
       },
     });
 
-    await client.user.update({
+    await context.client.user.update({
       where: { id: args.memberId },
       data: {
         teams: {
@@ -70,7 +70,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
       },
     });
 
-    const updatedTeam = await client.team.findUnique({
+    const updatedTeam = await context.client.team.findUnique({
       where: { id: args.teamId },
       select: {
         id: true,
@@ -100,7 +100,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     return {
       id: updatedTeam.id,
       name: updatedTeam.name,
-      userTeams: updatedTeam.users.map((ut) => ut),
+      userTeams: updatedTeam.users.map((ut: InterfaceUserTeam) => ut),
       updatedAt: updatedTeam.updatedAt,
     };
   } catch (error: any) {

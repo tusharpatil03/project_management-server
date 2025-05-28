@@ -1,4 +1,3 @@
-import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import { getUserWithTeams } from './getAllSprint';
 import { isUserPartOfProject } from './getAllSprint';
@@ -9,20 +8,20 @@ export const getAllTasks: QueryResolvers['getAllTasks'] = async (
   context
 ) => {
 
-  const user = await getUserWithTeams(context.authData.userId)
+  const user = await getUserWithTeams(context.authData.userId, context.client)
 
   if (!user) {
     throw new Error('User not found');
   }
 
-  const project = await client.project.findUnique({
+  const project = await context.client.project.findUnique({
     where: { id: args.projectId },
     select: { creatorId: true },
   });
 
   // Fetch teams working on the project and check if the user is part of any team
   const userTeamIds = user.teams.map((t) => t.teamId)
-  const projectTeams = await client.projectTeam.findMany({
+  const projectTeams = await context.client.projectTeam.findMany({
     where: { projectId: args.projectId },
     select: { teamId: true },
   });
@@ -32,7 +31,7 @@ export const getAllTasks: QueryResolvers['getAllTasks'] = async (
   }
 
   // Fetch the project and its tasks with proper includes and pagination
-  const tasks = await client.task.findMany({
+  const tasks = await context.client.task.findMany({
     where: { projectId: args.projectId },
     include: {
       assignee: {

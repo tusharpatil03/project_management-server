@@ -10,12 +10,12 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { client } from './db';
+import { client, PrismaClientType } from './db';
 import 'dotenv/config';
-import { isAuth } from './middlewares/isAuth';
+import { InterfaceAuthData, isAuth } from './middlewares/isAuth';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';
 import { roleDirectiveTransformer } from './directives/directiveTransformers/roleDirectiveTransformer';
-
+import { Request, Response } from 'express';
 const httpServer = http.createServer(app);
 
 let schema = makeExecutableSchema({
@@ -48,16 +48,23 @@ const server = new ApolloServer({
 });
 
 let serverHost = 'localhost';
+interface MyContext {
+  authData: InterfaceAuthData,
+  client: PrismaClientType,
+  req: Request,
+  res: Response,
+  apiRootUrl: string
+}
 
 async function startServer() {
   await server.start();
   app.use(
     '/graphql',
     expressMiddleware(server, {
-      context: async ({ req, res }) => {
+      context: async ({ req, res }): Promise<MyContext> => {
         serverHost = req.get('host') || 'localhost';
         return {
-          authData: await isAuth(req),
+          authData: await isAuth(req, client),
           client,
           req,
           res,

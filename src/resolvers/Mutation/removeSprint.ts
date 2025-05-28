@@ -1,13 +1,15 @@
-import { client } from '../../db';
+import { PrismaClientType } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { InterfaceSprint } from './createSprint';
+import { InterfaceTask } from './createTasks';
 
 export const removeSprint: MutationResolvers['removeSprint'] = async (
   _,
   args,
   context
 ) => {
-  const project = await client.project.findUnique({
+  const project = await context.client.project.findUnique({
     where: {
       id: args.projectId,
     },
@@ -18,12 +20,12 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
     throw new Error('Project Does not Exist');
   }
 
-  const sprintId = project.sprints.some((s) => s.id == args.sprintId);
+  const sprintId = project.sprints.some((s:InterfaceSprint) => s.id == args.sprintId);
 
   if (!sprintId) {
     throw new Error('Sprint is not part of this Project');
   }
-  const sprint = await client.sprint.findUnique({
+  const sprint = await context.client.sprint.findUnique({
     where: { id: args.sprintId },
     include: {
       tasks: {
@@ -55,7 +57,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   }
 
   try {
-    await client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma: PrismaClientType) => {
       const assigneeTaskMap: Record<string, { id: string }[]> = {};
 
       for (const task of sprint.tasks) {
@@ -83,7 +85,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
         await prisma.task.deleteMany({
           where: {
             id: {
-              in: sprint.tasks.map((t) => t.id),
+              in: sprint.tasks.map((t: InterfaceTask) => t.id),
             },
           },
         });

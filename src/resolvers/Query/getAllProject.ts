@@ -1,4 +1,3 @@
-import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _, { includes } from 'lodash';
 
@@ -9,7 +8,7 @@ export const getAllProjects:QueryResolvers['getAllProjects'] = async (
 ) => {
   const userId = context.authData.userId;
 
-  const userExists = await client.user.findUnique({
+  const userExists = await context.client.user.findUnique({
     where: { id: userId },
     select: { id: true }, // Lightweight fetch
   });
@@ -19,7 +18,7 @@ export const getAllProjects:QueryResolvers['getAllProjects'] = async (
   }
 
 
-  const projects = await client.project.findMany({
+  const projects = await context.client.project.findMany({
     where: { creatorId: userId },
     include: {
       tasks: {

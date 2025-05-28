@@ -1,15 +1,17 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { client } from '../../db';
-
+import { InterfaceUserTeam } from './createTeam';
+import { Team } from './assignTask';
+import { PrismaClientType } from '../../db';
 export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
   _,
   args,
   context
 ) => {
+
   try {
     //check wether the user is part of project or not
-    const project = await client.project.findUnique({
+    const project = await context.client.project.findUnique({
       where: {
         id: args.projectId,
       },
@@ -24,6 +26,7 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
                   where: {
                     id: context.authData.userId,
                   },
+
                 },
               },
             },
@@ -32,15 +35,15 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
       },
     });
 
-    const isMember = project?.teams.some((team) => {
-      team.team.users.some((user) => user.id === context.authData.userId);
+    const isMember = project?.teams.some((team: Team) => {
+      team.team.users.some((user: InterfaceUserTeam) => user.id === context.authData.userId);
     });
 
     if (!isMember) {
       throw new Error('User is not part of this project');
     }
 
-    await client.$transaction(async (t) => {
+    await context.client.$transaction(async (t: PrismaClientType) => {
       t.task.update({
         where: {
           id: args.taskId,

@@ -1,4 +1,3 @@
-import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import { getUserWithTeams, isUserPartOfProject } from './getAllSprint';
 
@@ -7,7 +6,7 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
   args,
   context
 ) => {
-  const sprint = await client.sprint.findUnique({
+  const sprint = await context.client.sprint.findUnique({
     where: {
       id: args.id,
       projectId: args.projectId,
@@ -48,13 +47,13 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
     throw new Error('Sprint not found');
   }
 
-  const user = await getUserWithTeams(context.authData.userId)
+  const user = await getUserWithTeams(context.authData.userId, context.client)
   if(!user){
     throw new Error("User Not Found")
   }
 
   const userTeamIds = user.teams.map((t)=> t.teamId)
-  const projectTeamIds = await client.projectTeam.findMany({
+  const projectTeamIds = await context.client.projectTeam.findMany({
     where: {
       projectId: args.projectId
     },

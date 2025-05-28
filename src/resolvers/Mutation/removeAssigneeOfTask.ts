@@ -1,11 +1,11 @@
-import { client } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { PrismaClientType } from '../../db';
 
 export const removeAssineeOfTask: MutationResolvers['removeAssineeOfTask'] =
   async (_, args, context) => {
     try {
-      return await client.$transaction(async (prisma) => {
+      return await context.client.$transaction(async (prisma:PrismaClientType) => {
         const task = await prisma.task.findFirst({
           where: {
             id: args.taskId,

@@ -1,6 +1,6 @@
 import { TaskStatus } from '@prisma/client';
-import { client } from '../../db';
 import { MutationResolvers, User } from '../../types/generatedGraphQLTypes';
+import { PrismaClientType } from '../../db';
 
 // Align InterfaceTask with GraphQL Task type
 export interface InterfaceTask {
@@ -31,7 +31,7 @@ export const createTask: MutationResolvers['createTask'] = async (
     : TaskStatus.TODO;
 
   try {
-    return await client.$transaction(async (prisma) => {
+    return await context.client.$transaction(async (prisma:PrismaClientType) => {
       const creator = await prisma.user.findUnique({
         where: {
           id: context.authData.userId,

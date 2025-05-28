@@ -1,13 +1,14 @@
-import { client } from '../../db';
+import { PrismaClientType } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { InterfaceUserTeam } from './createTeam';
 
 export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   _,
   args,
   context
 ) => {
-  const team = await client.team.findUnique({
+  const team = await context.client.team.findUnique({
     where: { id: args.teamId },
     select: {
       id: true,
@@ -26,13 +27,13 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     throw new UnauthorizedError('You are not the creator of this team', '403');
   }
 
-  const user = team.users.find((t) => t.userId === args.memberId);
+  const user = team.users.find((t: InterfaceUserTeam) => t.userId === args.memberId);
   if (!user) {
     throw new Error('User is not part of the team');
   }
 
   try {
-    await client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma: PrismaClientType) => {
       await prisma.user.update({
         where: { id: args.memberId },
         data: {
@@ -58,7 +59,7 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
       });
     });
 
-    const updatedTeam = await client.team.findUnique({
+    const updatedTeam = await context.client.team.findUnique({
       where: { id: args.teamId },
       select: {
         id: true,
@@ -87,7 +88,7 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     return {
       id: updatedTeam.id,
       name: updatedTeam.name,
-      members: updatedTeam.users.map((t) => t.user),
+      members: updatedTeam.users.map((t:InterfaceUserTeam) => t.user),
       createdAt: updatedTeam.createdAt,
       updatedAt: updatedTeam.updatedAt,
       creatorId: updatedTeam.creatorId,

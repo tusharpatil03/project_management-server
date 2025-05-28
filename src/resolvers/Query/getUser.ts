@@ -1,4 +1,3 @@
-import { client } from '../../db';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 
 export const getUserById: QueryResolvers['getUserById'] = async (
@@ -9,7 +8,7 @@ export const getUserById: QueryResolvers['getUserById'] = async (
   if (context.authData.role !== "Admin") {
     throw new Error("Unauthorized")
   }
-  const user = await client.user.findUnique({
+  const user = await context.client.user.findUnique({
     where: {
       id: args.userId,
     },

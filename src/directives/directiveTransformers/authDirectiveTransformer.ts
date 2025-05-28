@@ -8,7 +8,6 @@ function authDirectiveTransformer(
 ): GraphQLSchema {
   return mapSchema(schema, {
     [MapperKind.OBJECT_FIELD]: (fieldConfig) => {
-      // Check whether this field has the specified directive
       const authDirective = getDirective(
         schema,
         fieldConfig,
@@ -19,7 +18,7 @@ function authDirectiveTransformer(
         const { resolve = defaultFieldResolver } = fieldConfig;
 
         fieldConfig.resolve = (root, args, context, info): string => {
-          // Check if the user is authenticated and the session is not expired
+         //check user is authenticated
           if (context.authData.expired || !context.authData.isAuth) {
             throw String(new Error('UnAuthorized'));
           }

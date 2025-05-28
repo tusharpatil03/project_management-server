@@ -1,7 +1,12 @@
 import _, { assign } from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { client } from '../../db';
 import { MemberRole, Prisma } from '@prisma/client';
+import { PrismaClientType } from '../../db';
+import { InterfaceTeam } from './createTeam';
+
+export interface Team {
+  team: InterfaceTeam
+}
 
 export const assineTask: MutationResolvers['assineTask'] = async (
   _,
@@ -9,7 +14,7 @@ export const assineTask: MutationResolvers['assineTask'] = async (
   context
 ) => {
   try {
-    const assignee = await client.user.findUnique({
+    const assignee = await context.client.user.findUnique({
       where: { id: args.input.assigneeId },
       select: {
         id: true,
@@ -20,7 +25,7 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       throw new Error(`Assignee Not Found with id: ${args.input.assigneeId}`);
     }
 
-    const project = await client.project.findUnique({
+    const project = await context.client.project.findUnique({
       where: { id: args.input.projectId },
       include: {
         tasks: {
@@ -74,7 +79,8 @@ export const assineTask: MutationResolvers['assineTask'] = async (
 
     let role = null;
 
-    const isMember = project.teams.some((team) =>
+
+    const isMember = project.teams.some((team: Team) =>
       team.team.users.some((user) => {
         if (user.userId === assignee.id) {
           role = user.role;
@@ -90,7 +96,7 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       throw new Error('Assignee is not a contributor of this project');
     }
 
-    await client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma: PrismaClientType) => {
       await prisma.task.update({
         where: {
           id: task.id,

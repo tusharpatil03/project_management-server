@@ -1,11 +1,11 @@
 import { MemberRole } from "@prisma/client";
-import { client } from "../../db";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import { getUserWithTeams } from "./getAllSprint";
+import { InterfaceUserTeam } from "../Mutation/createTeam";
 
 export const getAllUserTeams: QueryResolvers["getAllUserTeams"] = async (_, args, context) => {
 
-    const userTeams = await client.userTeam.findMany({
+    const userTeams = await context.client.userTeam.findMany({
         where: {
             userId: context.authData.userId
         },
@@ -36,7 +36,7 @@ export const getAllUserTeams: QueryResolvers["getAllUserTeams"] = async (_, args
         }
     });
 
-    const teams = userTeams.map((t) => {
+    const teams = userTeams.map((t:InterfaceUserTeam) => {
         return {
             id: t.team.id,
             name: t.team.name,

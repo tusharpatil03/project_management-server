@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { client } from '../../db';
+import { PrismaClientType } from '../../db';
 
-export const getUserWithTeams = async (userId: string) => {
+export const getUserWithTeams = async (userId: string, client: PrismaClientType) => {
   const user = await client.user.findUnique({
     where: { id: userId },
     include: {
@@ -26,7 +26,7 @@ export const isUserPartOfProject = (
   return projectTeams.some((team) => userTeamIds.includes(team.teamId));
 };
 
-const getProjectWithSprints = async (projectId: string) => {
+const getProjectWithSprints = async (projectId: string, client: PrismaClientType) => {
   const project = await client.project.findUnique({
     where: { id: projectId },
     include: {
@@ -58,17 +58,17 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
 ) => {
   const userId = context.authData.userId;
 
-  const user = await getUserWithTeams(userId);
-  const userTeamIds = user.teams.map((team) => team.teamId);
+  const user = await getUserWithTeams(userId, context.client);
+  const userTeamIds = user.teams.map((team: { teamId: string }) => team.teamId);
 
-  const projectTeams = await client.projectTeam.findMany({
+  const projectTeams = await context.client.projectTeam.findMany({
     where: { projectId: args.projectId },
     select: { teamId: true },
   });
 
-  const project = await getProjectWithSprints(args.projectId);
+  const project = await getProjectWithSprints(args.projectId, context.client);
 
-  if(!isUserPartOfProject(userTeamIds, projectTeams)){
+  if (!isUserPartOfProject(userTeamIds, projectTeams)) {
     throw new Error("You Are Authorized person to view this project")
   }
 
