@@ -26,25 +26,26 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
       throw new Error('Unable to hash password');
     }
 
-    const result = await context.client.$transaction(async (prisma:PrismaClientType) => {
-      const userProfile = await prisma.userProfile.create({
-        data: {
-          firstName: args.input.firstName,
-          lastName: args.input.lastName,
-        },
-      });
+    const result = await context.client.$transaction(async (prisma: PrismaClientType) => {
 
-      await prisma.user.create({
+
+      const user = await prisma.user.create({
         data: {
           email: args.input.email,
           password: hashedPassword,
           username: args.input.username,
           salt: salt,
-          profile: {
+        },
+      });
+      const userProfile = await prisma.userProfile.create({
+        data: {
+          firstName: args.input.firstName,
+          lastName: args.input.lastName,
+          user: {
             connect: {
-              id: userProfile.id,
-            },
-          },
+              id: user.id
+            }
+          }
         },
       });
     });

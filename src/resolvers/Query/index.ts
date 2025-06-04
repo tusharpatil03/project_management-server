@@ -6,8 +6,10 @@ import { getSprintById } from './getSprintById';
 import { getTaskById } from './getTask';
 import { getTeamById } from './getTeam';
 import { getUserById } from './getUser';
+import { healthCheck } from './healthCheck';
 
 export const Query = {
+  healthCheck,
   getUserById,
   getTaskById,
   getSprintById,

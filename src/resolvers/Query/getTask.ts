@@ -38,7 +38,6 @@ export const getTaskById: QueryResolvers['getTaskById'] = async (
           id: true,
           username: true,
           email: true,
-          profileId: true
         }
       },
       assigneeId: true

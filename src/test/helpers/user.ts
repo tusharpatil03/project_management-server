@@ -1,6 +1,6 @@
 import { InterfaceUser } from "../../resolvers/Mutation/login";
 import { Context } from "./db/context";
-import { nanoid } from 'nanoid'
+import { nanoid } from 'nanoid/non-secure'
 
 export interface InterfaceCreateUser {
     username: string
@@ -17,28 +17,14 @@ export interface InterfaceCreateUser {
 export type TestUserType = (InterfaceUser) | null
 
 export const createTestUser = async (user: InterfaceCreateUser, ctx: Context): Promise<TestUserType> => {
-    const profile = await ctx.prisma.userProfile.create({
-        data: {
-            firstName: "Tushar",
-            lastName: "Patil",
-        },
-        select: {
-            id: true
-        }
-    });
 
-    return await ctx.prisma.user.create({
+    const newuser = await ctx.prisma.user.create({
         data:
         {
             email: `email${nanoid().toLowerCase()}@gmail.com`,
             username: `user${nanoid()}`,
             password: `pass${nanoid().toLowerCase()}`,
             salt: 'salt',
-            profile: {
-                connect: {
-                    id: profile.id
-                }
-            }
         },
         select: {
             id: true,
@@ -55,7 +41,22 @@ export const createTestUser = async (user: InterfaceCreateUser, ctx: Context): P
             teams: true,
             assignedTasks: true,
             profile: true,
-            profileId: true
         }
     });
+
+    const profile = await ctx.prisma.userProfile.create({
+        data: {
+            firstName: "Tushar",
+            lastName: "Patil",
+            user: {
+                connect: {
+                    id: newuser.id
+                }
+            }
+        },
+        select: {
+            id: true
+        }
+    });
+    return newuser
 }

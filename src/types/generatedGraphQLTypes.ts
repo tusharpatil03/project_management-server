@@ -18,6 +18,7 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
   EmailAddress: { input: any; output: any; }
   Json: { input: any; output: any; }
+  Password: { input: any; output: any; }
 };
 
 export type AssignTaskInput = {
@@ -104,7 +105,7 @@ export type Gender =
 
 export type LoginInput = {
   email: Scalars['EmailAddress']['input'];
-  password: Scalars['String']['input'];
+  password: Scalars['Password']['input'];
 };
 
 export type MemberRole =
@@ -253,6 +254,7 @@ export type Query = {
   getTaskById: Task;
   getTeamById: Team;
   getUserById: User;
+  healthCheck: ResponseMessage;
 };
 
 
@@ -311,7 +313,7 @@ export type SignupInput = {
   email: Scalars['EmailAddress']['input'];
   firstName: Scalars['String']['input'];
   lastName: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  password: Scalars['Password']['input'];
   username: Scalars['String']['input'];
 };
 
@@ -550,6 +552,7 @@ export type ResolversTypes = {
   LoginInput: LoginInput;
   MemberRole: MemberRole;
   Mutation: ResolverTypeWrapper<{}>;
+  Password: ResolverTypeWrapper<Scalars['Password']['output']>;
   Project: ResolverTypeWrapper<Project>;
   ProjectStatus: ProjectStatus;
   ProjectTeam: ResolverTypeWrapper<ProjectTeam>;
@@ -594,6 +597,7 @@ export type ResolversParentTypes = {
   Json: Scalars['Json']['output'];
   LoginInput: LoginInput;
   Mutation: {};
+  Password: Scalars['Password']['output'];
   Project: Project;
   ProjectTeam: ProjectTeam;
   Query: {};
@@ -702,6 +706,10 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'projectId' | 'status' | 'taskId'>>;
 };
 
+export interface PasswordScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Password'], any> {
+  name: 'Password';
+}
+
 export type ProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -735,6 +743,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   getTaskById?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<QueryGetTaskByIdArgs, 'taskId'>>;
   getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
   getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'userId'>>;
+  healthCheck?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
 };
 
 export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
@@ -887,6 +896,7 @@ export type Resolvers<ContextType = any> = {
   FieldError?: FieldErrorResolvers<ContextType>;
   Json?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  Password?: GraphQLScalarType;
   Project?: ProjectResolvers<ContextType>;
   ProjectTeam?: ProjectTeamResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;

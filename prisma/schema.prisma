@@ -26,8 +26,7 @@ model User {
   projects      Project[]
   teams         UserTeam[]
   assignedTasks Task[]      @relation("AssignedTasks")
-  profile       UserProfile @relation(fields: [profileId], references: [id])
-  profileId     String      @unique @map("profile_id")
+  profile       UserProfile?
 
   @@map("users")
 }
@@ -45,8 +44,8 @@ model UserProfile {
   social   Social? @relation(fields: [socialId], references: [id])
   socialId String? @unique @map("social_id")
 
-  user User?
-  userId String? @unique @map("user_id")
+  user User @relation(fields: [userId], references: [id])
+  userId String @unique @map("user_id")
 
   @@map("userprofile")
 }

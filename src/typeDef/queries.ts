@@ -3,6 +3,7 @@ import gql from 'graphql-tag';
 export const queries = gql`
   # Queries
   type Query {
+    healthCheck: ResponseMessage!
     getUserById(userId: ID!): User! @auth
     getProjectById(projectId: ID!): Project! @auth
     getTeamById(teamId: ID!): Team! @auth
