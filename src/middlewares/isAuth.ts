@@ -8,17 +8,18 @@ import { PrismaClientType } from '../db';
 export interface InterfaceAuthData {
   isAuth: boolean;
   expired: boolean | undefined;
-  userId: string | undefined;
+  userId: string;
 }
 
-export const isAuth = async (request: Request, client:PrismaClientType): Promise<InterfaceAuthData> => {
+export const isAuth = (request: Request): InterfaceAuthData => {
   const authData: InterfaceAuthData = {
     isAuth: false,
     expired: undefined,
-    userId: undefined,
+    userId: "",
   };
 
   const authHeader = request.headers.authorization;
+
 
   if (!authHeader) {
     return authData;
@@ -26,6 +27,7 @@ export const isAuth = async (request: Request, client:PrismaClientType): Promise
 
   // Extract token from authorization header
   const token = authHeader.split(' ')[1];
+
 
   if (!token || token === '') {
     return authData;
@@ -61,18 +63,8 @@ export const isAuth = async (request: Request, client:PrismaClientType): Promise
     return authData;
   }
 
-  const user = await client.user.findUnique({
-    where: { id: decodedToken.userId },
-  });
-
-  if (!user) {
-    authData.isAuth = false;
-    authData.expired = false;
-    return authData;
-  }
-
   authData.isAuth = true;
-  authData.userId = user.id;
+  authData.userId = decodedToken.userId;
 
   return authData;
 };

@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
-
+import nodemailer from "nodemailer"
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
+import 'dotenv/config'
 
 export interface InterfaceCreateAccessToken {
   userId: string;
@@ -24,21 +25,63 @@ export const createAccessToken = (
   );
 };
 
-// export const createRefreshToken = (
-//   user: InterfaceUser,
-//   userProfile: InterfaceUserProfile,
-// ): string => {
-//   return user && userProfile ? jwt.sign(
-//     {
-//       tokenVersion: userProfile.tokenVersion,
-//       userId: user.id.toString(),
-//       firstName: userProfile.firstName,
-//       lastName: userProfile.lastName,
-//       email: user.email,
-//     },
-//     REFRESH_TOKEN_SECRET as string,
-//     {
-//       expiresIn: "30d",
-//     },
-//   ) : ""
-// };
+export interface InterfaceCreateRefreshToken {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  tokenVersion: number;
+}
+
+export const createRefreshToken = (
+  payload:InterfaceCreateRefreshToken
+): string => {
+  return jwt.sign(
+    {
+      tokenVersion: payload.tokenVersion,
+      userId: payload.userId,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      email: payload.email,
+    },
+    REFRESH_TOKEN_SECRET as string,
+    {
+      expiresIn: "30d",
+    },
+  )
+};
+
+
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+
+
+export const sendVerificationEmail = (token: string, email: string) => {
+
+  const mailTransporter =
+    nodemailer.createTransport(
+      {
+        service: 'gmail',
+        auth: {
+          user: EMAIL_USER as string,
+          pass: EMAIL_PASSWORD as string
+        }
+      }
+    );
+
+  const url = `https://localhost:8080/auth/verify?token=${token}`
+
+  const mailDetails = {
+    from: EMAIL_USER as string,
+    to: email,
+    subject: 'Verifiaction Email',
+    text: url
+  };
+
+  mailTransporter.sendMail(mailDetails, (err, data) => {
+    if (err) {
+      throw new Error("Unable to send mail")
+    }
+  })
+
+}

@@ -1,7 +1,5 @@
-import { PrismaClientType } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceUserTeam } from './createTeam';
 
 export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   _,
@@ -23,17 +21,17 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     throw new Error('Team does not exist');
   }
 
-  if (team.creatorId !== context.authData.userId) {
+  if (team.creatorId !== context.userId) {
     throw new UnauthorizedError('You are not the creator of this team', '403');
   }
 
-  const user = team.users.find((t: InterfaceUserTeam) => t.userId === args.memberId);
+  const user = team.users.find((t) => t.userId === args.memberId);
   if (!user) {
     throw new Error('User is not part of the team');
   }
 
   try {
-    await context.client.$transaction(async (prisma: PrismaClientType) => {
+    await context.client.$transaction(async (prisma) => {
       await prisma.user.update({
         where: { id: args.memberId },
         data: {
@@ -88,7 +86,7 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     return {
       id: updatedTeam.id,
       name: updatedTeam.name,
-      members: updatedTeam.users.map((t:InterfaceUserTeam) => t.user),
+      members: updatedTeam.users.map((t) => t.user),
       createdAt: updatedTeam.createdAt,
       updatedAt: updatedTeam.updatedAt,
       creatorId: updatedTeam.creatorId,

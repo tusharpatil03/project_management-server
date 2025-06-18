@@ -1,6 +1,5 @@
 import { MemberRole } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceUserTeam } from './createTeam';
 
 export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   _,
@@ -11,7 +10,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     const AdminUserTeam = await context.client.userTeam.findFirst({
       where: {
         teamId: args.teamId,
-        userId: context.authData.userId,
+        userId: context.userId,
       },
       select: {
         id: true,
@@ -44,7 +43,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     }
 
     const isAlreadyMember = team.users.some(
-      (team: InterfaceUserTeam) => team.userId === args.memberId
+      (team) => team.userId === args.memberId
     );
 
     if (isAlreadyMember) {
@@ -100,7 +99,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     return {
       id: updatedTeam.id,
       name: updatedTeam.name,
-      userTeams: updatedTeam.users.map((ut: InterfaceUserTeam) => ut),
+      userTeams: updatedTeam.users.map((ut) => ut),
       updatedAt: updatedTeam.updatedAt,
     };
   } catch (error: any) {

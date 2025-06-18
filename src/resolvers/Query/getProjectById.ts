@@ -1,35 +1,22 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _ from 'lodash';
-import { InterfaceUser } from '../Mutation/login';
 import { InterfaceTask } from '../Mutation/createTasks';
-import { InterfaceTeam } from '../Mutation/createTeam';
 import { InterfaceSprint } from '../Mutation/createSprint';
+import { Project } from '@prisma/client';
 
-export interface InterfaceProject {
-  id: string;
-  name: string;
-  description: string;
-  goal: string;
-  plan: string;
-  creatorId: string;
-  teamId: string;
-  creator: InterfaceUser;
-  tasks: InterfaceTask[];
-  team: InterfaceTeam;
-  sprints: InterfaceSprint[];
-}
+
 
 export const getProjectById: QueryResolvers['getProjectById'] = async (
   _,
   args,
   context
 ) => {
-  if (!context.authData) {
+  if (!context.isAuth) {
     throw new Error('Unauthorized');
   }
   const user = await context.client.user.findUnique({
     where: {
-      id: context.authData.userId,
+      id: context.userId,
     },
     include: {
       projects: true,
@@ -55,9 +42,9 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   }
 
   const isAuthorized =
-    context.authData.userId === project.creatorId
+    context.userId === project.creatorId
       ? true
-      : user.projects.some((p:InterfaceProject) => p.id === project.id)
+      : user.projects.some((p:Project) => p.id === project.id)
         ? true
         : false;
   if (!isAuthorized) {

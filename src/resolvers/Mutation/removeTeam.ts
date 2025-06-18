@@ -20,11 +20,11 @@ export const removeTeam: MutationResolvers['removeTeam'] = async (
       throw new Error(`No Team Found with id: ${args.teamId}`);
     }
 
-    if (team.creatorId !== context.authData.userId) {
+    if (team.creatorId !== context.userId) {
       throw new Error('You are not the creator of this team');
     }
 
-    await context.client.$transaction(async (prisma:PrismaClientType) => {
+    await context.client.$transaction(async (prisma) => {
       await prisma.userTeam.deleteMany({
         where: {
           teamId: args.teamId,

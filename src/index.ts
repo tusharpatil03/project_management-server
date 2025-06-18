@@ -10,12 +10,11 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { client, PrismaClientType } from './db';
+import { client, MyContext } from './db';
 import 'dotenv/config';
-import { InterfaceAuthData, isAuth } from './middlewares/isAuth';
+import { isAuth } from './middlewares/isAuth';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';
 import { roleDirectiveTransformer } from './directives/directiveTransformers/roleDirectiveTransformer';
-import { Request, Response } from 'express';
 const httpServer = http.createServer(app);
 
 let schema = makeExecutableSchema({
@@ -25,6 +24,7 @@ let schema = makeExecutableSchema({
 
 schema = authDirectiveTransformer(schema, 'auth');
 schema = roleDirectiveTransformer(schema, 'role');
+
 
 const server = new ApolloServer({
   schema,
@@ -48,31 +48,19 @@ const server = new ApolloServer({
 });
 
 let serverHost = 'localhost';
-interface MyContext {
-  authData: InterfaceAuthData,
-  client: PrismaClientType,
-  req: Request,
-  res: Response,
-  apiRootUrl: string
-}
 
 async function startServer() {
   await server.start();
   app.use(
     '/graphql',
     expressMiddleware(server, {
-      context: async ({ req, res }): Promise<MyContext> => {
-        serverHost = req.get('host') || 'localhost';
-        return {
-          authData: await isAuth(req, client),
-          client,
-          req,
-          res,
-          apiRootUrl: `${req.protocol}://${serverHost}/`,
-        };
-      },
+      context: async ({ req }): Promise<MyContext> => ({
+        ...isAuth(req),
+        client
+      }),
     })
   );
+
 
   const PORT = parseInt(SEVER_PORT || '4000', 10);
   if (Number.isNaN(PORT) || PORT < 0 || PORT > 65535) {

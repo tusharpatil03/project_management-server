@@ -31,10 +31,10 @@ export const createTask: MutationResolvers['createTask'] = async (
     : TaskStatus.TODO;
 
   try {
-    return await context.client.$transaction(async (prisma:PrismaClientType) => {
+    return await context.client.$transaction(async (prisma) => {
       const creator = await prisma.user.findUnique({
         where: {
-          id: context.authData.userId,
+          id: context.userId,
         },
       });
 
@@ -67,7 +67,7 @@ export const createTask: MutationResolvers['createTask'] = async (
               connect: { id: input.assigneeId },
             },
           }),
-          creatorId: context.authData.userId,
+          creatorId: context.userId,
           project: {
             connect: {
               id: input.projectId,

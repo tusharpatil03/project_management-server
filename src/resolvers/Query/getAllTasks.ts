@@ -8,7 +8,7 @@ export const getAllTasks: QueryResolvers['getAllTasks'] = async (
   context
 ) => {
 
-  const user = await getUserWithTeams(context.authData.userId, context.client)
+  const user = await getUserWithTeams(context.userId, context.client)
 
   if (!user) {
     throw new Error('User not found');

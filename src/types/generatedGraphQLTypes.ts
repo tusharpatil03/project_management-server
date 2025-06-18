@@ -1,4 +1,5 @@
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { MyContext } from '../db';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -50,6 +51,7 @@ export type Auth = {
 export type AuthData = {
   __typename?: 'AuthData';
   accessToken: Scalars['String']['output'];
+  refreshToken: Scalars['String']['output'];
   user: User;
   userProfile: UserProfile;
 };
@@ -129,6 +131,7 @@ export type Mutation = {
   removeTask?: Maybe<ResponseMessage>;
   removeTeam?: Maybe<ResponseMessage>;
   removeTeamMember: Team;
+  revokeAccessToken: ExtendSession;
   signup: AuthData;
   updateTaskStatus: ResponseMessage;
 };
@@ -201,6 +204,11 @@ export type MutationRemoveTeamArgs = {
 export type MutationRemoveTeamMemberArgs = {
   memberId: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
+};
+
+
+export type MutationRevokeAccessTokenArgs = {
+  refreshToken?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -619,15 +627,15 @@ export type ResolversParentTypes = {
 
 export type AuthDirectiveArgs = { };
 
-export type AuthDirectiveResolver<Result, Parent, ContextType = any, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type AuthDirectiveResolver<Result, Parent, ContextType = MyContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type RoleDirectiveArgs = {
   requires?: Maybe<Role>;
 };
 
-export type RoleDirectiveResolver<Result, Parent, ContextType = any, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type RoleDirectiveResolver<Result, Parent, ContextType = MyContext, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type AuthResolvers<ContextType = any, ParentType extends ResolversParentTypes['Auth'] = ResolversParentTypes['Auth']> = {
+export type AuthResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Auth'] = ResolversParentTypes['Auth']> = {
   accessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   authData?: Resolver<Maybe<ResolversTypes['AuthData']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -647,8 +655,9 @@ export type AuthResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type AuthDataResolvers<ContextType = any, ParentType extends ResolversParentTypes['AuthData'] = ResolversParentTypes['AuthData']> = {
+export type AuthDataResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthData'] = ResolversParentTypes['AuthData']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   userProfile?: Resolver<ResolversTypes['UserProfile'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -666,18 +675,18 @@ export interface EmailAddressScalarConfig extends GraphQLScalarTypeConfig<Resolv
   name: 'EmailAddress';
 }
 
-export type ErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
+export type ErrorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Error'] = ResolversParentTypes['Error']> = {
   __resolveType: TypeResolveFn<'UnauthenticatedError' | 'UnauthorizedError', ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
 };
 
-export type ExtendSessionResolvers<ContextType = any, ParentType extends ResolversParentTypes['ExtendSession'] = ResolversParentTypes['ExtendSession']> = {
+export type ExtendSessionResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ExtendSession'] = ResolversParentTypes['ExtendSession']> = {
   accessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   refreshToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type FieldErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['FieldError'] = ResolversParentTypes['FieldError']> = {
+export type FieldErrorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['FieldError'] = ResolversParentTypes['FieldError']> = {
   __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   path?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
@@ -687,7 +696,7 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Json';
 }
 
-export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'memberId' | 'role' | 'teamId'>>;
   assineTask?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAssineTaskArgs, 'input'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
@@ -702,6 +711,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   removeTask?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTaskArgs, 'projectId' | 'taskId'>>;
   removeTeam?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTeamArgs, 'teamId'>>;
   removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'memberId' | 'teamId'>>;
+  revokeAccessToken?: Resolver<ResolversTypes['ExtendSession'], ParentType, ContextType, Partial<MutationRevokeAccessTokenArgs>>;
   signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'projectId' | 'status' | 'taskId'>>;
 };
@@ -710,7 +720,7 @@ export interface PasswordScalarConfig extends GraphQLScalarTypeConfig<ResolversT
   name: 'Password';
 }
 
-export type ProjectResolvers<ContextType = any, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
+export type ProjectResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Project'] = ResolversParentTypes['Project']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -723,7 +733,7 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ProjectTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['ProjectTeam'] = ResolversParentTypes['ProjectTeam']> = {
+export type ProjectTeamResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ProjectTeam'] = ResolversParentTypes['ProjectTeam']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   joinedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
@@ -733,7 +743,7 @@ export type ProjectTeamResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllSprints?: Resolver<Array<Maybe<ResolversTypes['Sprint']>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
   getAllTasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType, RequireFields<QueryGetAllTasksArgs, 'projectId'>>;
@@ -746,14 +756,14 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   healthCheck?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
 };
 
-export type ResponseMessageResolvers<ContextType = any, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
+export type ResponseMessageResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
   message?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   success?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SocialResolvers<ContextType = any, ParentType extends ResolversParentTypes['Social'] = ResolversParentTypes['Social']> = {
+export type SocialResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Social'] = ResolversParentTypes['Social']> = {
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   facebook?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   github?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -764,7 +774,7 @@ export type SocialResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type SprintResolvers<ContextType = any, ParentType extends ResolversParentTypes['Sprint'] = ResolversParentTypes['Sprint']> = {
+export type SprintResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Sprint'] = ResolversParentTypes['Sprint']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -780,7 +790,7 @@ export type SprintResolvers<ContextType = any, ParentType extends ResolversParen
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskResolvers<ContextType = any, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
+export type TaskResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
   assignee?: Resolver<Maybe<ResolversTypes['TaskAssignee']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['TaskCreator']>, ParentType, ContextType>;
@@ -795,7 +805,7 @@ export type TaskResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskAssigneeResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskAssignee'] = ResolversParentTypes['TaskAssignee']> = {
+export type TaskAssigneeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['TaskAssignee'] = ResolversParentTypes['TaskAssignee']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -808,7 +818,7 @@ export type TaskAssigneeResolvers<ContextType = any, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TaskCreatorResolvers<ContextType = any, ParentType extends ResolversParentTypes['TaskCreator'] = ResolversParentTypes['TaskCreator']> = {
+export type TaskCreatorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['TaskCreator'] = ResolversParentTypes['TaskCreator']> = {
   email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -816,7 +826,7 @@ export type TaskCreatorResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type TeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
+export type TeamResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Team'] = ResolversParentTypes['Team']> = {
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -827,17 +837,17 @@ export type TeamResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UnauthenticatedErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['UnauthenticatedError'] = ResolversParentTypes['UnauthenticatedError']> = {
+export type UnauthenticatedErrorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UnauthenticatedError'] = ResolversParentTypes['UnauthenticatedError']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UnauthorizedErrorResolvers<ContextType = any, ParentType extends ResolversParentTypes['UnauthorizedError'] = ResolversParentTypes['UnauthorizedError']> = {
+export type UnauthorizedErrorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UnauthorizedError'] = ResolversParentTypes['UnauthorizedError']> = {
   message?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   assignedTasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
@@ -860,7 +870,7 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserProfileResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserProfile'] = ResolversParentTypes['UserProfile']> = {
+export type UserProfileResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UserProfile'] = ResolversParentTypes['UserProfile']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -874,7 +884,7 @@ export type UserProfileResolvers<ContextType = any, ParentType extends Resolvers
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type UserTeamResolvers<ContextType = any, ParentType extends ResolversParentTypes['UserTeam'] = ResolversParentTypes['UserTeam']> = {
+export type UserTeamResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['UserTeam'] = ResolversParentTypes['UserTeam']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   joinedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['MemberRole']>, ParentType, ContextType>;
@@ -885,7 +895,7 @@ export type UserTeamResolvers<ContextType = any, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = MyContext> = {
   Auth?: AuthResolvers<ContextType>;
   AuthData?: AuthDataResolvers<ContextType>;
   Date?: GraphQLScalarType;
@@ -914,7 +924,7 @@ export type Resolvers<ContextType = any> = {
   UserTeam?: UserTeamResolvers<ContextType>;
 };
 
-export type DirectiveResolvers<ContextType = any> = {
+export type DirectiveResolvers<ContextType = MyContext> = {
   auth?: AuthDirectiveResolver<any, any, ContextType>;
   role?: RoleDirectiveResolver<any, any, ContextType>;
 };

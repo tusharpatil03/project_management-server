@@ -6,6 +6,7 @@ export const types = gql`
     user: User!
     userProfile: UserProfile!
     accessToken: String!
+    refreshToken: String!
   }
 
   type ExtendSession {

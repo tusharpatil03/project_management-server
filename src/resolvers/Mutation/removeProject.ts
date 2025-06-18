@@ -22,14 +22,14 @@ export const removeProject: MutationResolvers['removeProject'] = async (
       throw new Error('Project not found');
     }
 
-    if (project.creatorId !== context.authData.userId) {
+    if (project.creatorId !== context.userId) {
       throw new UnauthorizedError(
         'You are not authorized to delete this project',
         '403'
       );
     }
 
-    await context.client.$transaction(async (prisma:PrismaClientType) => {
+    await context.client.$transaction(async (prisma) => {
       // Delete tasks associated with the project
       await prisma.task.deleteMany({
         where: {

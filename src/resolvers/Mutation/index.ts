@@ -15,6 +15,7 @@ import { removeSprint } from './removeSprint';
 import { removeAssineeOfTask } from './removeAssigneeOfTask';
 import { addTeamMember } from './addTeamMember';
 import { removeTeamMember } from './removeTeamMember';
+import { revokeAccessToken } from './revokeAccessToken';
 
 export const Mutation: MutationResolvers = {
   signup,
@@ -33,4 +34,6 @@ export const Mutation: MutationResolvers = {
   removeAssineeOfTask,
   addTeamMember,
   removeTeamMember,
+
+  revokeAccessToken,
 };

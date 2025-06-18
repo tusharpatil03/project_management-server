@@ -20,7 +20,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
     throw new Error('Project Does not Exist');
   }
 
-  const sprintId = project.sprints.some((s:InterfaceSprint) => s.id == args.sprintId);
+  const sprintId = project.sprints.some((s) => s.id == args.sprintId);
 
   if (!sprintId) {
     throw new Error('Sprint is not part of this Project');
@@ -46,8 +46,8 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   }
 
   const isAuthorized =
-    context.authData.userId === sprint.creatorId ||
-    context.authData.userId === project.creatorId;
+    context.userId === sprint.creatorId ||
+    context.userId === project.creatorId;
 
   if (!isAuthorized) {
     throw new UnauthorizedError(
@@ -57,7 +57,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   }
 
   try {
-    await context.client.$transaction(async (prisma: PrismaClientType) => {
+    await context.client.$transaction(async (prisma) => {
       const assigneeTaskMap: Record<string, { id: string }[]> = {};
 
       for (const task of sprint.tasks) {
@@ -85,7 +85,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
         await prisma.task.deleteMany({
           where: {
             id: {
-              in: sprint.tasks.map((t: InterfaceTask) => t.id),
+              in: sprint.tasks.map((t) => t.id),
             },
           },
         });

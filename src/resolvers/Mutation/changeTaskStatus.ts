@@ -1,8 +1,6 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceUserTeam } from './createTeam';
-import { Team } from './assignTask';
-import { PrismaClientType } from '../../db';
+import { UserTeam } from '@prisma/client';
 export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
   _,
   args,
@@ -24,7 +22,7 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
               select: {
                 users: {
                   where: {
-                    id: context.authData.userId,
+                    id: context.userId,
                   },
 
                 },
@@ -35,15 +33,15 @@ export const updateTaskStatus: MutationResolvers['updateTaskStatus'] = async (
       },
     });
 
-    const isMember = project?.teams.some((team: Team) => {
-      team.team.users.some((user: InterfaceUserTeam) => user.id === context.authData.userId);
+    const isMember = project?.teams.some((team) => {
+      team.team.users.some((user:UserTeam) => user.id === context.userId);
     });
 
     if (!isMember) {
       throw new Error('User is not part of this project');
     }
 
-    await context.client.$transaction(async (t: PrismaClientType) => {
+    await context.client.$transaction(async (t) => {
       t.task.update({
         where: {
           id: args.taskId,

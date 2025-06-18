@@ -44,9 +44,11 @@ model UserProfile {
   social   Social? @relation(fields: [socialId], references: [id])
   socialId String? @unique @map("social_id")
 
+  token     String? @unique
+  tokenVersion Int @default(0) @map("token_version")
+
   user User @relation(fields: [userId], references: [id])
   userId String @unique @map("user_id")
-
   @@map("userprofile")
 }
 

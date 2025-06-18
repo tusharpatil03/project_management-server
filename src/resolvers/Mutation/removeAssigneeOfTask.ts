@@ -5,11 +5,11 @@ import { PrismaClientType } from '../../db';
 export const removeAssineeOfTask: MutationResolvers['removeAssineeOfTask'] =
   async (_, args, context) => {
     try {
-      return await context.client.$transaction(async (prisma:PrismaClientType) => {
+      return await context.client.$transaction(async (prisma) => {
         const task = await prisma.task.findFirst({
           where: {
             id: args.taskId,
-            creatorId: context.authData.userId,
+            creatorId: context.userId,
           },
         });
 
@@ -17,7 +17,7 @@ export const removeAssineeOfTask: MutationResolvers['removeAssineeOfTask'] =
           throw new Error('Task not Found');
         }
 
-        if (task.creatorId !== context.authData.userId) {
+        if (task.creatorId !== context.userId) {
           throw new UnauthorizedError(
             'You are not creator of this task',
             '403'

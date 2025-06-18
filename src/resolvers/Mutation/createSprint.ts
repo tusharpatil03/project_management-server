@@ -16,10 +16,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
 ) => {
   const input = args.input;
 
-  // Validate user authentication
-  if (!context.authData?.userId) {
-    throw new Error('Unauthorized: User must be logged in to create a sprint.');
-  }
+  const creatorId:string = context.userId;
 
   try {
     const sprint = await context.client.sprint.create({
@@ -27,7 +24,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
         title: input.title,
         description: input.description,
         dueDate: input.dueDate,
-        creatorId: context.authData.userId,
+        creatorId: context.userId,
         project: {
           connect: {
             id: input.projectId,
@@ -40,13 +37,23 @@ export const createSprint: MutationResolvers['createSprint'] = async (
       },
     });
 
+    type TaskInput = {
+      title: string,
+      description: string | undefined | null,
+      dueDate: string,
+      creatorId: string,
+      projectId: string,
+      sprintId: string,
+      assigneeId: string | null | undefined
+    }
+
     // Prepare tasks with the created sprint ID
     if (input.tasks && input.tasks.length > 0) {
-      const tasksInput = input.tasks.map((task) => ({
+      const tasksInput:TaskInput[] = input.tasks.map((task):TaskInput => ({
         title: task.title,
         description: task.description,
         dueDate: task.dueDate,
-        creatorId: context.authData.userId,
+        creatorId: creatorId,
         projectId: input.projectId,
         sprintId: sprint.id,
         assigneeId: task.assigneeId,

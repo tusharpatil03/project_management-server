@@ -5,9 +5,6 @@ export const getUserById: QueryResolvers['getUserById'] = async (
   args,
   context
 ) => {
-  if (context.authData.role !== "Admin") {
-    throw new Error("Unauthorized")
-  }
   const user = await context.client.user.findUnique({
     where: {
       id: args.userId,

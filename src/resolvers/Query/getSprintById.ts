@@ -1,3 +1,4 @@
+import { Team, UserTeam } from '@prisma/client';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import { getUserWithTeams, isUserPartOfProject } from './getAllSprint';
 
@@ -47,7 +48,7 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
     throw new Error('Sprint not found');
   }
 
-  const user = await getUserWithTeams(context.authData.userId, context.client)
+  const user = await getUserWithTeams(context.userId, context.client)
   if(!user){
     throw new Error("User Not Found")
   }

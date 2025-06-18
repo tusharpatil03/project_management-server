@@ -56,7 +56,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
   args,
   context
 ) => {
-  const userId = context.authData.userId;
+  const userId = context.userId;
 
   const user = await getUserWithTeams(userId, context.client);
   const userTeamIds = user.teams.map((team: { teamId: string }) => team.teamId);

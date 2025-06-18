@@ -1,12 +1,11 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import _, { includes } from 'lodash';
 
 export const getAllProjects:QueryResolvers['getAllProjects'] = async (
   _,
   args,
   context
 ) => {
-  const userId = context.authData.userId;
+  const userId = context.userId;
 
   const userExists = await context.client.user.findUnique({
     where: { id: userId },

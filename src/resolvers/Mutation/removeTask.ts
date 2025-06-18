@@ -10,7 +10,7 @@ export const removeTask: MutationResolvers['removeTask'] = async (
   const { taskId, projectId } = args;
 
   try {
-    return await context.client.$transaction(async (prisma: PrismaClientType) => {
+    return await context.client.$transaction(async (prisma) => {
       // Fetch the task with its project
       const task = await prisma.task.findUnique({
         where: { id: taskId },
@@ -32,8 +32,8 @@ export const removeTask: MutationResolvers['removeTask'] = async (
 
       // Authorization checks
       if (
-        task.creatorId !== context.authData.userId &&
-        project.creatorId !== context.authData.userId
+        task.creatorId !== context.userId &&
+        project.creatorId !== context.userId
       ) {
         throw new UnauthorizedError(
           'You are not authorized to remove this task',

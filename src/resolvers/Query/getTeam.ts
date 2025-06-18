@@ -1,5 +1,4 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceUser } from '../Mutation/login';
 
 export const getTeamById: QueryResolvers['getTeamById'] = async (
   _,
@@ -32,11 +31,11 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
     throw new Error("Team Not Found")
   }
 
-  if (context.authData.userId !== team.id) {
+  if (context.userId !== team.id) {
     throw new Error("You are Not Authorized Person")
   }
 
-  const members = team.users.map((user: { user: InterfaceUser }) => {
+  const members = team.users.map((user) => {
     return {
       id: user.user.id,
       username: user.user.username,

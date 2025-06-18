@@ -19,7 +19,7 @@ function authDirectiveTransformer(
 
         fieldConfig.resolve = (root, args, context, info): string => {
          //check user is authenticated
-          if (context.authData.expired || !context.authData.isAuth) {
+          if (context.expired || !context.isAuth) {
             throw String(new Error('UnAuthorized'));
           }
 

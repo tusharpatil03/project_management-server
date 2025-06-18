@@ -1,49 +1,7 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
-import { createAccessToken } from '../../utility/auth';
+import { createAccessToken, createRefreshToken, InterfaceCreateRefreshToken } from '../../utility/auth';
 
-export interface InterfaceUser {
-  id: string;
-  email: string;
-  username: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Project {
-  id: string;
-  name: string;
-  description: string;
-  goal: string;
-  plan: string;
-  status: string;
-  tasks: [] | null;
-  creatorId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  creator: InterfaceUser;
-}
-
-export interface InterfaceUserProfile {
-  id: string;
-  firstName: string;
-  lastName: string;
-  avatar: string | null;
-  phone: string | null;
-  gender: string | null;
-  social: {
-    id: string;
-    github: string;
-    facebook: string;
-    twitter: string;
-    linkedin: string;
-    createdAt: Date;
-    updatedAt: Date;
-  } | null;
-  createdAt: Date;
-  updatedAt: Date;
-  user: InterfaceUser;
-}
 
 export const login: MutationResolvers['login'] = async (_, args, context) => {
   const user = await context.client.user.findUnique({
@@ -53,14 +11,17 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
         select: {
           firstName: true,
           lastName: true,
-        },
+          token: true,
+          tokenVersion: true,
+        }
       },
-    },
+    }
   });
 
   if (!user) {
     throw new Error('User does not exist');
   }
+
 
   const userProfile = await context.client.userProfile.findUnique({
     where: {
@@ -89,9 +50,33 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   const accessToken = createAccessToken(accessTokenPayload);
 
+ const refreshTokenPayload: InterfaceCreateRefreshToken = {
+    userId: user.id,
+    firstName: userProfile.firstName,
+    lastName: userProfile.lastName,
+    email: user.email,
+    tokenVersion: userProfile.tokenVersion,
+  }
+
+  const refreshToken = createRefreshToken(refreshTokenPayload);
+
+  if (!refreshToken) {
+    throw new Error('Failed to create refresh token');
+  }
+
+  // Update the user's profile with the new refresh token
+  await context.client.userProfile.update({
+    where: { id: userProfile.id },
+    data: {
+      token: refreshToken,
+      tokenVersion: userProfile.tokenVersion + 1,
+    },
+  });
+
   return {
     user,
     userProfile,
     accessToken,
+    refreshToken
   };
 };
