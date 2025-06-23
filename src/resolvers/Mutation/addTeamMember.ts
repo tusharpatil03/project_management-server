@@ -1,5 +1,46 @@
-import { MemberRole } from '@prisma/client';
+import { MemberRole, Prisma } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { client } from '../../db';
+
+//select team scalors method with validator returns defined feild object
+export const TeamAdminSelect = Prisma.validator(
+  client,
+  "userTeam",
+  "findFirst",
+  "select"
+)({
+  id: true,
+  role: true
+});
+
+//a function that take filds as input and validate it with UserTeamCreateInput returns a object that have defined fields
+//example use in userteam create query defined in addTeamMember resolver, here i passed a function call with parameters that willl return data
+const createUserTeam = (
+  userId: string,
+  teamId: string,
+  role: MemberRole
+) => {
+  return Prisma.validator<Prisma.UserTeamCreateInput>()({
+    role,
+    user: {
+      connect: { id: userId },
+    },
+    team: {
+      connect: { id: teamId },
+    }
+  })
+}
+
+//a more cleaner appraoch to creating types , provides flexibility
+const userWithTeams = Prisma.validator<Prisma.UserDefaultArgs>()({
+  include: {
+    teams: true
+  }
+})
+type UserWithTeams = Prisma.UserGetPayload<typeof userWithTeams>
+
+// type ThenArg<T> = T extends PromiseLike<infer U> ? U : T
+// type UserWithTeams = ThenArg<ReturnType<typeof >>
 
 export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   _,
@@ -7,15 +48,13 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   context
 ) => {
   try {
+
     const AdminUserTeam = await context.client.userTeam.findFirst({
       where: {
         teamId: args.teamId,
         userId: context.userId,
       },
-      select: {
-        id: true,
-        role: true,
-      },
+      select: TeamAdminSelect
     });
     if (AdminUserTeam?.role !== MemberRole.Admin) {
       throw new Error('Unauthorized access');
@@ -51,11 +90,9 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     }
 
     const userTeam = await context.client.userTeam.create({
-      data: {
-        userId: args.memberId,
-        teamId: args.teamId,
-        role: args.role as MemberRole,
-      },
+      data: createUserTeam(
+        args.memberId, args.teamId, args.role as MemberRole
+      )
     });
 
     await context.client.user.update({

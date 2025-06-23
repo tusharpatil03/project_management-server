@@ -39,6 +39,6 @@ export const mutations = gql`
 
     removeTeamMember(memberId: ID!, teamId: ID!): Team! @auth
 
-    revokeAccessToken(refreshToken: String): ExtendSession!
+    refreshToken(refreshToken: String): ExtendSession!
   }
 `;

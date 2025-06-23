@@ -1,8 +1,6 @@
 export interface InterfaceError {
   message: string;
   code: string | null;
-  param: string | null;
-  metadata?: Record<string, string>;
 }
 
 export class ApplicationError extends Error {

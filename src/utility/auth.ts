@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
 import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
 import 'dotenv/config'
+import { client } from '../db';
 
 export interface InterfaceCreateAccessToken {
   userId: string;
@@ -20,7 +21,7 @@ export const createAccessToken = (
     },
     ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: 7 * 24 * 60 * 60 * 1000,
+      expiresIn: 24 * 60 * 60,
     }
   );
 };
@@ -34,7 +35,7 @@ export interface InterfaceCreateRefreshToken {
 }
 
 export const createRefreshToken = (
-  payload:InterfaceCreateRefreshToken
+  payload: InterfaceCreateRefreshToken
 ): string => {
   return jwt.sign(
     {
@@ -50,6 +51,19 @@ export const createRefreshToken = (
     },
   )
 };
+
+export const revokeRefreshToken = async (userId: string) => {
+  const userProfiel = await client.userProfile.update({
+    where: {
+      userId: userId
+    },
+    data: {
+      token: "",
+    }
+  });
+
+
+}
 
 
 const EMAIL_USER = process.env.EMAIL_USER;

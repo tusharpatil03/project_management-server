@@ -68,6 +68,7 @@ export const types = gql`
     createdAt: DateTime
     updatedAt: DateTime
     tasks: [Task]
+    sprints: [Sprint]
     status: ProjectStatus
     creatorId: String!
   }
@@ -111,10 +112,10 @@ export const types = gql`
     assignee: TaskAssignee
     projectId: String
     sprintId: String
-    createdAt: Date
-    updatedAt: Date
+    createdAt: DateTime
+    updatedAt: DateTime
     status: TaskStatus
-    dueDate: Date!
+    dueDate: DateTime!
   }
 
   type TaskCreator {

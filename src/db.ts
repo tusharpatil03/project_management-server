@@ -5,6 +5,6 @@ import { InterfaceAuthData } from './middlewares/isAuth';
 export const client = new PrismaClient();
 export type PrismaClientType = PrismaClient; 
 
-export interface MyContext extends InterfaceAuthData, BaseContext {
+export interface MyContext extends InterfaceAuthData, BaseContext{
   client: PrismaClientType
-}
+} 

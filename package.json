@@ -17,7 +17,6 @@
     "@graphql-tools/schema": "^10.0.6",
     "@graphql-tools/utils": "^10.3.2",
     "@parcel/watcher": "^2.4.1",
-    "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
     "concurrently": "^9.1.2",
     "cookie-parser": "^1.4.7",
@@ -35,8 +34,9 @@
     "lodash": "^4.17.21",
     "nanoid": "^5.1.5",
     "nodemailer": "^7.0.3",
-    "prisma": "^6.5.0",
-    "regex": "^6.0.1"
+    "regex": "^6.0.1",
+    "@prisma/client": "^6.2.1",
+    "prisma": "^6.2.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.7",

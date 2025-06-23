@@ -32,10 +32,17 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
       id: args.projectId,
     },
     include: {
-      creator: true,
-      tasks: true,
-      sprints: true,
-    },
+      tasks: {
+        include: {
+          assignee: true,
+        }
+      },
+      sprints: {
+        include: {
+          tasks: true
+        }
+      }
+    }
   });
   if (!project) {
     throw new Error('Project not found');
@@ -44,7 +51,7 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   const isAuthorized =
     context.userId === project.creatorId
       ? true
-      : user.projects.some((p:Project) => p.id === project.id)
+      : user.projects.some((p: Project) => p.id === project.id)
         ? true
         : false;
   if (!isAuthorized) {

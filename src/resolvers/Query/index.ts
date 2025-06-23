@@ -7,6 +7,7 @@ import { getTaskById } from './getTask';
 import { getTeamById } from './getTeam';
 import { getUserById } from './getUser';
 import { healthCheck } from './healthCheck';
+import { getRecentProject } from './getRecentProject';
 
 export const Query = {
   healthCheck,
@@ -18,4 +19,5 @@ export const Query = {
   getAllTasks,
   getTeamById,
   getAllProjects,
+  getRecentProject,
 };

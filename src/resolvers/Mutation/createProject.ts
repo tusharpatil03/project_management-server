@@ -35,8 +35,12 @@ export const createProject: MutationResolvers['createProject'] = async (
       });
 
     });
-  } catch {
-    throw new Error('Error creating project');
+  } catch (e) {
+    console.log("project:", e)
+    if (e instanceof Error) {
+      throw new Error(`${e.message}`);
+    }
+    throw new Error("Error in creating project");
   }
 
   const project = await context.client.project.findUnique({
@@ -50,6 +54,8 @@ export const createProject: MutationResolvers['createProject'] = async (
       key: true,
     },
   });
+
+
 
   if (!project) {
     throw new Error('Error creating project');

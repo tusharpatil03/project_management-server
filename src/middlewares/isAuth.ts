@@ -1,7 +1,6 @@
 import type { Request } from 'express';
 import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../globals';
-import { PrismaClientType } from '../db';
 
 
 // This interface represents the type of data object returned by isAuth function.

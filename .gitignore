@@ -3,3 +3,4 @@
 .env
 *notes.md
 /prisma/migrations
+/src/generated/prisma

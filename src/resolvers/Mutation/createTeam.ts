@@ -1,4 +1,4 @@
-import { MemberRole } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 
@@ -7,6 +7,7 @@ export const createTeam: MutationResolvers['createTeam'] = async (
   args,
   context
 ) => {
+
   const team = await context.client.team.create({
     data: {
       name: args.input.name,

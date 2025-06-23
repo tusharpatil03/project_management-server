@@ -12,6 +12,7 @@ export const queries = gql`
     getAllProjects: [Project] @auth
     getAllTasks(projectId: ID!): [Task]! @auth
     getAllSprints(projectId: ID!): [Sprint]! @auth
-    getAllUserTeams(userId: ID!): [Team]!
+    getAllUserTeams: [Team]! @auth
+    getRecentProject: Project @auth
   }
 `;

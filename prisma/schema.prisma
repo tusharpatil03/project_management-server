@@ -14,41 +14,37 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  username  String   @unique
-  password  String
-  salt      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  // Relations
+  id            String       @id @default(cuid())
+  email         String       @unique
+  username      String       @unique
+  password      String
+  salt          String
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
   projects      Project[]
+  assignedTasks Task[]       @relation("AssignedTasks")
   teams         UserTeam[]
-  assignedTasks Task[]      @relation("AssignedTasks")
   profile       UserProfile?
 
   @@map("users")
 }
 
 model UserProfile {
-  id        String   @id @default(cuid())
-  firstName String   @map("first_name")
-  lastName  String   @map("last_name")
-  avatar    String?
-  phone     String?
-  gender    Gender?
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  firstName    String   @map("first_name")
+  lastName     String   @map("last_name")
+  avatar       String?
+  phone        String?
+  gender       Gender?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  socialId     String?  @unique @map("social_id")
+  token        String?  @unique
+  tokenVersion Int      @default(0) @map("token_version")
+  userId       String   @unique @map("user_id")
+  social       Social?  @relation(fields: [socialId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
 
-  social   Social? @relation(fields: [socialId], references: [id])
-  socialId String? @unique @map("social_id")
-
-  token     String? @unique
-  tokenVersion Int @default(0) @map("token_version")
-
-  user User @relation(fields: [userId], references: [id])
-  userId String @unique @map("user_id")
   @@map("userprofile")
 }
 
@@ -58,14 +54,13 @@ model Project {
   key         String        @unique
   description String?
   creatorId   String        @map("creator_id")
-  creator     User          @relation(fields: [creatorId], references: [id])
   status      ProjectStatus @default(TODO)
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
-
-  teams   ProjectTeam[]
-  tasks   Task[]        @relation("ProjectTasks")
-  sprints Sprint[]
+  teams       ProjectTeam[]
+  creator     User          @relation(fields: [creatorId], references: [id])
+  sprints     Sprint[]
+  tasks       Task[]        @relation("ProjectTasks")
 
   @@map("projects")
 }
@@ -74,10 +69,10 @@ model Team {
   id        String        @id @default(cuid())
   name      String?
   creatorId String        @map("creator_id")
-  users     UserTeam[]
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
   projects  ProjectTeam[]
+  users     UserTeam[]
 
   @@map("teams")
 }
@@ -88,9 +83,8 @@ model UserTeam {
   teamId   String
   role     MemberRole @default(Viewer)
   joinedAt DateTime?  @default(now())
-
-  user User @relation(fields: [userId], references: [id])
-  team Team @relation(fields: [teamId], references: [id])
+  team     Team       @relation(fields: [teamId], references: [id])
+  user     User       @relation(fields: [userId], references: [id])
 
   @@map("user_teams")
 }
@@ -99,9 +93,9 @@ model ProjectTeam {
   id        String   @id @default(cuid())
   projectId String
   teamId    String
+  joinedAt  DateTime @default(now())
   project   Project  @relation(fields: [projectId], references: [id])
   team      Team     @relation(fields: [teamId], references: [id])
-  joinedAt  DateTime @default(now())
 
   @@map("project_teams")
 }
@@ -114,14 +108,13 @@ model Task {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   dueDate     DateTime   @map("due_date")
-
-  assigneeId String?
-  assignee   User?   @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  creatorId  String  @map("creator_id")
-  projectId  String  @map("project_id")
-  project    Project @relation("ProjectTasks", fields: [projectId], references: [id])
-  sprintId   String? @map("sprint_id")
-  sprint     Sprint? @relation(fields: [sprintId], references: [id])
+  assigneeId  String?
+  creatorId   String     @map("creator_id")
+  projectId   String     @map("project_id")
+  sprintId    String?    @map("sprint_id")
+  assignee    User?      @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  project     Project    @relation("ProjectTasks", fields: [projectId], references: [id])
+  sprint      Sprint?    @relation(fields: [sprintId], references: [id])
 
   @@map("tasks")
 }
@@ -134,11 +127,10 @@ model Sprint {
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   dueDate     DateTime?    @map("due_date")
-
-  creatorId String  @map("creator_id")
-  projectId String  @map("project_id")
-  project   Project @relation(fields: [projectId], references: [id])
-  tasks     Task[]
+  creatorId   String       @map("creator_id")
+  projectId   String       @map("project_id")
+  project     Project      @relation(fields: [projectId], references: [id])
+  tasks       Task[]
 
   @@map("sprints")
 }
@@ -151,7 +143,7 @@ model Social {
   linkedin    String?      @unique
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  userProfile UserProfile? @relation
+  userProfile UserProfile?
 }
 
 enum TaskStatus {

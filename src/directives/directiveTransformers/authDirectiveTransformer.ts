@@ -1,6 +1,7 @@
 import { MapperKind, getDirective, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver } from 'graphql';
 import type { GraphQLSchema } from 'graphql/type/schema';
+import { UnAuthenticatedError } from '../../libraries/errors/unAuthenticatedError';
 
 function authDirectiveTransformer(
   schema: GraphQLSchema,
@@ -20,7 +21,9 @@ function authDirectiveTransformer(
         fieldConfig.resolve = (root, args, context, info): string => {
          //check user is authenticated
           if (context.expired || !context.isAuth) {
-            throw String(new Error('UnAuthorized'));
+            throw new UnAuthenticatedError(
+              "UnauthenticatedError", "user.unauthenticated"
+            )
           }
 
           // Call the original resolver with the context

@@ -28,13 +28,19 @@ schema = roleDirectiveTransformer(schema, 'role');
 
 const server = new ApolloServer({
   schema,
-  formatError: (err) => {
-    console.error(err);
+  formatError: (
+    error: GraphQLFormattedError,
+  ): { message: string; status: number; data: string[] } => {
+    const message = error.message ?? "Something went wrong !";
 
+    const data: string[] = (error.extensions?.errors as string[]) ?? [];
+    const code: number = (error.extensions?.code as number) ?? 422;
+
+    console.error(message, error);
     return {
-      message: err.message,
-      code: err.extensions?.code || 'INTERNAL_SERVER_ERROR',
-      path: err.path,
+      message,
+      status: code,
+      data,
     };
   },
   validationRules: [depthLimit(6)],
@@ -56,8 +62,8 @@ async function startServer() {
     expressMiddleware(server, {
       context: async ({ req }): Promise<MyContext> => ({
         ...isAuth(req),
-        client
-      }),
+        client,
+      })
     })
   );
 

@@ -1,9 +1,10 @@
 import { REFRESH_TOKEN_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken"
-import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
+import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken, revokeRefreshToken } from "../../utility/auth";
 
-export const revokeAccessToken: MutationResolvers["revokeAccessToken"] = async (_, args, context) => {
+export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, context) => {
+    console.log("ENDPOINT HIT BY REACT CLIENT");
     const refreshToken = args.refreshToken;
 
     const decoded = jwt.verify(refreshToken as string, REFRESH_TOKEN_SECRET as string) as InterfaceCreateRefreshToken
@@ -25,6 +26,7 @@ export const revokeAccessToken: MutationResolvers["revokeAccessToken"] = async (
 
     const isValid = (user.profile.tokenVersion !== decoded.tokenVersion) && (user.profile.token !== refreshToken)
     if (isValid) {
+        await revokeRefreshToken(user.id);
         const error = new Error("Invalid Token");
         error.name = "TokenVersionMismatchError";
         throw error;
