@@ -7,4 +7,6 @@ export type PrismaClientType = PrismaClient;
 
 export interface MyContext extends InterfaceAuthData, BaseContext{
   client: PrismaClientType
-} 
+}
+
+export type TransactionClient = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0];

@@ -7,17 +7,17 @@ export const mutations = gql`
 
     createTeam(input: CreateTeamInput!): Team! @auth
 
-    createTask(input: CreateTaskInput!): Task! @auth
+    createIssue(input: CreateIssueInput!): Issue! @auth
 
     createSprint(input: CreateSprintInput!): Sprint! @auth
 
-    updateTaskStatus(
+    updateIssueStatus(
       projectId: ID!
-      taskId: ID!
-      status: TaskStatus!
+      issueId: ID!
+      status: IssueStatus!
     ): ResponseMessage! @auth
 
-    assineTask(input: AssignTaskInput!): ResponseMessage! @auth
+    assineIssue(input: AssignIssueInput!): ResponseMessage! @auth
 
     signup(input: SignupInput!): AuthData!
 
@@ -25,11 +25,11 @@ export const mutations = gql`
 
     removeProject(projectId: ID!): ResponseMessage @auth
 
-    removeTask(taskId: ID!, projectId: ID!): ResponseMessage @auth
+    removeIssue(issueId: ID!, projectId: ID!): ResponseMessage @auth
 
     removeSprint(sprintId: ID!, projectId: ID!): ResponseMessage @auth
 
-    removeAssineeOfTask(taskId: ID!): Task! @auth
+    removeAssineeOfIssue(issueId: ID!): Issue! @auth
 
     removeTeam(teamId: ID!): ResponseMessage @auth
 
@@ -40,5 +40,7 @@ export const mutations = gql`
     removeTeamMember(memberId: ID!, teamId: ID!): Team! @auth
 
     refreshToken(refreshToken: String): ExtendSession!
+
+    addIssueInSprint(input: addIssueInput): ResponseMessage @auth
   }
 `;

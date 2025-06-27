@@ -1,14 +1,15 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { MemberRole, Project, User} from '@prisma/client';
+import { IssueType, MemberRole, Project, User } from '@prisma/client';
+import { PrismaClientType, TransactionClient } from '../../db';
 
-export const assineTask: MutationResolvers['assineTask'] = async (
+export const assineIssue: MutationResolvers['assineIssue'] = async (
   _,
   args,
   context
 ) => {
   try {
-    const assignee:User  = await context.client.user.findUnique({
+    const assignee: User = await context.client.user.findUnique({
       where: { id: args.input.assigneeId },
       select: {
         id: true,
@@ -19,17 +20,19 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       throw new Error(`Assignee Not Found with id: ${args.input.assigneeId}`);
     }
 
+
     const project = await context.client.project.findUnique({
       where: { id: args.input.projectId },
       include: {
-        tasks: {
+        issues: {
           where: {
-            id: args.input.taskId,
+            id: args.input.issueId,
           },
           select: {
             id: true,
             assigneeId: true,
             projectId: true,
+            type: true,
           },
         },
         teams: {
@@ -52,30 +55,37 @@ export const assineTask: MutationResolvers['assineTask'] = async (
           },
         },
       },
-    }) 
+    });
+
 
     if (!project) {
       throw new Error(`Project Not Found with id: ${args.input.projectId}`);
     }
-    if (project.tasks.length === 0) {
-      throw new Error(`Task Not Found with id: ${args.input.taskId}`);
+    if (project.issues.length === 0) {
+      throw new Error(`Issue Not Found with id: ${args.input.issueId}`);
     }
-    const task = project.tasks[0];
-    if (!task) {
-      throw new Error("Project Has no Tasks")
+
+    const issue = project.issues[0];
+
+    if (!issue) {
+      throw new Error("Project Has no issues")
     }
-    if (task.assigneeId === args.input.assigneeId) {
-      throw new Error('Task is already assigned to this user');
+    
+    if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
+      throw new Error("Issue types Epic and Story can not be Assigned")
     }
-    if (task.projectId !== args.input.projectId) {
-      throw new Error('Task does not belong to this project');
+    if (issue.assigneeId === args.input.assigneeId) {
+      throw new Error('issue is already assigned to this user');
+    }
+    if (issue.projectId !== args.input.projectId) {
+      throw new Error('issue does not belong to this project');
     }
 
     let role = null;
 
 
-    const isMember = project.teams.some((team) =>
-      team.team.users.some((user) => {
+    const isMember = project.teams.some((team: any) =>
+      team.team.users.some((user: any) => {
         if (user.userId === assignee.id) {
           role = user.role;
           return true;
@@ -90,10 +100,10 @@ export const assineTask: MutationResolvers['assineTask'] = async (
       throw new Error('Assignee is not a contributor of this project');
     }
 
-    await context.client.$transaction(async (prisma) => {
-      await prisma.task.update({
+    await context.client.$transaction(async (prisma: TransactionClient) => {
+      await prisma.issue.update({
         where: {
-          id: task.id,
+          id: issue.id,
         },
         data: {
           assignee: {
@@ -109,21 +119,21 @@ export const assineTask: MutationResolvers['assineTask'] = async (
           id: assignee.id,
         },
         data: {
-          assignedTasks: {
+          assignedIssues: {
             connect: {
-              id: task.id,
+              id: issue.id,
             },
           },
         },
       });
     });
   } catch (e) {
-    console.log('Task Assing Error: ', e);
-    throw new Error('Failed to assign Task');
+    console.log('Issue Assing Error: ', e);
+    throw new Error('Failed to assign Issue');
   }
 
   return {
-    message: 'tasks assigned successfully',
+    message: 'Issue assigned successfully',
     success: true,
   };
 };

@@ -19,8 +19,9 @@ function authDirectiveTransformer(
         const { resolve = defaultFieldResolver } = fieldConfig;
 
         fieldConfig.resolve = (root, args, context, info): string => {
-         //check user is authenticated
+          //check user is authenticated
           if (context.expired || !context.isAuth) {
+            console.log("Context:", context.userId)
             throw new UnAuthenticatedError(
               "UnauthenticatedError", "user.unauthenticated"
             )

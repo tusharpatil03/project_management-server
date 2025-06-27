@@ -20,7 +20,7 @@ export const getAllProjects:QueryResolvers['getAllProjects'] = async (
   const projects = await context.client.project.findMany({
     where: { creatorId: userId },
     include: {
-      tasks: {
+      issues: {
         include: {
           assignee: {
             include: {
@@ -36,7 +36,7 @@ export const getAllProjects:QueryResolvers['getAllProjects'] = async (
       },
       sprints: {
         include: {
-          tasks: {
+          issues: {
             include: {
               assignee: true,
             },

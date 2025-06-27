@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { PrismaClientType } from '../../db';
+import { client, PrismaClientType } from '../../db';
 
 export const getUserWithTeams = async (userId: string, client: PrismaClientType) => {
   const user = await client.user.findUnique({
@@ -26,30 +26,6 @@ export const isUserPartOfProject = (
   return projectTeams.some((team) => userTeamIds.includes(team.teamId));
 };
 
-const getProjectWithSprints = async (projectId: string, client: PrismaClientType) => {
-  const project = await client.project.findUnique({
-    where: { id: projectId },
-    include: {
-      sprints: {
-        include: {
-          tasks: {
-            include: {
-              assignee: {
-                select: { id: true, email: true, username: true },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!project) {
-    throw new Error('Project not found');
-  }
-
-  return project;
-};
 
 export const getAllSprints: QueryResolvers['getAllSprints'] = async (
   _,
@@ -66,15 +42,56 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
     select: { teamId: true },
   });
 
-  const project = await getProjectWithSprints(args.projectId, context.client);
+  const project = await client.project.findUniqueOrThrow({
+    where: {
+      id: args.projectId
+    },
+    select: {
+      id: true,
+      creatorId: true,
+    }
+  })
 
-  if (!isUserPartOfProject(userTeamIds, projectTeams)) {
-    throw new Error("You Are Authorized person to view this project")
+  const sprints = await client.sprint.findMany({
+    where: {
+      projectId: project.id
+    },
+    select: {
+      id: true,
+      status: true,
+      title: true,
+      dueDate: true,
+      creatorId: true,
+      issues: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          type: true,
+          dueDate: true,
+          assignee: {
+            select: {
+              username: true,
+              email: true,
+              id: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (project.creatorId !== context.userId) {
+    if (!isUserPartOfProject(userTeamIds, projectTeams)) {
+      throw new Error("You Are Authorized person to view this project")
+    }
   }
 
-  if (!project.sprints || project.sprints.length === 0) {
+
+
+  if (!sprints || sprints.length === 0) {
     throw new Error('No sprints found for this project');
   }
 
-  return project.sprints;
+  return sprints;
 };

@@ -22,10 +22,10 @@ export type Scalars = {
   Password: { input: any; output: any; }
 };
 
-export type AssignTaskInput = {
+export type AssignIssueInput = {
   assigneeId: Scalars['ID']['input'];
+  issueId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
-  taskId: Scalars['ID']['input'];
 };
 
 export type Auth = {
@@ -56,6 +56,18 @@ export type AuthData = {
   userProfile: UserProfile;
 };
 
+export type CreateIssueInput = {
+  assigneeId?: InputMaybe<Scalars['ID']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  dueDate: Scalars['DateTime']['input'];
+  parentId?: InputMaybe<Scalars['ID']['input']>;
+  projectId: Scalars['ID']['input'];
+  sprintId?: InputMaybe<Scalars['ID']['input']>;
+  status?: InputMaybe<IssueStatus>;
+  title: Scalars['String']['input'];
+  type: IssueType;
+};
+
 export type CreateProjectInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   key: Scalars['String']['input'];
@@ -65,19 +77,9 @@ export type CreateProjectInput = {
 export type CreateSprintInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate: Scalars['DateTime']['input'];
+  issues?: InputMaybe<Array<InputMaybe<IssueInput>>>;
   projectId: Scalars['ID']['input'];
   status?: InputMaybe<SprintStatus>;
-  tasks?: InputMaybe<Array<CreateTaskInput>>;
-  title: Scalars['String']['input'];
-};
-
-export type CreateTaskInput = {
-  assigneeId?: InputMaybe<Scalars['ID']['input']>;
-  description?: InputMaybe<Scalars['String']['input']>;
-  dueDate: Scalars['DateTime']['input'];
-  projectId: Scalars['ID']['input'];
-  sprintId?: InputMaybe<Scalars['ID']['input']>;
-  status?: InputMaybe<TaskStatus>;
   title: Scalars['String']['input'];
 };
 
@@ -105,6 +107,62 @@ export type Gender =
   | 'Male'
   | 'Other';
 
+export type Issue = {
+  __typename?: 'Issue';
+  assignee?: Maybe<IssueAssignee>;
+  childrens?: Maybe<Array<Maybe<Issue>>>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  creator?: Maybe<IssueCreator>;
+  description?: Maybe<Scalars['String']['output']>;
+  dueDate: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  parent?: Maybe<Issue>;
+  parentId?: Maybe<Scalars['String']['output']>;
+  projectId?: Maybe<Scalars['String']['output']>;
+  sprintId?: Maybe<Scalars['String']['output']>;
+  status?: Maybe<IssueStatus>;
+  title: Scalars['String']['output'];
+  type?: Maybe<IssueType>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type IssueAssignee = {
+  __typename?: 'IssueAssignee';
+  avatar?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  lastName?: Maybe<Scalars['String']['output']>;
+  role?: Maybe<Role>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  username?: Maybe<Scalars['String']['output']>;
+};
+
+export type IssueCreator = {
+  __typename?: 'IssueCreator';
+  email?: Maybe<Scalars['String']['output']>;
+  firstName?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  lastName?: Maybe<Scalars['String']['output']>;
+};
+
+export type IssueInput = {
+  id?: InputMaybe<Scalars['ID']['input']>;
+  type?: InputMaybe<IssueType>;
+};
+
+export type IssueStatus =
+  | 'DONE'
+  | 'IN_PROGRESS'
+  | 'TODO';
+
+export type IssueType =
+  | 'BUG'
+  | 'EPIC'
+  | 'STORY'
+  | 'TASK';
+
 export type LoginInput = {
   email: Scalars['EmailAddress']['input'];
   password: Scalars['Password']['input'];
@@ -117,23 +175,29 @@ export type MemberRole =
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addIssueInSprint?: Maybe<ResponseMessage>;
   addTeamMember: Team;
-  assineTask: ResponseMessage;
+  assineIssue: ResponseMessage;
+  createIssue: Issue;
   createProject: Project;
   createSprint: Sprint;
-  createTask: Task;
   createTeam: Team;
   login: AuthData;
   logout: Scalars['Boolean']['output'];
   refreshToken: ExtendSession;
-  removeAssineeOfTask: Task;
+  removeAssineeOfIssue: Issue;
+  removeIssue?: Maybe<ResponseMessage>;
   removeProject?: Maybe<ResponseMessage>;
   removeSprint?: Maybe<ResponseMessage>;
-  removeTask?: Maybe<ResponseMessage>;
   removeTeam?: Maybe<ResponseMessage>;
   removeTeamMember: Team;
   signup: AuthData;
-  updateTaskStatus: ResponseMessage;
+  updateIssueStatus: ResponseMessage;
+};
+
+
+export type MutationAddIssueInSprintArgs = {
+  input?: InputMaybe<AddIssueInput>;
 };
 
 
@@ -144,8 +208,13 @@ export type MutationAddTeamMemberArgs = {
 };
 
 
-export type MutationAssineTaskArgs = {
-  input: AssignTaskInput;
+export type MutationAssineIssueArgs = {
+  input: AssignIssueInput;
+};
+
+
+export type MutationCreateIssueArgs = {
+  input: CreateIssueInput;
 };
 
 
@@ -156,11 +225,6 @@ export type MutationCreateProjectArgs = {
 
 export type MutationCreateSprintArgs = {
   input: CreateSprintInput;
-};
-
-
-export type MutationCreateTaskArgs = {
-  input: CreateTaskInput;
 };
 
 
@@ -179,8 +243,14 @@ export type MutationRefreshTokenArgs = {
 };
 
 
-export type MutationRemoveAssineeOfTaskArgs = {
-  taskId: Scalars['ID']['input'];
+export type MutationRemoveAssineeOfIssueArgs = {
+  issueId: Scalars['ID']['input'];
+};
+
+
+export type MutationRemoveIssueArgs = {
+  issueId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
 };
 
 
@@ -192,12 +262,6 @@ export type MutationRemoveProjectArgs = {
 export type MutationRemoveSprintArgs = {
   projectId: Scalars['ID']['input'];
   sprintId: Scalars['ID']['input'];
-};
-
-
-export type MutationRemoveTaskArgs = {
-  projectId: Scalars['ID']['input'];
-  taskId: Scalars['ID']['input'];
 };
 
 
@@ -217,10 +281,10 @@ export type MutationSignupArgs = {
 };
 
 
-export type MutationUpdateTaskStatusArgs = {
+export type MutationUpdateIssueStatusArgs = {
+  issueId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
-  status: TaskStatus;
-  taskId: Scalars['ID']['input'];
+  status: IssueStatus;
 };
 
 export type Project = {
@@ -229,11 +293,11 @@ export type Project = {
   creatorId: Scalars['String']['output'];
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  issues?: Maybe<Array<Maybe<Issue>>>;
   key: Scalars['String']['output'];
   name?: Maybe<Scalars['String']['output']>;
   sprints?: Maybe<Array<Maybe<Sprint>>>;
   status?: Maybe<ProjectStatus>;
-  tasks?: Maybe<Array<Maybe<Task>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -254,17 +318,22 @@ export type ProjectTeam = {
 
 export type Query = {
   __typename?: 'Query';
+  getAllIssues?: Maybe<Array<Maybe<Issue>>>;
   getAllProjects?: Maybe<Array<Maybe<Project>>>;
   getAllSprints: Array<Maybe<Sprint>>;
-  getAllTasks: Array<Maybe<Task>>;
   getAllUserTeams: Array<Maybe<Team>>;
+  getIssueById: Issue;
   getProjectById: Project;
   getRecentProject?: Maybe<Project>;
   getSprintById: Sprint;
-  getTaskById: Task;
   getTeamById: Team;
   getUserById: User;
   healthCheck: ResponseMessage;
+};
+
+
+export type QueryGetAllIssuesArgs = {
+  projectId: Scalars['ID']['input'];
 };
 
 
@@ -273,8 +342,8 @@ export type QueryGetAllSprintsArgs = {
 };
 
 
-export type QueryGetAllTasksArgs = {
-  projectId: Scalars['ID']['input'];
+export type QueryGetIssueByIdArgs = {
+  issueId: Scalars['ID']['input'];
 };
 
 
@@ -286,11 +355,6 @@ export type QueryGetProjectByIdArgs = {
 export type QueryGetSprintByIdArgs = {
   id: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
-};
-
-
-export type QueryGetTaskByIdArgs = {
-  taskId: Scalars['ID']['input'];
 };
 
 
@@ -341,56 +405,15 @@ export type Sprint = {
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['DateTime']['output'];
   id: Scalars['ID']['output'];
+  issues: Array<Maybe<Issue>>;
   project?: Maybe<Project>;
   projectId?: Maybe<Scalars['String']['output']>;
   status: SprintStatus;
-  tasks: Array<Maybe<Task>>;
   title: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type SprintStatus =
-  | 'DONE'
-  | 'IN_PROGRESS'
-  | 'TODO';
-
-export type Task = {
-  __typename?: 'Task';
-  assignee?: Maybe<TaskAssignee>;
-  createdAt?: Maybe<Scalars['Date']['output']>;
-  creator?: Maybe<TaskCreator>;
-  description?: Maybe<Scalars['String']['output']>;
-  dueDate: Scalars['Date']['output'];
-  id: Scalars['String']['output'];
-  projectId?: Maybe<Scalars['String']['output']>;
-  sprintId?: Maybe<Scalars['String']['output']>;
-  status?: Maybe<TaskStatus>;
-  title: Scalars['String']['output'];
-  updatedAt?: Maybe<Scalars['Date']['output']>;
-};
-
-export type TaskAssignee = {
-  __typename?: 'TaskAssignee';
-  avatar?: Maybe<Scalars['String']['output']>;
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  email?: Maybe<Scalars['String']['output']>;
-  firstName?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  lastName?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Role>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  username?: Maybe<Scalars['String']['output']>;
-};
-
-export type TaskCreator = {
-  __typename?: 'TaskCreator';
-  email?: Maybe<Scalars['String']['output']>;
-  firstName?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  lastName?: Maybe<Scalars['String']['output']>;
-};
-
-export type TaskStatus =
   | 'DONE'
   | 'IN_PROGRESS'
   | 'TODO';
@@ -418,10 +441,10 @@ export type UnauthorizedError = Error & {
 
 export type User = {
   __typename?: 'User';
-  assignedTasks?: Maybe<Array<Maybe<Task>>>;
+  assignedIssues?: Maybe<Array<Maybe<Issue>>>;
   avatar?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  createdTasks?: Maybe<Array<Maybe<Task>>>;
+  createdIssues?: Maybe<Array<Maybe<Issue>>>;
   createdTeams?: Maybe<Array<Maybe<Team>>>;
   email: Scalars['EmailAddress']['output'];
   firstName?: Maybe<Scalars['String']['output']>;
@@ -462,6 +485,11 @@ export type UserTeam = {
   teamId: Scalars['ID']['output'];
   user?: Maybe<User>;
   userId: Scalars['ID']['output'];
+};
+
+export type AddIssueInput = {
+  id: Scalars['ID']['input'];
+  sprintId: Scalars['ID']['input'];
 };
 
 
@@ -536,13 +564,13 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  AssignTaskInput: AssignTaskInput;
+  AssignIssueInput: AssignIssueInput;
   Auth: ResolverTypeWrapper<Auth>;
   AuthData: ResolverTypeWrapper<AuthData>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  CreateIssueInput: CreateIssueInput;
   CreateProjectInput: CreateProjectInput;
   CreateSprintInput: CreateSprintInput;
-  CreateTaskInput: CreateTaskInput;
   CreateTeamInput: CreateTeamInput;
   Date: ResolverTypeWrapper<Scalars['Date']['output']>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
@@ -553,6 +581,12 @@ export type ResolversTypes = {
   Gender: Gender;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
+  Issue: ResolverTypeWrapper<Issue>;
+  IssueAssignee: ResolverTypeWrapper<IssueAssignee>;
+  IssueCreator: ResolverTypeWrapper<IssueCreator>;
+  IssueInput: IssueInput;
+  IssueStatus: IssueStatus;
+  IssueType: IssueType;
   Json: ResolverTypeWrapper<Scalars['Json']['output']>;
   LoginInput: LoginInput;
   MemberRole: MemberRole;
@@ -569,27 +603,24 @@ export type ResolversTypes = {
   Sprint: ResolverTypeWrapper<Sprint>;
   SprintStatus: SprintStatus;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
-  Task: ResolverTypeWrapper<Task>;
-  TaskAssignee: ResolverTypeWrapper<TaskAssignee>;
-  TaskCreator: ResolverTypeWrapper<TaskCreator>;
-  TaskStatus: TaskStatus;
   Team: ResolverTypeWrapper<Team>;
   UnauthenticatedError: ResolverTypeWrapper<UnauthenticatedError>;
   UnauthorizedError: ResolverTypeWrapper<UnauthorizedError>;
   User: ResolverTypeWrapper<User>;
   UserProfile: ResolverTypeWrapper<UserProfile>;
   UserTeam: ResolverTypeWrapper<UserTeam>;
+  addIssueInput: AddIssueInput;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  AssignTaskInput: AssignTaskInput;
+  AssignIssueInput: AssignIssueInput;
   Auth: Auth;
   AuthData: AuthData;
   Boolean: Scalars['Boolean']['output'];
+  CreateIssueInput: CreateIssueInput;
   CreateProjectInput: CreateProjectInput;
   CreateSprintInput: CreateSprintInput;
-  CreateTaskInput: CreateTaskInput;
   CreateTeamInput: CreateTeamInput;
   Date: Scalars['Date']['output'];
   DateTime: Scalars['DateTime']['output'];
@@ -599,6 +630,10 @@ export type ResolversParentTypes = {
   FieldError: ResolversInterfaceTypes<ResolversParentTypes>['FieldError'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
+  Issue: Issue;
+  IssueAssignee: IssueAssignee;
+  IssueCreator: IssueCreator;
+  IssueInput: IssueInput;
   Json: Scalars['Json']['output'];
   LoginInput: LoginInput;
   Mutation: {};
@@ -611,15 +646,13 @@ export type ResolversParentTypes = {
   Social: Social;
   Sprint: Sprint;
   String: Scalars['String']['output'];
-  Task: Task;
-  TaskAssignee: TaskAssignee;
-  TaskCreator: TaskCreator;
   Team: Team;
   UnauthenticatedError: UnauthenticatedError;
   UnauthorizedError: UnauthorizedError;
   User: User;
   UserProfile: UserProfile;
   UserTeam: UserTeam;
+  addIssueInput: AddIssueInput;
 };
 
 export type AuthDirectiveArgs = { };
@@ -689,28 +722,69 @@ export type FieldErrorResolvers<ContextType = MyContext, ParentType extends Reso
   path?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
 };
 
+export type IssueResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Issue'] = ResolversParentTypes['Issue']> = {
+  assignee?: Resolver<Maybe<ResolversTypes['IssueAssignee']>, ParentType, ContextType>;
+  childrens?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  creator?: Resolver<Maybe<ResolversTypes['IssueCreator']>, ParentType, ContextType>;
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  dueDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType>;
+  parentId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  sprintId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  status?: Resolver<Maybe<ResolversTypes['IssueStatus']>, ParentType, ContextType>;
+  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  type?: Resolver<Maybe<ResolversTypes['IssueType']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type IssueAssigneeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['IssueAssignee'] = ResolversParentTypes['IssueAssignee']> = {
+  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type IssueCreatorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['IssueCreator'] = ResolversParentTypes['IssueCreator']> = {
+  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Json'], any> {
   name: 'Json';
 }
 
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
+  addIssueInSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, Partial<MutationAddIssueInSprintArgs>>;
   addTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'memberId' | 'role' | 'teamId'>>;
-  assineTask?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAssineTaskArgs, 'input'>>;
+  assineIssue?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAssineIssueArgs, 'input'>>;
+  createIssue?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<MutationCreateIssueArgs, 'input'>>;
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createSprint?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<MutationCreateSprintArgs, 'input'>>;
-  createTask?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
   login?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['ExtendSession'], ParentType, ContextType, Partial<MutationRefreshTokenArgs>>;
-  removeAssineeOfTask?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<MutationRemoveAssineeOfTaskArgs, 'taskId'>>;
+  removeAssineeOfIssue?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<MutationRemoveAssineeOfIssueArgs, 'issueId'>>;
+  removeIssue?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveIssueArgs, 'issueId' | 'projectId'>>;
   removeProject?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveProjectArgs, 'projectId'>>;
   removeSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveSprintArgs, 'projectId' | 'sprintId'>>;
-  removeTask?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTaskArgs, 'projectId' | 'taskId'>>;
   removeTeam?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTeamArgs, 'teamId'>>;
   removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'memberId' | 'teamId'>>;
   signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
-  updateTaskStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateTaskStatusArgs, 'projectId' | 'status' | 'taskId'>>;
+  updateIssueStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateIssueStatusArgs, 'issueId' | 'projectId' | 'status'>>;
 };
 
 export interface PasswordScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Password'], any> {
@@ -722,11 +796,11 @@ export type ProjectResolvers<ContextType = MyContext, ParentType extends Resolve
   creatorId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  issues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['ProjectStatus']>, ParentType, ContextType>;
-  tasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -742,14 +816,14 @@ export type ProjectTeamResolvers<ContextType = MyContext, ParentType extends Res
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  getAllIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType, RequireFields<QueryGetAllIssuesArgs, 'projectId'>>;
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllSprints?: Resolver<Array<Maybe<ResolversTypes['Sprint']>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
-  getAllTasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType, RequireFields<QueryGetAllTasksArgs, 'projectId'>>;
   getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['Team']>>, ParentType, ContextType>;
+  getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId'>>;
   getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'projectId'>>;
   getRecentProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
   getSprintById?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<QueryGetSprintByIdArgs, 'id' | 'projectId'>>;
-  getTaskById?: Resolver<ResolversTypes['Task'], ParentType, ContextType, RequireFields<QueryGetTaskByIdArgs, 'taskId'>>;
   getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
   getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'userId'>>;
   healthCheck?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType>;
@@ -780,48 +854,12 @@ export type SprintResolvers<ContextType = MyContext, ParentType extends Resolver
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  issues?: Resolver<Array<Maybe<ResolversTypes['Issue']>>, ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
   projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   status?: Resolver<ResolversTypes['SprintStatus'], ParentType, ContextType>;
-  tasks?: Resolver<Array<Maybe<ResolversTypes['Task']>>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
-  assignee?: Resolver<Maybe<ResolversTypes['TaskAssignee']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  creator?: Resolver<Maybe<ResolversTypes['TaskCreator']>, ParentType, ContextType>;
-  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  dueDate?: Resolver<ResolversTypes['Date'], ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  projectId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  sprintId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  status?: Resolver<Maybe<ResolversTypes['TaskStatus']>, ParentType, ContextType>;
-  title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['Date']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskAssigneeResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['TaskAssignee'] = ResolversParentTypes['TaskAssignee']> = {
-  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
-  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
-
-export type TaskCreatorResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['TaskCreator'] = ResolversParentTypes['TaskCreator']> = {
-  email?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -847,10 +885,10 @@ export type UnauthorizedErrorResolvers<ContextType = MyContext, ParentType exten
 };
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  assignedTasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  assignedIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  createdTasks?: Resolver<Maybe<Array<Maybe<ResolversTypes['Task']>>>, ParentType, ContextType>;
+  createdIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   createdTeams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -903,6 +941,9 @@ export type Resolvers<ContextType = MyContext> = {
   Error?: ErrorResolvers<ContextType>;
   ExtendSession?: ExtendSessionResolvers<ContextType>;
   FieldError?: FieldErrorResolvers<ContextType>;
+  Issue?: IssueResolvers<ContextType>;
+  IssueAssignee?: IssueAssigneeResolvers<ContextType>;
+  IssueCreator?: IssueCreatorResolvers<ContextType>;
   Json?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
   Password?: GraphQLScalarType;
@@ -912,9 +953,6 @@ export type Resolvers<ContextType = MyContext> = {
   ResponseMessage?: ResponseMessageResolvers<ContextType>;
   Social?: SocialResolvers<ContextType>;
   Sprint?: SprintResolvers<ContextType>;
-  Task?: TaskResolvers<ContextType>;
-  TaskAssignee?: TaskAssigneeResolvers<ContextType>;
-  TaskCreator?: TaskCreatorResolvers<ContextType>;
   Team?: TeamResolvers<ContextType>;
   UnauthenticatedError?: UnauthenticatedErrorResolvers<ContextType>;
   UnauthorizedError?: UnauthorizedErrorResolvers<ContextType>;

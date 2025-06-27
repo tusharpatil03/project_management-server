@@ -1,6 +1,6 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _ from 'lodash';
-import { InterfaceTask } from '../Mutation/createTasks';
+import { InterfaceIssue} from '../Mutation/createIssue';
 import { InterfaceSprint } from '../Mutation/createSprint';
 import { Project } from '@prisma/client';
 
@@ -32,14 +32,14 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
       id: args.projectId,
     },
     include: {
-      tasks: {
+      issues: {
         include: {
           assignee: true,
         }
       },
       sprints: {
         include: {
-          tasks: true
+          issues: true
         }
       }
     }
@@ -57,7 +57,7 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   if (!isAuthorized) {
     throw new Error('You are not authorized to view this project');
   }
-  const tasks = await context.client.task.findMany({
+  const issues = await context.client.issue.findMany({
     where: {
       projectId: project.id,
     },
@@ -69,6 +69,6 @@ export const getProjectById: QueryResolvers['getProjectById'] = async (
   });
   return {
     ...project,
-    tasks: tasks,
+    issues: issues,
   };
 };

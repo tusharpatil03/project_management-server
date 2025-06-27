@@ -1,6 +1,6 @@
 import { Team, UserTeam } from '@prisma/client';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { getUserWithTeams, isUserPartOfProject } from './getAllSprint';
+import { getUserWithTeams, isUserPartOfProject } from './allSprints';
 
 export const getSprintById: QueryResolvers['getSprintById'] = async (
   _,
@@ -18,7 +18,7 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
       title: true,
       dueDate: true,
       status: true,
-      tasks: {
+      issues: {
         select: {
           id: true,
           title: true,

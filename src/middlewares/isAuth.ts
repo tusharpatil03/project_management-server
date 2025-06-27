@@ -3,7 +3,6 @@ import jwt from 'jsonwebtoken';
 import { ACCESS_TOKEN_SECRET } from '../globals';
 
 
-// This interface represents the type of data object returned by isAuth function.
 export interface InterfaceAuthData {
   isAuth: boolean;
   expired: boolean | undefined;
@@ -19,20 +18,17 @@ export const isAuth = (request: Request): InterfaceAuthData => {
 
   const authHeader = request.headers.authorization;
 
-
   if (!authHeader) {
     return authData;
   }
 
-  // Extract token from authorization header
   const token = authHeader.split(' ')[1];
-
 
   if (!token || token === '') {
     return authData;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   let decodedToken: any;
   try {
     decodedToken = jwt.verify(
@@ -40,18 +36,20 @@ export const isAuth = (request: Request): InterfaceAuthData => {
       ACCESS_TOKEN_SECRET as string,
       (err: any, decoded: any) => {
         if (err) {
-          //console.log(err.message);
+          console.log(err.message);
           return err;
         }
         return decoded;
       }
-    ); // If there is an error decoded token would contain it
-
-    //console.log(decodedToken.userId);
+    );
 
     if (decodedToken.name === 'TokenExpiredError') {
       authData.expired = true;
       return authData;
+    }
+
+    if (decodedToken.message === 'invalid token') {
+      return authData
     }
   } catch (e) {
     authData.expired = true;
@@ -62,7 +60,9 @@ export const isAuth = (request: Request): InterfaceAuthData => {
     return authData;
   }
 
-  authData.isAuth = true;
+  if (decodedToken.userId) {
+    authData.isAuth = true;
+  }
   authData.userId = decodedToken.userId;
 
   return authData;

@@ -1,4 +1,4 @@
-import { SprintStatus, TaskStatus } from '@prisma/client';
+import { IssueType, SprintStatus } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export interface InterfaceSprint {
@@ -16,7 +16,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
 ) => {
   const input = args.input;
 
-  const creatorId:string = context.userId;
+  const creatorId: string = context.userId;
 
   try {
     const sprint = await context.client.sprint.create({
@@ -33,38 +33,62 @@ export const createSprint: MutationResolvers['createSprint'] = async (
       },
       include: {
         project: true,
-        tasks: true,
+        issues: true,
       },
     });
 
-    type TaskInput = {
-      title: string,
-      description: string | undefined | null,
-      dueDate: string,
-      creatorId: string,
-      projectId: string,
-      sprintId: string,
-      assigneeId: string | null | undefined
+    if (input.issues && input.issues.length > 0) {
+      for (let issue of input.issues) {
+        if (
+          (issue?.type === IssueType.TASK || issue?.type === IssueType.BUG) &&
+          issue.id
+        ) {
+          await context.client.issue.update({
+            where: {
+              id: issue.id
+            },
+            data: {
+              sprint: {
+                connect: {
+                  id: sprint.id
+                }
+              }
+            }
+          })
+        }
+      }
     }
 
-    // Prepare tasks with the created sprint ID
-    if (input.tasks && input.tasks.length > 0) {
-      const tasksInput:TaskInput[] = input.tasks.map((task):TaskInput => ({
-        title: task.title,
-        description: task.description,
-        dueDate: task.dueDate,
-        creatorId: creatorId,
-        projectId: input.projectId,
-        sprintId: sprint.id,
-        assigneeId: task.assigneeId,
-      }));
+    // type IssueInput = {
+    //   title: string,
+    //   description: string | undefined | null,
+    //   dueDate: string,
+    //   type: IssueType,
+    //   creatorId: string,
+    //   projectId: string,
+    //   sprintId: string,
+    //   assigneeId: string | null | undefined
+    // }
 
-      // Create tasks
-      await context.client.task.createMany({
-        data: tasksInput,
-        skipDuplicates: true,
-      });
-    }
+    // // Prepare Issues with the created sprint ID
+    // if (input.issues && input.issues.length > 0) {
+    //   const issuesInput: IssueInput[] = input.issues.map((issue): IssueInput => ({
+    //     title: issue.title,
+    //     description: issue.description,
+    //     dueDate: issue.dueDate,
+    //     type: issue.type,
+    //     creatorId: creatorId,
+    //     projectId: input.projectId,
+    //     sprintId: sprint.id,
+    //     assigneeId: issue.assigneeId,
+    //   }));
+
+    //   // Create issues
+    //   await context.client.issue.createMany({
+    //     data: issuesInput,
+    //     skipDuplicates: true,
+    //   });
+    //}
 
     return sprint;
   } catch (error: any) {

@@ -1,3 +1,4 @@
+import { TransactionClient } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
@@ -31,7 +32,7 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   }
 
   try {
-    await context.client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma:TransactionClient) => {
       await prisma.user.update({
         where: { id: args.memberId },
         data: {

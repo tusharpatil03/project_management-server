@@ -1,3 +1,4 @@
+import { PrismaClientType, TransactionClient } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 
@@ -6,8 +7,18 @@ export const createProject: MutationResolvers['createProject'] = async (
   args,
   context
 ) => {
+
+  const existingProject = await context.client.project.findFirst({
+    where: {
+      key: args.input.key
+    }
+  });
+
+  if (existingProject) {
+    throw new Error("project with key already exist")
+  }
   try {
-    await context.client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma: TransactionClient) => {
       const creator = await prisma.user.findUnique({
         where: {
           id: context.userId,
@@ -36,7 +47,6 @@ export const createProject: MutationResolvers['createProject'] = async (
 
     });
   } catch (e) {
-    console.log("project:", e)
     if (e instanceof Error) {
       throw new Error(`${e.message}`);
     }

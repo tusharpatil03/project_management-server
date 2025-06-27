@@ -18,11 +18,21 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
             createdAt: true,
             updatedAt: true,
             status: true,
-            tasks: {
+            issues: {
                 select: {
                     id: true,
                     title: true,
                     dueDate: true,
+                    type: true,
+                    parent: {
+                        select: {
+                            id: true,
+                            title: true,
+                            dueDate: true,
+                            type: true
+                        }
+                    }
+
                 }
             },
             sprints: {
@@ -31,7 +41,7 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
                     title: true,
                     dueDate: true,
                     status: true,
-                    tasks: {
+                    issues: {
                         select: {
                             id: true,
                             title: true,
@@ -49,6 +59,10 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
         throw new GraphQLError("No recent project found for this user.", {
             extensions: { code: "NOT_FOUND" }
         });
+    }
+
+    if(project.creatorId !== context.userId){
+        throw new Error("you are not authorized")
     }
 
     return project;

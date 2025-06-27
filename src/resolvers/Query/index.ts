@@ -1,9 +1,9 @@
-import { getAllProjects } from './getAllProject';
-import { getAllSprints } from './getAllSprint';
-import { getAllTasks } from './getAllTasks';
+import { getAllProjects } from './allProjects';
+import { getAllSprints } from './allSprints';
+import { getAllIssues } from './allissues';
 import { getProjectById } from './getProjectById';
 import { getSprintById } from './getSprintById';
-import { getTaskById } from './getTask';
+import { getIssueById } from './getIssue';
 import { getTeamById } from './getTeam';
 import { getUserById } from './getUser';
 import { healthCheck } from './healthCheck';
@@ -12,11 +12,11 @@ import { getRecentProject } from './getRecentProject';
 export const Query = {
   healthCheck,
   getUserById,
-  getTaskById,
+  getIssueById,
   getSprintById,
   getProjectById,
   getAllSprints,
-  getAllTasks,
+  getAllIssues,
   getTeamById,
   getAllProjects,
   getRecentProject,

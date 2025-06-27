@@ -1,4 +1,4 @@
-import { PrismaClientType } from '../../db';
+import { PrismaClientType, TransactionClient } from '../../db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export const removeTeam: MutationResolvers['removeTeam'] = async (
@@ -24,7 +24,7 @@ export const removeTeam: MutationResolvers['removeTeam'] = async (
       throw new Error('You are not the creator of this team');
     }
 
-    await context.client.$transaction(async (prisma) => {
+    await context.client.$transaction(async (prisma:TransactionClient) => {
       await prisma.userTeam.deleteMany({
         where: {
           teamId: args.teamId,

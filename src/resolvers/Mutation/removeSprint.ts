@@ -1,8 +1,8 @@
-import { PrismaClientType } from '../../db';
+import { PrismaClientType, TransactionClient } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { InterfaceSprint } from './createSprint';
-import { InterfaceTask } from './createTasks';
+import { InterfaceIssue } from './createIssue';
 
 export const removeSprint: MutationResolvers['removeSprint'] = async (
   _,
@@ -28,7 +28,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   const sprint = await context.client.sprint.findUnique({
     where: { id: args.sprintId },
     include: {
-      tasks: {
+      issues: {
         select: {
           id: true,
           assignee: {
@@ -57,35 +57,35 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   }
 
   try {
-    await context.client.$transaction(async (prisma) => {
-      const assigneeTaskMap: Record<string, { id: string }[]> = {};
+    await context.client.$transaction(async (prisma:TransactionClient) => {
+      const assigneeIssueMap: Record<string, { id: string }[]> = {};
 
-      for (const task of sprint.tasks) {
-        if (task.assignee?.id) {
-          const assigneeId = task.assignee.id;
-          if (!assigneeTaskMap[assigneeId]) {
-            assigneeTaskMap[assigneeId] = [];
+      for (const issue of sprint.issues) {
+        if (issue.assignee?.id) {
+          const assigneeId = issue.assignee.id;
+          if (!assigneeIssueMap[assigneeId]) {
+            assigneeIssueMap[assigneeId] = [];
           }
-          assigneeTaskMap[assigneeId].push({ id: task.id });
+          assigneeIssueMap[assigneeId].push({ id: issue.id });
         }
       }
 
-      for (const [assigneeId, tasks] of Object.entries(assigneeTaskMap)) {
+      for (const [assigneeId, issues] of Object.entries(assigneeIssueMap)) {
         await prisma.user.update({
           where: { id: assigneeId },
           data: {
-            assignedTasks: {
-              disconnect: tasks,
+            assignedIssues: {
+              disconnect: issues,
             },
           },
         });
       }
 
-      if (sprint.tasks.length > 0) {
-        await prisma.task.deleteMany({
+      if (sprint.issues.length > 0) {
+        await prisma.issue.deleteMany({
           where: {
             id: {
-              in: sprint.tasks.map((t) => t.id),
+              in: sprint.issues.map((t) => t.id),
             },
           },
         });

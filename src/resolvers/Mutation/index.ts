@@ -1,39 +1,42 @@
 import { signup } from './signup';
-import { assineTask } from './assignTask';
+import { assineIssue } from './assignIssue';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { createProject } from './createProject';
 import { createTeam } from './createTeam';
-import { createTask } from './createTasks';
+import { createIssue } from './createIssue';
 import { createSprint } from './createSprint';
-import { updateTaskStatus } from './changeTaskStatus';
+import { updateIssueStatus } from './changeIssueStatus';
 import { login } from './login';
 
 import { removeProject } from './removeProject';
-import { removeTask } from './removeTask';
+import { removeIssue } from './removeIssue';
 import { removeSprint } from './removeSprint';
 
-import { removeAssineeOfTask } from './removeAssigneeOfTask';
+import { removeAssineeOfIssue } from './removeAssigneeOfIssue';
 import { addTeamMember } from './addTeamMember';
 import { removeTeamMember } from './removeTeamMember';
 import { refreshToken } from './refreshToken';
+import { addIssueInSprint } from './addIssueInSprint';
+
 
 export const Mutation: MutationResolvers = {
   signup,
   login,
-  assineTask,
+  assineIssue,
   createProject,
   createTeam,
-  createTask,
+  createIssue,
   createSprint,
-  updateTaskStatus,
+  updateIssueStatus,
 
   removeProject,
   removeSprint,
-  removeTask,
+  removeIssue,
 
-  removeAssineeOfTask,
+  removeAssineeOfIssue,
   addTeamMember,
   removeTeamMember,
 
   refreshToken,
+  addIssueInSprint,
 };

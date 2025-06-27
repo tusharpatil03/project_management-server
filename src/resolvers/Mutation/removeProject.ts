@@ -1,6 +1,6 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { PrismaClientType } from '../../db';
+import { PrismaClientType, TransactionClient } from '../../db';
 
 export const removeProject: MutationResolvers['removeProject'] = async (
   _,
@@ -29,42 +29,32 @@ export const removeProject: MutationResolvers['removeProject'] = async (
       );
     }
 
-    await context.client.$transaction(async (prisma) => {
-      // Delete tasks associated with the project
-      await prisma.task.deleteMany({
+    await context.client.$transaction(async (prisma: TransactionClient) => {
+      await prisma.issue.deleteMany({
         where: {
           projectId: args.projectId,
         },
       });
 
-      // Delete sprints associated with the project
       await prisma.sprint.deleteMany({
         where: {
           projectId: args.projectId,
         },
       });
 
-      // Delete project-team relationships
       await prisma.projectTeam.deleteMany({
         where: {
           projectId: args.projectId,
         },
       });
 
-      // Delete user-team relationships for teams tied to the project
       const projectTeams = await prisma.projectTeam.findMany({
         where: { projectId: args.projectId },
         select: { teamId: true },
       });
 
       const teamIds = projectTeams.map((pt) => pt.teamId);
-      // await prisma.userTeam.deleteMany({
-      //   where: {
-      //     teamId: { in: teamIds },
-      //   },
-      // });
 
-      // Delete teams tied to the project
       await prisma.projectTeam.deleteMany({
         where: {
           id: { in: teamIds },
@@ -84,25 +74,19 @@ export const removeProject: MutationResolvers['removeProject'] = async (
         });
       }
 
-      // Finally, delete the project
       await prisma.project.delete({
         where: {
           id: args.projectId,
         },
       });
     });
-
-    return {
-      success: true,
-      status: 200,
-      message: 'Project deleted successfully',
-    };
   } catch (error) {
-    console.error('Error removing project:', error);
-    return {
-      success: false,
-      status: 500,
-      message: 'Failed to remove project',
-    };
+    throw new Error("Unable to delete project")
   }
+
+  return {
+    success: true,
+    status: 200,
+    message: 'Project deleted successfully',
+  };
 };

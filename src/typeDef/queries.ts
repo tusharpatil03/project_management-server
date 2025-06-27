@@ -7,10 +7,10 @@ export const queries = gql`
     getUserById(userId: ID!): User! @auth
     getProjectById(projectId: ID!): Project! @auth
     getTeamById(teamId: ID!): Team! @auth
-    getTaskById(taskId: ID!): Task! @auth
+    getIssueById(issueId: ID!): Issue! @auth
     getSprintById(id: ID!, projectId: ID!): Sprint! @auth
     getAllProjects: [Project] @auth
-    getAllTasks(projectId: ID!): [Task]! @auth
+    getAllIssues(projectId: ID!): [Issue] @auth
     getAllSprints(projectId: ID!): [Sprint]! @auth
     getAllUserTeams: [Team]! @auth
     getRecentProject: Project @auth

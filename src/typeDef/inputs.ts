@@ -23,14 +23,26 @@ export const inputs = gql`
     name: String!
   }
 
-  input CreateTaskInput {
+  input CreateIssueInput {
     title: String!
     description: String
     assigneeId: ID
     projectId: ID!
+    type: IssueType!
     dueDate: DateTime!
-    status: TaskStatus
+    status: IssueStatus
     sprintId: ID
+    parentId: ID
+  }
+
+  input addIssueInput {
+    id: ID!,
+    sprintId: ID!
+  }
+
+  input IssueInput {
+    id: ID,
+    type: IssueType,
   }
 
   input CreateSprintInput {
@@ -39,11 +51,11 @@ export const inputs = gql`
     projectId: ID!
     dueDate: DateTime!
     status: SprintStatus
-    tasks: [CreateTaskInput!]
+    issues: [IssueInput]
   }
 
-  input AssignTaskInput {
-    taskId: ID!
+  input AssignIssueInput {
+    issueId: ID!
     assigneeId: ID!
     projectId: ID!
   }
