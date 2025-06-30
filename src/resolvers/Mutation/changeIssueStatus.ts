@@ -1,6 +1,10 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { IssueStatus, IssueType, UserTeam } from '@prisma/client';
+import { notFoundError } from '../../libraries/errors/notFoundError';
+import { conflictError } from '../../libraries/errors/conflictError';
+import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, PROJECT_NOT_FOUND } from '../../globals';
+
 export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   _,
   args,
@@ -8,7 +12,11 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
 ) => {
 
   try {
-    //check wether the user is part of project or not
+
+    if (!context.userId) {
+      throw new conflictError(UNAUTHORIZED_USER.message, UNAUTHORIZED_USER.code);
+    }
+
     const project = await context.client.project.findUnique({
       where: {
         id: args.projectId,
@@ -24,7 +32,6 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
                   where: {
                     id: context.userId,
                   },
-
                 },
               },
             },
@@ -33,12 +40,16 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
       },
     });
 
-    const isMember = project?.teams.some((team: any) => {
-      team.team.users.some((user: UserTeam) => user.id === context.userId);
-    });
+    if (!project) {
+      throw new notFoundError(PROJECT_NOT_FOUND.MESSAGE, PROJECT_NOT_FOUND.CODE);
+    }
+
+    const isMember = project.teams.some((team: any) =>
+      team.team.users.some((user: UserTeam) => user.id === context.userId)
+    );
 
     if (!isMember) {
-      throw new Error('User is not part of this project');
+      throw new conflictError(UNAUTHORIZED_USER.message, UNAUTHORIZED_USER.code);
     }
 
     if (args.status === IssueStatus.DONE) {
@@ -64,23 +75,40 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
         }
       });
 
-      const isValid = issue?.childrens.some((child) => {
-        
-      })
+      if (!issue) {
+        throw new notFoundError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
+      }
 
+      // Recursively check if all children are DONE
+      function allChildrenDone(children: any[]): boolean {
+        return children.every(child =>
+          child.status === IssueStatus.DONE &&
+          (!child.childrens || allChildrenDone(child.childrens))
+        );
+      }
+
+      if (issue.childrens && issue.childrens.length > 0 && !allChildrenDone(issue.childrens)) {
+        throw new conflictError(
+          "Children Issues are not DONE yet",
+          "issue.childNotDone"
+        );
+      }
     }
 
-
-    await context.client.$transaction(async (t) => {
-      t.issue.update({
-        where: {
-          id: args.issueId,
-        },
-        data: {
-          status: args.status,
-        },
+    try {
+      await context.client.$transaction(async (t) => {
+        await t.issue.update({
+          where: {
+            id: args.issueId,
+          },
+          data: {
+            status: args.status,
+          },
+        });
       });
-    });
+    } catch (e) {
+      throw new conflictError('Unable to Update Issue', 'issue.updateFailed');
+    }
   } catch (e) {
     throw new Error('Unable to Update Issue');
   }

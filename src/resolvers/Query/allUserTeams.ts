@@ -1,47 +1,47 @@
-import { MemberRole, UserTeam } from "@prisma/client";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
 export const getAllUserTeams: QueryResolvers["getAllUserTeams"] = async (_, args, context) => {
 
-    const userTeams = await context.client.userTeam.findMany({
+    const teams = await context.client.team.findMany({
         where: {
-            userId: context.userId
-        },
-        select: {
-            id: true,
-            team: {
-                select: {
-                    id: true,
-                    name: true,
-                    creatorId: true,
+            OR: [
+                { creatorId: context.userId },
+                {
                     users: {
-                        where: {
-                            role: MemberRole.Admin
+                        some: {
+                            userId: context.userId,
                         },
+                    },
+                },
+            ],
+        },
+        include: {
+            users: {
+                include: {
+                    user: {
                         select: {
                             id: true,
-                            role: true,
-                            user: {
-                                select: {
-                                    username: true,
-                                    email: true
-                                }
-                            }
-                        }
-                    }
-                }
+                            email: true,
+                            username: true,
+                        },
+                    },
+                },
             }
-        }
+        },
     });
 
-    const teams = userTeams.map((t) => {
+    const teamsWithMembers = teams.map((team) => {
         return {
-            id: t.team.id,
-            name: t.team.name,
-            admins: t.team.users.some((u) => u.role === MemberRole.Admin)
-        }
-    })
+            ...team,
+            members: team.users.map((user) => ({
+                id: user.user.id,
+                username: user.user.username,
+                email: user.user.email,
+                // Only include role if your User type in GraphQL schema has it, and ensure the type matches
+                ...(user.role ? { role: user.role as any } : {})
+            }))
+        };
+    });
 
-
-    return teams
+    return teamsWithMembers;
 } 

@@ -25,22 +25,24 @@ export const mutations = gql`
 
     removeProject(projectId: ID!): ResponseMessage @auth
 
-    removeIssue(issueId: ID!, projectId: ID!): ResponseMessage @auth
+    removeIssue(input: removeIssueInput!): ResponseMessage @auth
 
-    removeSprint(sprintId: ID!, projectId: ID!): ResponseMessage @auth
+    removeSprint(input: removeSprintInput!): ResponseMessage @auth
 
     removeAssineeOfIssue(issueId: ID!): Issue! @auth
 
     removeTeam(teamId: ID!): ResponseMessage @auth
 
-    addTeamMember(memberId: ID!, teamId: ID!, role: String!): Team! @auth
+    addTeamMember(input: addTeamMemberInput!): Team! @auth
 
     logout: Boolean! @auth
 
-    removeTeamMember(memberId: ID!, teamId: ID!): Team! @auth
+    removeTeamMember(input: removeTeamMemberInput!): Team! @auth
 
-    refreshToken(refreshToken: String): ExtendSession!
+    refreshToken(refreshToken: String!): ExtendSession!
 
-    addIssueInSprint(input: addIssueInput): ResponseMessage @auth
+    addIssueInSprint(input: addIssueInput!): ResponseMessage @auth
+
+    addProjectTeam(input: addProjectTeamInput!): ResponseMessage @auth
   }
 `;

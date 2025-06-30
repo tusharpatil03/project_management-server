@@ -14,5 +14,6 @@ export const queries = gql`
     getAllSprints(projectId: ID!): [Sprint]! @auth
     getAllUserTeams: [Team]! @auth
     getRecentProject: Project @auth
+    getUserByEmail(email: String!): User!  @auth
   }
 `;

@@ -6,25 +6,26 @@ export const removeTeam: MutationResolvers['removeTeam'] = async (
   args,
   context
 ) => {
-  try {
-    const team = await context.client.team.findUnique({
-      where: { id: args.teamId },
-      include: {
-        users: {
-          select: { userId: true },
-        },
+
+  const team = await context.client.team.findUnique({
+    where: { id: args.teamId },
+    include: {
+      users: {
+        select: { userId: true },
       },
-    });
+    },
+  });
 
-    if (!team) {
-      throw new Error(`No Team Found with id: ${args.teamId}`);
-    }
+  if (!team) {
+    throw new Error(`No Team Found with id: ${args.teamId}`);
+  }
 
-    if (team.creatorId !== context.userId) {
-      throw new Error('You are not the creator of this team');
-    }
+  if (team.creatorId !== context.userId) {
+    throw new Error('You are not the creator of this team');
+  }
 
-    await context.client.$transaction(async (prisma:TransactionClient) => {
+  try {
+    await context.client.$transaction(async (prisma: TransactionClient) => {
       await prisma.userTeam.deleteMany({
         where: {
           teamId: args.teamId,
@@ -41,12 +42,12 @@ export const removeTeam: MutationResolvers['removeTeam'] = async (
         where: { id: args.teamId },
       });
     });
-
-    return {
-      message: 'Team removed successfully',
-      success: true,
-    };
-  } catch (error) {
+  } catch (e) {
     throw new Error('Error removing team');
   }
-};
+
+  return {
+    message: 'Team removed successfully',
+    success: true,
+  };
+}

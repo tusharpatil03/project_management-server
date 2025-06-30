@@ -1,6 +1,6 @@
 import { PrismaClientType, TransactionClient } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { MutationResolvers, RemoveSprintInput } from '../../types/generatedGraphQLTypes';
 import { InterfaceSprint } from './createSprint';
 import { InterfaceIssue } from './createIssue';
 
@@ -9,9 +9,11 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   args,
   context
 ) => {
+  const input: RemoveSprintInput = args.input;
+
   const project = await context.client.project.findUnique({
     where: {
-      id: args.projectId,
+      id: input.projectId,
     },
     include: { sprints: true },
   });
@@ -20,13 +22,13 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
     throw new Error('Project Does not Exist');
   }
 
-  const sprintId = project.sprints.some((s) => s.id == args.sprintId);
+  const sprintId = project.sprints.some((s) => s.id == input.sprintId);
 
   if (!sprintId) {
     throw new Error('Sprint is not part of this Project');
   }
   const sprint = await context.client.sprint.findUnique({
-    where: { id: args.sprintId },
+    where: { id: input.sprintId },
     include: {
       issues: {
         select: {
@@ -57,7 +59,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
   }
 
   try {
-    await context.client.$transaction(async (prisma:TransactionClient) => {
+    await context.client.$transaction(async (prisma: TransactionClient) => {
       const assigneeIssueMap: Record<string, { id: string }[]> = {};
 
       for (const issue of sprint.issues) {
@@ -93,7 +95,7 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
 
       await prisma.sprint.delete({
         where: {
-          id: args.sprintId,
+          id: input.sprintId,
         },
       });
     });

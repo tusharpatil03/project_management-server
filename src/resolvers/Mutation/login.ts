@@ -9,6 +9,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
     include: {
       profile: {
         select: {
+          id: true,
           firstName: true,
           lastName: true,
           token: true,
@@ -50,7 +51,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   const accessToken = createAccessToken(accessTokenPayload);
 
- const refreshTokenPayload: InterfaceCreateRefreshToken = {
+  const refreshTokenPayload: InterfaceCreateRefreshToken = {
     userId: user.id,
     firstName: userProfile.firstName,
     lastName: userProfile.lastName,
@@ -75,7 +76,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   return {
     user,
-    userProfile,
+    profile: userProfile,
     accessToken,
     refreshToken
   };

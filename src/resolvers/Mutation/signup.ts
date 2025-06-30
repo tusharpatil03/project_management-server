@@ -7,7 +7,14 @@ import { TransactionClient } from '../../db';
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   const existingUser = await context.client.user.findFirst({
     where: {
-      email: args.input.email,
+      OR: [
+        {
+          email: args.input.email
+        },
+        {
+          username: args.input.username
+        }
+      ]
     },
     include: {
       profile: true,
@@ -30,7 +37,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     throw error;
   }
 
-  await context.client.$transaction(async (prisma:TransactionClient) => {
+  await context.client.$transaction(async (prisma: TransactionClient) => {
 
 
     const user = await prisma.user.create({
@@ -116,7 +123,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
 
   return {
     user,
-    userProfile,
+    profile: userProfile,
     accessToken,
     refreshToken
   };

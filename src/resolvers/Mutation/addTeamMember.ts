@@ -1,6 +1,9 @@
 import { MemberRole, Prisma } from '@prisma/client';
-import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { AddTeamMemberInput, MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { client } from '../../db';
+import { notFoundError } from '../../libraries/errors/notFoundError';
+import { ALREADY_MEMBER_OF_TEAM, MEMEBER_NOT_FOUND_ERROR, TEAM_NOT_FOUND } from '../../globals';
+import { conflictError } from '../../libraries/errors/conflictError';
 
 //select team scalors method with validator returns defined feild object
 export const TeamAdminSelect = Prisma.validator(
@@ -47,56 +50,56 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   args,
   context
 ) => {
+  const input: AddTeamMemberInput = args.input;
+  const AdminUserTeam = await context.client.userTeam.findFirst({
+    where: {
+      teamId: input.teamId,
+      userId: context.userId,
+    },
+    select: TeamAdminSelect
+  });
+  if (AdminUserTeam?.role !== MemberRole.Admin) {
+    throw new Error('Unauthorized access');
+  }
+
+  const team = await context.client.team.findUnique({
+    where: { id: input.teamId },
+    include: {
+      users: {
+        select: { userId: true },
+      },
+    },
+  });
+
+  if (!team) {
+    throw new notFoundError(TEAM_NOT_FOUND.MESSAGE, TEAM_NOT_FOUND.CODE);
+  }
+
+  const member = await context.client.user.findUnique({
+    where: { id: input.memberId },
+  });
+
+  if (!member) {
+    throw new notFoundError(MEMEBER_NOT_FOUND_ERROR.MESSAGE, MEMEBER_NOT_FOUND_ERROR.CODE);
+  }
+
+  const isAlreadyMember = team.users.some(
+    (team) => team.userId === input.memberId
+  );
+
+  if (isAlreadyMember) {
+    throw new conflictError(ALREADY_MEMBER_OF_TEAM.MESSAGE, ALREADY_MEMBER_OF_TEAM.CODE)
+  }
+
+  const userTeam = await context.client.userTeam.create({
+    data: createUserTeam(
+      input.memberId, input.teamId, input.role as MemberRole
+    )
+  });
+
   try {
-
-    const AdminUserTeam = await context.client.userTeam.findFirst({
-      where: {
-        teamId: args.teamId,
-        userId: context.userId,
-      },
-      select: TeamAdminSelect
-    });
-    if (AdminUserTeam?.role !== MemberRole.Admin) {
-      throw new Error('Unauthorized access');
-    }
-
-    const team = await context.client.team.findUnique({
-      where: { id: args.teamId },
-      include: {
-        users: {
-          select: { userId: true },
-        },
-      },
-    });
-
-    if (!team) {
-      throw new Error(`No Team Found with id: ${args.teamId}`);
-    }
-
-    const member = await context.client.user.findUnique({
-      where: { id: args.memberId },
-    });
-
-    if (!member) {
-      throw new Error(`User Not Found with id: ${args.memberId}`);
-    }
-
-    const isAlreadyMember = team.users.some(
-      (team) => team.userId === args.memberId
-    );
-
-    if (isAlreadyMember) {
-      throw new Error('User is already a member of the team');
-    }
-
-    const userTeam = await context.client.userTeam.create({
-      data: createUserTeam(
-        args.memberId, args.teamId, args.role as MemberRole
-      )
-    });
-
     await context.client.user.update({
-      where: { id: args.memberId },
+      where: { id: input.memberId },
       data: {
         teams: {
           connect: {
@@ -105,42 +108,42 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
         },
       },
     });
-
-    const updatedTeam = await context.client.team.findUnique({
-      where: { id: args.teamId },
-      select: {
-        id: true,
-        name: true,
-        users: {
-          select: {
-            id: true,
-            user: {
-              select: {
-                id: true,
-                username: true,
-                email: true,
-                teams: true,
-              },
-            },
-            role: true,
-          },
-        },
-        updatedAt: true,
-      },
-    });
-
-    if (!updatedTeam) {
-      throw new Error('Failed to fetch updated team after adding member');
-    }
-
-    return {
-      id: updatedTeam.id,
-      name: updatedTeam.name,
-      userTeams: updatedTeam.users.map((ut) => ut),
-      updatedAt: updatedTeam.updatedAt,
-    };
-  } catch (error: any) {
-    console.error('Failed to add team member:', error);
-    throw new Error(`Failed to add team member: ${error.message || error}`);
   }
+  catch (e) {
+    throw new Error("Failed to update user")
+  }
+
+  const updatedTeam = await context.client.team.findUnique({
+    where: { id: input.teamId },
+    select: {
+      id: true,
+      name: true,
+      users: {
+        select: {
+          id: true,
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
+              teams: true,
+            },
+          },
+          role: true,
+        },
+      },
+      updatedAt: true,
+    },
+  });
+
+  if (!updatedTeam) {
+    throw new Error('Failed to fetch updated team after adding member');
+  }
+
+  return {
+    id: updatedTeam.id,
+    name: updatedTeam.name,
+    userTeams: updatedTeam.users.map((ut) => ut),
+    updatedAt: updatedTeam.updatedAt,
+  };
 };

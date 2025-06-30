@@ -8,6 +8,10 @@ export const createProject: MutationResolvers['createProject'] = async (
   context
 ) => {
 
+  if (!context.userId) {
+    throw new Error("you are not authorized");
+  }
+
   const existingProject = await context.client.project.findFirst({
     where: {
       key: args.input.key
@@ -17,6 +21,7 @@ export const createProject: MutationResolvers['createProject'] = async (
   if (existingProject) {
     throw new Error("project with key already exist")
   }
+
   try {
     await context.client.$transaction(async (prisma: TransactionClient) => {
       const creator = await prisma.user.findUnique({
@@ -50,7 +55,7 @@ export const createProject: MutationResolvers['createProject'] = async (
     if (e instanceof Error) {
       throw new Error(`${e.message}`);
     }
-    throw new Error("Error in creating project");
+    console.log(e);
   }
 
   const project = await context.client.project.findUnique({
@@ -64,8 +69,6 @@ export const createProject: MutationResolvers['createProject'] = async (
       key: true,
     },
   });
-
-
 
   if (!project) {
     throw new Error('Error creating project');

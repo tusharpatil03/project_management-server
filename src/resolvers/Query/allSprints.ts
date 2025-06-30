@@ -26,7 +26,6 @@ export const isUserPartOfProject = (
   return projectTeams.some((team) => userTeamIds.includes(team.teamId));
 };
 
-
 export const getAllSprints: QueryResolvers['getAllSprints'] = async (
   _,
   args,
@@ -42,7 +41,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
     select: { teamId: true },
   });
 
-  const project = await client.project.findUniqueOrThrow({
+  const project = await client.project.findUnique({
     where: {
       id: args.projectId
     },
@@ -50,7 +49,11 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       id: true,
       creatorId: true,
     }
-  })
+  });
+
+  if (!project) {
+    throw new Error("Project Not found")
+  }
 
   const sprints = await client.sprint.findMany({
     where: {
@@ -87,11 +90,10 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
     }
   }
 
-
-
   if (!sprints || sprints.length === 0) {
     throw new Error('No sprints found for this project');
   }
 
+  
   return sprints;
 };

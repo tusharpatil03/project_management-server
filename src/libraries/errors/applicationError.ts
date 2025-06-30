@@ -5,7 +5,7 @@ export interface InterfaceError {
 
 export class ApplicationError extends Error {
   public errors: InterfaceError[];
-  public httpCode: number;
+  public httpCode;
 
   constructor(errors: InterfaceError[], httpCode = 422, message = 'Error') {
     super(message); // Call the constructor of the superclass Error

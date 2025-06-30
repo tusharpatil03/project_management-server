@@ -2,104 +2,104 @@ import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { IssueType, MemberRole, Project, User } from '@prisma/client';
 import { PrismaClientType, TransactionClient } from '../../db';
+import { notFoundError } from '../../libraries/errors/notFoundError';
+import { conflictError } from '../../libraries/errors/conflictError';
+import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, ALREADY_ASSIGNED_ISSUE, ASSIGNEE_NOT_MEMBER, ASSIGNEE_NOT_CONTRIBUTOR, PROJECT_NOT_FOUND, ASSIGNEE_NOT_FOUND, INVALID_ISSUE_TYPE } from '../../globals';
 
 export const assineIssue: MutationResolvers['assineIssue'] = async (
   _,
   args,
   context
 ) => {
-  try {
-    const assignee: User = await context.client.user.findUnique({
-      where: { id: args.input.assigneeId },
-      select: {
-        id: true,
-      },
-    }) as User
+  const assignee: User = await context.client.user.findUnique({
+    where: { id: args.input.assigneeId },
+    select: {
+      id: true,
+    },
+  }) as User
 
-    if (!assignee) {
-      throw new Error(`Assignee Not Found with id: ${args.input.assigneeId}`);
-    }
+  if (!assignee) {
+    throw new notFoundError(ASSIGNEE_NOT_FOUND.MESSAGE, ASSIGNEE_NOT_FOUND.CODE);
+  }
 
-
-    const project = await context.client.project.findUnique({
-      where: { id: args.input.projectId },
-      include: {
-        issues: {
-          where: {
-            id: args.input.issueId,
-          },
-          select: {
-            id: true,
-            assigneeId: true,
-            projectId: true,
-            type: true,
-          },
+  const project = await context.client.project.findUnique({
+    where: { id: args.input.projectId },
+    include: {
+      issues: {
+        where: {
+          id: args.input.issueId,
         },
-        teams: {
-          select: {
-            team: {
-              select: {
-                id: true,
-                users: {
-                  where: {
-                    userId: assignee.id,
-                  },
-                  select: {
-                    id: true,
-                    userId: true,
-                    role: true,
-                  },
+        select: {
+          id: true,
+          assigneeId: true,
+          projectId: true,
+          type: true,
+        },
+      },
+      teams: {
+        select: {
+          team: {
+            select: {
+              id: true,
+              users: {
+                where: {
+                  userId: assignee.id,
+                },
+                select: {
+                  id: true,
+                  userId: true,
+                  role: true,
                 },
               },
             },
           },
         },
       },
-    });
+    },
+  });
 
+  if (!project) {
+    throw new notFoundError(PROJECT_NOT_FOUND.MESSAGE, PROJECT_NOT_FOUND.CODE);
+  }
+  if (project.issues.length === 0) {
+    throw new notFoundError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
+  }
 
-    if (!project) {
-      throw new Error(`Project Not Found with id: ${args.input.projectId}`);
-    }
-    if (project.issues.length === 0) {
-      throw new Error(`Issue Not Found with id: ${args.input.issueId}`);
-    }
+  const issue = project.issues[0];
 
-    const issue = project.issues[0];
+  if (!issue) {
+    throw new notFoundError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
+  }
 
-    if (!issue) {
-      throw new Error("Project Has no issues")
-    }
-    
-    if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
-      throw new Error("Issue types Epic and Story can not be Assigned")
-    }
-    if (issue.assigneeId === args.input.assigneeId) {
-      throw new Error('issue is already assigned to this user');
-    }
-    if (issue.projectId !== args.input.projectId) {
-      throw new Error('issue does not belong to this project');
-    }
+  if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
+    throw new conflictError(INVALID_ISSUE_TYPE.MESSAGE, INVALID_ISSUE_TYPE.CODE);
+  }
+  if (issue.assigneeId === args.input.assigneeId) {
+    throw new conflictError(ALREADY_ASSIGNED_ISSUE.MESSAGE, ALREADY_ASSIGNED_ISSUE.CODE);
+  }
+  if (issue.projectId !== args.input.projectId) {
+    throw new conflictError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
+  }
 
-    let role = null;
+  let role = null;
 
+  const isMember = project.teams.some((team: any) =>
+    team.team.users.some((user: any) => {
+      if (user.userId === assignee.id) {
+        role = user.role;
+        return true;
+      }
+    })
+  );
+  if (!isMember) {
+    throw new conflictError(ASSIGNEE_NOT_MEMBER.MESSAGE, ASSIGNEE_NOT_MEMBER.CODE);
+  }
 
-    const isMember = project.teams.some((team: any) =>
-      team.team.users.some((user: any) => {
-        if (user.userId === assignee.id) {
-          role = user.role;
-          return true;
-        }
-      })
-    );
-    if (!isMember) {
-      throw new Error('Assignee is not a member of the project');
-    }
+  if (role === MemberRole.Viewer) {
+    throw new conflictError(ASSIGNEE_NOT_CONTRIBUTOR.MESSAGE, ASSIGNEE_NOT_CONTRIBUTOR.CODE);
+  }
 
-    if (role === MemberRole.Viewer) {
-      throw new Error('Assignee is not a contributor of this project');
-    }
-
+  try {
     await context.client.$transaction(async (prisma: TransactionClient) => {
       await prisma.issue.update({
         where: {
@@ -127,9 +127,10 @@ export const assineIssue: MutationResolvers['assineIssue'] = async (
         },
       });
     });
-  } catch (e) {
-    console.log('Issue Assing Error: ', e);
-    throw new Error('Failed to assign Issue');
+  }
+  catch (e) {
+    console.log(e);
+    throw new Error("update issue and user failed")
   }
 
   return {

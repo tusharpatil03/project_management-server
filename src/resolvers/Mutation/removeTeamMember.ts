@@ -1,14 +1,16 @@
 import { TransactionClient } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { MutationResolvers, RemoveTeamMemberInput } from '../../types/generatedGraphQLTypes';
 
 export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   _,
   args,
   context
 ) => {
+  const input: RemoveTeamMemberInput = args.input;
+
   const team = await context.client.team.findUnique({
-    where: { id: args.teamId },
+    where: { id: input.teamId },
     select: {
       id: true,
       users: {
@@ -26,74 +28,58 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     throw new UnauthorizedError('You are not the creator of this team', '403');
   }
 
-  const user = team.users.find((t) => t.userId === args.memberId);
+  const user = team.users.find((t) => t.userId === input.memberId);
   if (!user) {
     throw new Error('User is not part of the team');
   }
 
   try {
-    await context.client.$transaction(async (prisma:TransactionClient) => {
-      await prisma.user.update({
-        where: { id: args.memberId },
-        data: {
-          teams: {
-            disconnect: {
-              id: user.id,
-            },
-          },
-        },
-      });
-      await prisma.team.update({
-        where: { id: args.teamId },
-        data: {
-          users: {
-            disconnect: {
-              id: user.id,
-            },
-          },
-        },
-      });
+    await context.client.$transaction(async (prisma: TransactionClient) => {
       await prisma.userTeam.delete({
-        where: { id: user.id },
+        where: {
+          id: user.id
+        },
       });
     });
+  } catch (error: any) {
+    console.log(error.message);
+    console.error('Failed to remove team member:', error);
+    throw new Error('Failed to remove team member');
+  }
 
-    const updatedTeam = await context.client.team.findUnique({
-      where: { id: args.teamId },
-      select: {
-        id: true,
-        name: true,
-        creatorId: true,
-        createdAt: true,
-        updatedAt: true,
-        users: {
-          select: {
-            user: {
-              select: {
-                id: true,
-                username: true,
-                email: true,
-              },
+  const updatedTeam = await context.client.team.findUnique({
+    where: { id: input.teamId },
+    select: {
+      id: true,
+      name: true,
+      creatorId: true,
+      createdAt: true,
+      updatedAt: true,
+      users: {
+        select: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              email: true,
             },
           },
         },
       },
-    });
+    },
+  });
 
-    if (!updatedTeam) {
-      throw new Error('Team does not exist');
-    }
-
-    return {
-      id: updatedTeam.id,
-      name: updatedTeam.name,
-      members: updatedTeam.users.map((t) => t.user),
-      createdAt: updatedTeam.createdAt,
-      updatedAt: updatedTeam.updatedAt,
-      creatorId: updatedTeam.creatorId,
-    };
-  } catch (error) {
-    console.error('Failed to remove team member:', error);
-    throw new Error('Failed to remove team member');
+  if (!updatedTeam) {
+    throw new Error('Team does not exist');
   }
+
+  return {
+    id: updatedTeam.id,
+    name: updatedTeam.name,
+    members: updatedTeam.users.map((t) => t.user),
+    createdAt: updatedTeam.createdAt,
+    updatedAt: updatedTeam.updatedAt,
+    creatorId: updatedTeam.creatorId,
+  };
+
 };

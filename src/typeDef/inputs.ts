@@ -59,4 +59,30 @@ export const inputs = gql`
     assigneeId: ID!
     projectId: ID!
   }
+
+  input removeIssueInput {
+    issueId: ID!
+    projectId: ID!
+  }
+
+  input removeSprintInput {
+    sprintId: ID!
+    projectId: ID!
+  }
+
+  input addTeamMemberInput {
+    memberId: ID!
+    teamId: ID!
+    role: String!
+  }
+
+  input removeTeamMemberInput {
+    memberId: ID!
+    teamId: ID!
+  }
+
+  input addProjectTeamInput {
+    projectId: ID!
+    teamId: ID!
+  }
 `;

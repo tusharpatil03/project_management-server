@@ -51,7 +51,7 @@ model UserProfile {
 model Project {
   id          String        @id @default(cuid())
   name        String
-  key         String        @unique
+  key         String
   description String?
   creatorId   String        @map("creator_id")
   status      ProjectStatus @default(TODO)
@@ -67,7 +67,7 @@ model Project {
 
 model Team {
   id        String        @id @default(cuid())
-  name      String?
+  name      String       
   creatorId String        @map("creator_id")
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
@@ -102,7 +102,7 @@ model ProjectTeam {
 
 model Issue {
   id          String      @id @default(cuid())
-  title       String      @unique
+  title       String
   description String?
   status      IssueStatus @default(TODO)
   createdAt   DateTime    @default(now()) @map("created_at")
