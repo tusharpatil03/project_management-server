@@ -14,8 +14,23 @@ export const getUserWithProfile = async (userId: string) => {
         where: {
             id: userId
         },
-        include: {
-            profile: true
+        select: {
+            id: true,
+            email: true,
+            username: true,
+            createdAt: true,
+            profile: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                    gender: true,
+                    phone: true,
+                    social: true
+                }
+
+            }
         }
     }) as UserWithProfile
 }

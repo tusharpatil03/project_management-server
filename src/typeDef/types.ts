@@ -19,7 +19,6 @@ export const types = gql`
     id: ID!
     email: EmailAddress!
     username: String!
-    role: Role
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]
@@ -113,9 +112,10 @@ export const types = gql`
     dueDate: DateTime!
     createdAt: DateTime
     updatedAt: DateTime
+    projectId: String
+    creatorId: String
     creator: IssueCreator
     assignee: IssueAssignee
-    projectId: String
     sprintId: String
 
     parentId: String
@@ -139,7 +139,6 @@ export const types = gql`
     avatar: String
     createdAt: DateTime
     updatedAt: DateTime
-    role: Role
   }
 
   # Sprint Type
@@ -176,7 +175,6 @@ export const types = gql`
     authData: AuthData
     userId: String
     email: String
-    role: Role
     createdAt: DateTime
     updatedAt: DateTime
     firstName: String

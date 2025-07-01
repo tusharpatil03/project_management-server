@@ -1,10 +1,6 @@
 import gql from "graphql-tag";
 
 export const enums = gql`
-  enum Role {
-    Admin
-    User
-  }
   enum IssueStatus {
     TODO
     IN_PROGRESS
@@ -33,7 +29,6 @@ export const enums = gql`
     Contributor
     Viewer
   }
-
   enum IssueType {
     EPIC
     STORY

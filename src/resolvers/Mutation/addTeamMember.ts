@@ -91,13 +91,13 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     throw new conflictError(ALREADY_MEMBER_OF_TEAM.MESSAGE, ALREADY_MEMBER_OF_TEAM.CODE)
   }
 
-  const userTeam = await context.client.userTeam.create({
-    data: createUserTeam(
-      input.memberId, input.teamId, input.role as MemberRole
-    )
-  });
-
   try {
+    const userTeam = await context.client.userTeam.create({
+      data: createUserTeam(
+        input.memberId, input.teamId, input.role as MemberRole
+      )
+    });
+
     await context.client.user.update({
       where: { id: input.memberId },
       data: {
@@ -110,7 +110,8 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     });
   }
   catch (e) {
-    throw new Error("Failed to update user")
+    console.log(e);
+    throw new Error("Failed to create user team")
   }
 
   const updatedTeam = await context.client.team.findUnique({

@@ -1,9 +1,6 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import _ from 'lodash';
-import { InterfaceIssue} from '../Mutation/createIssue';
-import { InterfaceSprint } from '../Mutation/createSprint';
 import { Project } from '@prisma/client';
-
 
 
 export const getProjectById: QueryResolvers['getProjectById'] = async (

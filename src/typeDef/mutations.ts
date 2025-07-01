@@ -29,11 +29,11 @@ export const mutations = gql`
 
     removeSprint(input: removeSprintInput!): ResponseMessage @auth
 
-    removeAssineeOfIssue(issueId: ID!): Issue! @auth
+    removeAssineeOfIssue(issueId: ID!): ResponseMessage @auth
 
     removeTeam(teamId: ID!): ResponseMessage @auth
 
-    addTeamMember(input: addTeamMemberInput!): Team! @auth
+    addTeamMember(input: addTeamMemberInput!): Team! @auth @role(requires: Admin)
 
     logout: Boolean! @auth
 

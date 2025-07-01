@@ -10,5 +10,9 @@ export const getUserById: QueryResolvers['getUserById'] = async (
   if (!user) {
     throw new Error("Unable to Find User")
   }
+
+  if (user.id !== context.userId) {
+    throw new Error("unauthorized access")
+  }
   return user;
 };

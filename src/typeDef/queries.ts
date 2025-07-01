@@ -12,7 +12,7 @@ export const queries = gql`
     getAllProjects: [Project] @auth
     getAllIssues(projectId: ID!): [Issue] @auth
     getAllSprints(projectId: ID!): [Sprint]! @auth
-    getAllUserTeams: [Team]! @auth
+    getAllUserTeams: [UserTeam]! @auth
     getRecentProject: Project @auth
     getUserByEmail(email: String!): User!  @auth
   }

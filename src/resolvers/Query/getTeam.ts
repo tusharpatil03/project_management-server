@@ -21,7 +21,9 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
               username: true,
               email: true
             }
-          }
+          },
+          role: true,
+          userId: true,
         }
       }
     }
@@ -31,7 +33,9 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
     throw new Error("Team Not Found")
   }
 
-  if (context.userId !== team.id) {
+  const isMemberofTeam = team.users.some((user) => user.userId === context.userId)
+
+  if (!isMemberofTeam) {
     throw new Error("You are Not Authorized Person")
   }
 

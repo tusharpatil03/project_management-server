@@ -58,7 +58,7 @@ export const createProject: MutationResolvers['createProject'] = async (
     console.log(e);
   }
 
-  const project = await context.client.project.findUnique({
+  const project = await context.client.project.findFirst({
     where: {
       key: args.input.key,
     },

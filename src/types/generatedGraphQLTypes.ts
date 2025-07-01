@@ -39,7 +39,6 @@ export type Auth = {
   idToken?: Maybe<Scalars['String']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   phone?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Role>;
   scope?: Maybe<Scalars['String']['output']>;
   token?: Maybe<Scalars['String']['output']>;
   tokenType?: Maybe<Scalars['String']['output']>;
@@ -113,6 +112,7 @@ export type Issue = {
   childrens?: Maybe<Array<Maybe<Issue>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creator?: Maybe<IssueCreator>;
+  creatorId?: Maybe<Scalars['String']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   dueDate: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -134,7 +134,6 @@ export type IssueAssignee = {
   firstName?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   lastName?: Maybe<Scalars['String']['output']>;
-  role?: Maybe<Role>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   username?: Maybe<Scalars['String']['output']>;
 };
@@ -186,7 +185,7 @@ export type Mutation = {
   login: AuthData;
   logout: Scalars['Boolean']['output'];
   refreshToken: ExtendSession;
-  removeAssineeOfIssue: Issue;
+  removeAssineeOfIssue?: Maybe<ResponseMessage>;
   removeIssue?: Maybe<ResponseMessage>;
   removeProject?: Maybe<ResponseMessage>;
   removeSprint?: Maybe<ResponseMessage>;
@@ -322,7 +321,7 @@ export type Query = {
   getAllIssues?: Maybe<Array<Maybe<Issue>>>;
   getAllProjects?: Maybe<Array<Maybe<Project>>>;
   getAllSprints: Array<Maybe<Sprint>>;
-  getAllUserTeams: Array<Maybe<Team>>;
+  getAllUserTeams: Array<Maybe<UserTeam>>;
   getIssueById: Issue;
   getProjectById: Project;
   getRecentProject?: Maybe<Project>;
@@ -380,10 +379,6 @@ export type ResponseMessage = {
   status?: Maybe<Scalars['Int']['output']>;
   success: Scalars['Boolean']['output'];
 };
-
-export type Role =
-  | 'Admin'
-  | 'User';
 
 export type SignupInput = {
   email: Scalars['EmailAddress']['input'];
@@ -461,7 +456,6 @@ export type User = {
   phone?: Maybe<Scalars['String']['output']>;
   profile?: Maybe<Profile>;
   projects?: Maybe<Array<Maybe<Project>>>;
-  role?: Maybe<Role>;
   social?: Maybe<Social>;
   sprints?: Maybe<Array<Maybe<Sprint>>>;
   teams?: Maybe<Array<Maybe<Team>>>;
@@ -630,7 +624,6 @@ export type ResolversTypes = {
   ProjectTeam: ResolverTypeWrapper<ProjectTeam>;
   Query: ResolverTypeWrapper<{}>;
   ResponseMessage: ResolverTypeWrapper<ResponseMessage>;
-  Role: Role;
   SignupInput: SignupInput;
   Social: ResolverTypeWrapper<Social>;
   Sprint: ResolverTypeWrapper<Sprint>;
@@ -703,7 +696,7 @@ export type AuthDirectiveArgs = { };
 export type AuthDirectiveResolver<Result, Parent, ContextType = MyContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type RoleDirectiveArgs = {
-  requires?: Maybe<Role>;
+  requires?: Maybe<MemberRole>;
 };
 
 export type RoleDirectiveResolver<Result, Parent, ContextType = MyContext, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
@@ -718,7 +711,6 @@ export type AuthResolvers<ContextType = MyContext, ParentType extends ResolversP
   idToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   scope?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   token?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   tokenType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -770,6 +762,7 @@ export type IssueResolvers<ContextType = MyContext, ParentType extends Resolvers
   childrens?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['IssueCreator']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -791,7 +784,6 @@ export type IssueAssigneeResolvers<ContextType = MyContext, ParentType extends R
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   username?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -821,7 +813,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   login?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['ExtendSession'], ParentType, ContextType, RequireFields<MutationRefreshTokenArgs, 'refreshToken'>>;
-  removeAssineeOfIssue?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<MutationRemoveAssineeOfIssueArgs, 'issueId'>>;
+  removeAssineeOfIssue?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveAssineeOfIssueArgs, 'issueId'>>;
   removeIssue?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveIssueArgs, 'input'>>;
   removeProject?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveProjectArgs, 'projectId'>>;
   removeSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveSprintArgs, 'input'>>;
@@ -863,7 +855,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getAllIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType, RequireFields<QueryGetAllIssuesArgs, 'projectId'>>;
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllSprints?: Resolver<Array<Maybe<ResolversTypes['Sprint']>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
-  getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['Team']>>, ParentType, ContextType>;
+  getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['UserTeam']>>, ParentType, ContextType>;
   getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId'>>;
   getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'projectId'>>;
   getRecentProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
@@ -943,7 +935,6 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['profile']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
-  role?: Resolver<Maybe<ResolversTypes['Role']>, ParentType, ContextType>;
   social?: Resolver<Maybe<ResolversTypes['Social']>, ParentType, ContextType>;
   sprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;

@@ -24,7 +24,6 @@ export const getUserByEmail: QueryResolvers['getUserByEmail'] = async (
         }
     });
 
-
     if (!user) {
         throw new Error("Unable to Find User")
     }

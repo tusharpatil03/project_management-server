@@ -1,30 +1,50 @@
 import _ from 'lodash';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { client, PrismaClientType } from '../../db';
+import { PrismaClientType } from '../../db';
+import { MemberRole } from '@prisma/client';
 
-export const getUserWithTeams = async (userId: string, client: PrismaClientType) => {
-  const user = await client.user.findUnique({
-    where: { id: userId },
-    include: {
-      teams: {
-        select: { teamId: true },
+export interface InterfaceUserRole {
+  role: MemberRole | undefined
+}
+export const isUserPartOfProject = async (
+  userId: string,
+  projectId: string,
+  client: PrismaClientType
+): Promise<InterfaceUserRole> => {
+
+  const userTeam = await client.userTeam.findFirst({
+    where: {
+      AND: [
+        { userId: userId },
+        {
+          team: {
+            projects: {
+              some: {
+                projectId: projectId,
+              },
+            },
+          },
+        }
+      ]
+    },
+    select: {
+      role: true,
+      team: {
+        select: {
+          id: true,
+          name: true,
+        },
       },
     },
   });
-
-  if (!user) {
-    throw new Error('User not found');
+  if (!userTeam || userTeam.role) {
+    return { role: undefined }
   }
 
-  return user;
+  return { role: userTeam.role }
+
 };
 
-export const isUserPartOfProject = (
-  userTeamIds: string[],
-  projectTeams: { teamId: string }[]
-) => {
-  return projectTeams.some((team) => userTeamIds.includes(team.teamId));
-};
 
 export const getAllSprints: QueryResolvers['getAllSprints'] = async (
   _,
@@ -33,15 +53,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
 ) => {
   const userId = context.userId;
 
-  const user = await getUserWithTeams(userId, context.client);
-  const userTeamIds = user.teams.map((team: { teamId: string }) => team.teamId);
-
-  const projectTeams = await context.client.projectTeam.findMany({
-    where: { projectId: args.projectId },
-    select: { teamId: true },
-  });
-
-  const project = await client.project.findUnique({
+  const project = await context.client.project.findUnique({
     where: {
       id: args.projectId
     },
@@ -55,7 +67,16 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
     throw new Error("Project Not found")
   }
 
-  const sprints = await client.sprint.findMany({
+  const isPartOfProject: InterfaceUserRole = await isUserPartOfProject(userId, args.projectId, context.client);
+
+  if (project.creatorId !== context.userId) {
+    if (!isPartOfProject) {
+      throw new Error("You Are Authorized person to view this project")
+    }
+  }
+
+
+  const sprints = await context.client.sprint.findMany({
     where: {
       projectId: project.id
     },
@@ -84,16 +105,10 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
     }
   });
 
-  if (project.creatorId !== context.userId) {
-    if (!isUserPartOfProject(userTeamIds, projectTeams)) {
-      throw new Error("You Are Authorized person to view this project")
-    }
-  }
-
   if (!sprints || sprints.length === 0) {
     throw new Error('No sprints found for this project');
   }
 
-  
+
   return sprints;
 };

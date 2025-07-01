@@ -1,5 +1,6 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLSchema } from 'graphql';
+import { InterfaceUserRole, isUserPartOfProject } from '../../resolvers/Query/allSprints';
 
 export function roleDirectiveTransformer(
   schema: GraphQLSchema,
@@ -16,25 +17,27 @@ export function roleDirectiveTransformer(
       if (roleDirective) {
         const { resolve = defaultFieldResolver } = fieldConfig;
 
+        //const { require } = roleDirective;
+
         fieldConfig.resolve = async (
           root,
           args,
           context,
           info
         ): Promise<string> => {
-          // Fetch the current user from the database using the userId from the context
-          const currentUser = await context.client.user.findUnique({
-            where: {
-              id: context.userId,
-            },
-          });
-
-          if (!currentUser) {
-            throw new Error('User not found');
+          let userRole: InterfaceUserRole = { role: undefined };
+          if (args.projectId || args.input.projectId) {
+            try {
+              userRole = await isUserPartOfProject(context.userId, args.projectId, context.client);
+              context.userRole = userRole.role;
+            }
+            catch (e) {
+              console.log(e);
+              if (e instanceof Error) {
+                throw new Error(e.message)
+              }
+            }
           }
-
-          // Add the current user to the context for use in the resolver
-          context.user = currentUser;
 
           // Call the original resolver with the updated context
           return resolve(root, args, context, info) as string;
