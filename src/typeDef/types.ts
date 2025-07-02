@@ -27,12 +27,6 @@ export const types = gql`
     createdTeams: [Team]
     createdIssues: [Issue]
     assignedIssues: [Issue]
-    firstName: String
-    lastName: String
-    phone: String
-    gender: String
-    avatar: String
-    social: Social
     profile: profile
   }
 

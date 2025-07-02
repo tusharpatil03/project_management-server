@@ -15,7 +15,7 @@ export const mutations = gql`
       projectId: ID!
       issueId: ID!
       status: IssueStatus!
-    ): ResponseMessage! @auth
+    ): ResponseMessage! @auth @role(requires: Admin)
 
     assineIssue(input: AssignIssueInput!): ResponseMessage! @auth
 

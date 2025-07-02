@@ -450,19 +450,13 @@ export type UnauthorizedError = Error & {
 export type User = {
   __typename?: 'User';
   assignedIssues?: Maybe<Array<Maybe<Issue>>>;
-  avatar?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   createdIssues?: Maybe<Array<Maybe<Issue>>>;
   createdTeams?: Maybe<Array<Maybe<Team>>>;
   email: Scalars['EmailAddress']['output'];
-  firstName?: Maybe<Scalars['String']['output']>;
-  gender?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  lastName?: Maybe<Scalars['String']['output']>;
-  phone?: Maybe<Scalars['String']['output']>;
   profile?: Maybe<Profile>;
   projects?: Maybe<Array<Maybe<Project>>>;
-  social?: Maybe<Social>;
   sprints?: Maybe<Array<Maybe<Sprint>>>;
   teams?: Maybe<Array<Maybe<Team>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -930,19 +924,13 @@ export type UnauthorizedErrorResolvers<ContextType = MyContext, ParentType exten
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   assignedIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
-  avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   createdIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   createdTeams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   email?: Resolver<ResolversTypes['EmailAddress'], ParentType, ContextType>;
-  firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  gender?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  phone?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['profile']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
-  social?: Resolver<Maybe<ResolversTypes['Social']>, ParentType, ContextType>;
   sprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType>;
   teams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;

@@ -26,7 +26,7 @@ export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = 
                     },
                     id: true,
                     role: true,
-                    joinedAt: true
+                    joinedAt: true,
                 }
             }
         }
