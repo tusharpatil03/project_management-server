@@ -4,16 +4,29 @@ export const queries = gql`
   # Queries
   type Query {
     healthCheck: ResponseMessage!
+
     getUserById(userId: ID!): User! @auth
+
     getProjectById(projectId: ID!): Project! @auth
+
     getTeamById(teamId: ID!): Team! @auth
+
     getIssueById(issueId: ID!): Issue! @auth
+
     getSprintById(id: ID!, projectId: ID!): Sprint! @auth
+
     getAllProjects: [Project] @auth
+
     getAllIssues(projectId: ID!): [Issue] @auth
+
     getAllSprints(projectId: ID!): [Sprint]! @auth
+
     getAllUserTeams: [UserTeam]! @auth
+
     getRecentProject: Project @auth
+
     getUserByEmail(email: String!): User!  @auth
+
+    getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
   }
 `;

@@ -10,6 +10,7 @@ import { healthCheck } from './healthCheck';
 import { getRecentProject } from './getRecentProject';
 import { getUserByEmail } from './getUserByEmail';
 import { getAllUserTeams } from './allUserTeams';
+import { getProjectTeamsMembers } from './getProjectTeamsMembers';
 
 export const Query = {
   healthCheck,
@@ -23,5 +24,6 @@ export const Query = {
   getAllProjects,
   getRecentProject,
   getAllUserTeams,
-  getUserByEmail
+  getUserByEmail,
+  getProjectTeamsMembers
 };

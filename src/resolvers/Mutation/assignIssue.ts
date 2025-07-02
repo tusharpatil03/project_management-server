@@ -1,10 +1,10 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { IssueType, MemberRole, Project, User } from '@prisma/client';
-import { PrismaClientType, TransactionClient } from '../../db';
+import { TransactionClient } from '../../db';
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { conflictError } from '../../libraries/errors/conflictError';
-import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, ALREADY_ASSIGNED_ISSUE, ASSIGNEE_NOT_MEMBER, ASSIGNEE_NOT_CONTRIBUTOR, PROJECT_NOT_FOUND, ASSIGNEE_NOT_FOUND, INVALID_ISSUE_TYPE } from '../../globals';
+import {  ISSUE_NOT_FOUND, ALREADY_ASSIGNED_ISSUE, ASSIGNEE_NOT_MEMBER, ASSIGNEE_NOT_CONTRIBUTOR, PROJECT_NOT_FOUND, ASSIGNEE_NOT_FOUND, INVALID_ISSUE_TYPE } from '../../globals';
 
 export const assineIssue: MutationResolvers['assineIssue'] = async (
   _,
