@@ -5,7 +5,7 @@ import { createProject } from './createProject';
 import { createTeam } from './createTeam';
 import { createIssue } from './createIssue';
 import { createSprint } from './createSprint';
-import { updateIssueStatus } from './changeIssueStatus';
+import { updateIssueStatus } from './updateIssueStatus';
 import { login } from './login';
 
 import { removeProject } from './removeProject';
