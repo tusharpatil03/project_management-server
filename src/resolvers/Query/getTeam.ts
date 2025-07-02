@@ -9,21 +9,23 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
     where: {
       id: args.teamId
     },
-    select: {
-      id: true,
-      name: true,
-      creatorId: true,
+    include: {
       users: {
-        select: {
+        include: {
           user: {
             select: {
               id: true,
               username: true,
-              email: true
+              email: true,
+              profile: {
+                select: {
+                  avatar: true,
+                  firstName: true,
+                  lastName: true
+                }
+              }
             }
           },
-          role: true,
-          userId: true,
         }
       }
     }
@@ -48,8 +50,7 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
   });
 
   return {
-    id: team.id,
-    name: team.name,
-    members: members
+    ...team,
+    members
   }
 };
