@@ -324,6 +324,7 @@ export type Query = {
   getAllUserTeams: Array<Maybe<UserTeam>>;
   getIssueById: Issue;
   getProjectById: Project;
+  getProjectTeamsMembers?: Maybe<Array<Maybe<Team>>>;
   getRecentProject?: Maybe<Project>;
   getSprintById: Sprint;
   getTeamById: Team;
@@ -349,6 +350,11 @@ export type QueryGetIssueByIdArgs = {
 
 
 export type QueryGetProjectByIdArgs = {
+  projectId: Scalars['ID']['input'];
+};
+
+
+export type QueryGetProjectTeamsMembersArgs = {
   projectId: Scalars['ID']['input'];
 };
 
@@ -425,10 +431,10 @@ export type Team = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creatorId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  members?: Maybe<Array<Maybe<User>>>;
   name?: Maybe<Scalars['String']['output']>;
   projects?: Maybe<Array<Maybe<Project>>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  users?: Maybe<Array<Maybe<UserTeam>>>;
 };
 
 export type UnauthenticatedError = Error & {
@@ -469,9 +475,9 @@ export type UserTeam = {
   joinedAt?: Maybe<Scalars['DateTime']['output']>;
   role?: Maybe<MemberRole>;
   team?: Maybe<Team>;
-  teamId: Scalars['ID']['output'];
+  teamId?: Maybe<Scalars['ID']['output']>;
   user?: Maybe<User>;
-  userId: Scalars['ID']['output'];
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type AddIssueInput = {
@@ -858,6 +864,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['UserTeam']>>, ParentType, ContextType>;
   getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId'>>;
   getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'projectId'>>;
+  getProjectTeamsMembers?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType, RequireFields<QueryGetProjectTeamsMembersArgs, 'projectId'>>;
   getRecentProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
   getSprintById?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<QueryGetSprintByIdArgs, 'id' | 'projectId'>>;
   getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
@@ -904,10 +911,10 @@ export type TeamResolvers<ContextType = MyContext, ParentType extends ResolversP
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creatorId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
-  members?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  users?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserTeam']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -948,9 +955,9 @@ export type UserTeamResolvers<ContextType = MyContext, ParentType extends Resolv
   joinedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['MemberRole']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
-  teamId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
-  userId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

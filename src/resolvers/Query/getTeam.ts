@@ -19,6 +19,7 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
               email: true,
               profile: {
                 select: {
+                  id: true,
                   avatar: true,
                   firstName: true,
                   lastName: true
@@ -41,16 +42,8 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
     throw new Error("You are Not Authorized Person")
   }
 
-  const members = team.users.map((user) => {
-    return {
-      id: user.user.id,
-      username: user.user.username,
-      email: user.user.email
-    }
-  });
 
   return {
-    ...team,
-    members
+    ...team
   }
 };

@@ -25,10 +25,11 @@ export function roleDirectiveTransformer(
           context,
           info
         ): Promise<string> => {
-          let userRole: InterfaceUserRole = { role: undefined };
+
           if (args.projectId || args.input.projectId) {
             try {
-              userRole = await isUserPartOfProject(context.userId, args.projectId, context.client);
+              const projectId = args.projectId || args.input.projectId;
+              const userRole = await isUserPartOfProject(context.userId, projectId, context.client);
               context.userRole = userRole.role;
             }
             catch (e) {

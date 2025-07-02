@@ -8,20 +8,6 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
         throw new Error("you are not authorized")
     }
 
-    const team = await context.client.team.findFirst({
-        where: {
-            id: input.teamId
-        },
-        select: {
-            id: true,
-            name: true,
-        }
-    });
-
-    if (!team) {
-        throw new Error("Team not exist")
-    }
-
     const project = await context.client.project.findFirst({
         where: {
             AND: [
@@ -40,6 +26,26 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
             },
         }
     });
+
+    if (!project) {
+        throw new Error("Project not found")
+    }
+
+
+
+    const team = await context.client.team.findFirst({
+        where: {
+            id: input.teamId
+        },
+        select: {
+            id: true,
+            name: true,
+        }
+    });
+
+    if (!team) {
+        throw new Error("Team not exist")
+    }
 
     let teamExist: boolean = false;
 
@@ -60,19 +66,6 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
                 data: {
                     teamId: input.teamId,
                     projectId: input.projectId
-                }
-            });
-
-            await prisma.project.update({
-                where: {
-                    id: input.projectId
-                },
-                data: {
-                    teams: {
-                        connect: {
-                            id: input.teamId
-                        }
-                    }
                 }
             });
         })

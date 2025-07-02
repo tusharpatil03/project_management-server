@@ -83,8 +83,8 @@ export const types = gql`
 
   type UserTeam {
     id: ID!
-    userId: ID!
-    teamId: ID!
+    userId: ID
+    teamId: ID
     role: MemberRole
     joinedAt: DateTime
     user: User
@@ -96,7 +96,7 @@ export const types = gql`
     id: ID!
     name: String
     creatorId: String
-    members: [User]
+    users: [UserTeam]
     projects: [Project]
     createdAt: DateTime
     updatedAt: DateTime

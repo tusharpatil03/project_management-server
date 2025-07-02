@@ -12,6 +12,7 @@ export const isUserPartOfProject = async (
   client: PrismaClientType
 ): Promise<InterfaceUserRole> => {
 
+
   const userTeam = await client.userTeam.findFirst({
     where: {
       AND: [
@@ -37,7 +38,8 @@ export const isUserPartOfProject = async (
       },
     },
   });
-  if (!userTeam || userTeam.role) {
+
+  if (!userTeam || !userTeam.role) {
     return { role: undefined }
   }
 

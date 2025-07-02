@@ -63,6 +63,7 @@ async function startServer() {
       context: async ({ req }): Promise<MyContext> => ({
         ...isAuth(req),
         client,
+        userRole: undefined
       })
     })
   );
