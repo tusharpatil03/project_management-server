@@ -10,8 +10,6 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
       profile: {
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
           token: true,
           tokenVersion: true,
         }
@@ -53,8 +51,8 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   const refreshTokenPayload: InterfaceCreateRefreshToken = {
     userId: user.id,
-    firstName: userProfile.firstName,
-    lastName: userProfile.lastName,
+    firstName: user.firstName,
+    lastName: user.lastName,
     email: user.email,
     tokenVersion: userProfile.tokenVersion,
   }

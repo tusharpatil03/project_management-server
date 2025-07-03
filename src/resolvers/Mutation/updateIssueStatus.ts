@@ -1,17 +1,15 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { IssueStatus, MemberRole, UserTeam } from '@prisma/client';
+import { IssueStatus, MemberRole} from '@prisma/client';
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { conflictError } from '../../libraries/errors/conflictError';
 import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, PROJECT_NOT_FOUND } from '../../globals';
-import { InterfaceUserRole, isUserPartOfProject } from '../Query/allSprints';
 
 export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   _,
   args,
   context
 ) => {
-
 
   if (!context.userId) {
     throw new conflictError(UNAUTHORIZED_USER.message, UNAUTHORIZED_USER.code);
@@ -105,7 +103,6 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   } catch (e) {
     throw new conflictError('Unable to Update Issue', 'issue.updateFailed');
   }
-
 
   return {
     message: 'Issue Updated',

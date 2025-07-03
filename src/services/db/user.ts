@@ -18,12 +18,13 @@ export const getUserWithProfile = async (userId: string) => {
             id: true,
             email: true,
             username: true,
+            firstName: true,
+            lastName: true,
             createdAt: true,
+            updatedAt: true,
             profile: {
                 select: {
                     id: true,
-                    firstName: true,
-                    lastName: true,
                     avatar: true,
                     gender: true,
                     phone: true,
@@ -40,6 +41,8 @@ export const CreateUser = async (user: User) => {
         email: user.email,
         username: user.email,
         password: user.password,
+        firstName: user.firstName,
+        lastName: user.lastName,
         salt: user.salt,
         profile: {
             connect: {

@@ -22,7 +22,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   });
 
   if (existingUser) {
-    // Use a specific error type for user existence
     const error = new Error('User already exists');
     error.name = 'UserExistsError';
     throw error;
@@ -42,6 +41,8 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
 
     const user = await prisma.user.create({
       data: {
+        firstName: args.input.firstName,
+        lastName: args.input.lastName,
         email: args.input.email,
         password: hashedPassword,
         username: args.input.username,
@@ -50,8 +51,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     });
     const userProfile = await prisma.userProfile.create({
       data: {
-        firstName: args.input.firstName,
-        lastName: args.input.lastName,
         user: {
           connect: {
             id: user.id
@@ -98,8 +97,8 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
 
   const refreshTokenPayload: InterfaceCreateRefreshToken = {
     userId: user.id,
-    firstName: userProfile.firstName,
-    lastName: userProfile.lastName,
+    firstName: user.firstName,
+    lastName: user.lastName,
     email: user.email,
     tokenVersion: userProfile.tokenVersion,
   }

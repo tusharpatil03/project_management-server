@@ -13,11 +13,11 @@ export const getUserByEmail: QueryResolvers['getUserByEmail'] = async (
             id: true,
             email: true,
             username: true,
+            firstName: true,
+            lastName: true,
             profile: {
                 select: {
                     id: true,
-                    firstName: true,
-                    lastName: true,
                     avatar: true,
                 }
             }
