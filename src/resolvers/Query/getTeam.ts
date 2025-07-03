@@ -17,12 +17,12 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
               id: true,
               username: true,
               email: true,
+              firstName: true,
+              lastName: true,
               profile: {
                 select: {
                   id: true,
                   avatar: true,
-                  firstName: true,
-                  lastName: true
                 }
               }
             }

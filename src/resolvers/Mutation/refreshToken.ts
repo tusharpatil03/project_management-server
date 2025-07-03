@@ -42,8 +42,8 @@ export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, c
 
     const refreshTokenPayload: InterfaceCreateRefreshToken = {
         userId: user.id,
-        firstName: user.profile.firstName,
-        lastName: user.profile.lastName,
+        firstName: user.firstName,
+        lastName: user.lastName,
         email: user.email,
         tokenVersion: user.profile.tokenVersion,
     }

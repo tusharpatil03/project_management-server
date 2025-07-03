@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const types = gql`
   # Auth Data
@@ -19,6 +19,8 @@ export const types = gql`
     id: ID!
     email: EmailAddress!
     username: String!
+    firstName: String!
+    lastName: String!
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]
@@ -32,14 +34,13 @@ export const types = gql`
 
   type profile {
     id: ID!
-    firstName: String!
-    lastName: String!
-    avatar: String
-    phone: String
     gender: Gender
+    phone: String
+    avatar: String
     social: Social
     createdAt: DateTime
     updatedAt: DateTime
+    userId: ID
     user: User
   }
 

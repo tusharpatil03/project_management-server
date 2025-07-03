@@ -17,6 +17,8 @@ model User {
   id             String       @id @default(cuid())
   email          String       @unique
   username       String       @unique
+  firstName      String       @map("first_name")
+  lastName       String       @map("last_name")
   password       String
   salt           String
   createdAt      DateTime     @default(now()) @map("created_at")
@@ -31,17 +33,16 @@ model User {
 
 model UserProfile {
   id           String   @id @default(cuid())
-  firstName    String   @map("first_name")
-  lastName     String   @map("last_name")
   avatar       String?
   phone        String?
   gender       Gender?
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
   socialId     String?  @unique @map("social_id")
   token        String?  @unique
   tokenVersion Int      @default(0) @map("token_version")
   userId       String   @unique @map("user_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  
   social       Social?  @relation(fields: [socialId], references: [id])
   user         User     @relation(fields: [userId], references: [id])
 
@@ -67,7 +68,7 @@ model Project {
 
 model Team {
   id        String        @id @default(cuid())
-  name      String       
+  name      String
   creatorId String        @map("creator_id")
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")

@@ -22,6 +22,8 @@ export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = 
                             id: true,
                             email: true,
                             username: true,
+                            firstName: true,
+                            lastName: true,
                         }
                     },
                     id: true,
