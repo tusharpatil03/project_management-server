@@ -82,3 +82,8 @@ export const INVALID_ISSUE_TYPE = Object.freeze({
     MESSAGE: "Issue types Epic and Story can not be Assigned",
     CODE: "issue.invalidType"
 });
+
+export const USER_NOT_FOUND_ERROR = Object.freeze({
+    MESSAGE: "User not found",
+    CODE: "user.notFound"
+})

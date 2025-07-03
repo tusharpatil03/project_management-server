@@ -3,8 +3,6 @@ import gql from 'graphql-tag';
 export const queries = gql`
   # Queries
   type Query {
-    healthCheck: ResponseMessage!
-
     getUserById(userId: ID!): User! @auth
 
     getProjectById(projectId: ID!): Project! @auth
@@ -29,6 +27,6 @@ export const queries = gql`
 
     getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
 
-    checkAuth: User
+    checkAuth: User!
   }
 `;
