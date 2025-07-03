@@ -6,14 +6,14 @@ import { getSprintById } from './getSprintById';
 import { getIssueById } from './getIssue';
 import { getTeamById } from './getTeam';
 import { getUserById } from './getUser';
-import { healthCheck } from './healthCheck';
+import { checkAuth } from './checkAuth';
 import { getRecentProject } from './getRecentProject';
 import { getUserByEmail } from './getUserByEmail';
 import { getAllUserTeams } from './allUserTeams';
 import { getProjectTeamsMembers } from './getProjectTeamsMembers';
 
 export const Query = {
-  healthCheck,
+  checkAuth,
   getUserById,
   getIssueById,
   getSprintById,
