@@ -5,6 +5,7 @@ export const SEVER_PORT = process.env.PORT;
 export const HOST = process.env.HOST;
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+export const EMAIL_VERIFICATION_SECRET = process.env.EMAIL_VERIFICATION_SECRET
 
 export const UNAUTHORIZED_USER = Object.freeze({
     code: "user.unauthorized",
@@ -86,4 +87,4 @@ export const INVALID_ISSUE_TYPE = Object.freeze({
 export const USER_NOT_FOUND_ERROR = Object.freeze({
     MESSAGE: "User not found",
     CODE: "user.notFound"
-})
+});

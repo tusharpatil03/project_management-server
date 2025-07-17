@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
-import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(express.json());
@@ -20,5 +19,6 @@ app.use('/voyager', voyagerMiddleware({ endpointUrl: '/graphql' }));
 app.get('/hello', (req: Request, res: Response, next: NextFunction) => {
   res.status(200).json({ message: 'hello, welcome to project' });
 });
+
 
 export default app;

@@ -2,15 +2,28 @@ import { USER_NOT_FOUND_ERROR } from "../../globals";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
-export const checkAuth: QueryResolvers["checkAuth"] = async(_, args, context) => {
+export const checkAuth: QueryResolvers["checkAuth"] = async (_, args, context) => {
     const user = await context.client.user.findUnique({
         where: {
             id: context.userId
         },
-        include: {
-            profile: true
+        select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            username: true,
+            email: true,
+            isVerified: true,
+            profile: {
+                select: {
+                    id: true,
+                    avatar: true
+                }
+            }
         }
     });
+
+    console.log(user);
 
     if (!user || !user.profile) {
         throw new notFoundError(USER_NOT_FOUND_ERROR.MESSAGE, USER_NOT_FOUND_ERROR.CODE);

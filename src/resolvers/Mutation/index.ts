@@ -19,6 +19,8 @@ import { refreshToken } from './refreshToken';
 import { addIssueInSprint } from './addIssueInSprint';
 import { removeTeam } from './removeTeam';
 import { addProjectTeam } from './addProjectTeam';
+import { sendVerificationLink } from './sendVerificationLink';
+import { verifyUser } from './verifyUser'; 
 
 export const Mutation: MutationResolvers = {
   signup,
@@ -42,4 +44,6 @@ export const Mutation: MutationResolvers = {
   refreshToken,
   addIssueInSprint,
   addProjectTeam,
+  sendVerificationLink,
+  verifyUser
 };
