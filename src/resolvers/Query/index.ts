@@ -25,5 +25,5 @@ export const Query = {
   getRecentProject,
   getAllUserTeams,
   getUserByEmail,
-  getProjectTeamsMembers
+  getProjectTeamsMembers,
 };

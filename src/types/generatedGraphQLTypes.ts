@@ -19,6 +19,7 @@ export type Scalars = {
   DateTime: { input: any; output: any; }
   EmailAddress: { input: any; output: any; }
   Json: { input: any; output: any; }
+  Name: { input: any; output: any; }
   Password: { input: any; output: any; }
 };
 
@@ -50,7 +51,7 @@ export type Auth = {
 export type AuthData = {
   __typename?: 'AuthData';
   accessToken: Scalars['String']['output'];
-  profile: Profile;
+  profile?: Maybe<Profile>;
   refreshToken: Scalars['String']['output'];
   user: User;
 };
@@ -191,8 +192,10 @@ export type Mutation = {
   removeSprint?: Maybe<ResponseMessage>;
   removeTeam?: Maybe<ResponseMessage>;
   removeTeamMember: Team;
-  signup: AuthData;
+  sendVerificationLink?: Maybe<ResponseMessage>;
+  signup: ResponseMessage;
   updateIssueStatus: ResponseMessage;
+  verifyUser: AuthData;
 };
 
 
@@ -276,6 +279,11 @@ export type MutationRemoveTeamMemberArgs = {
 };
 
 
+export type MutationSendVerificationLinkArgs = {
+  email: Scalars['String']['input'];
+};
+
+
 export type MutationSignupArgs = {
   input: SignupInput;
 };
@@ -285,6 +293,11 @@ export type MutationUpdateIssueStatusArgs = {
   issueId: Scalars['ID']['input'];
   projectId: Scalars['ID']['input'];
   status: IssueStatus;
+};
+
+
+export type MutationVerifyUserArgs = {
+  token: Scalars['String']['input'];
 };
 
 export type Project = {
@@ -456,6 +469,7 @@ export type User = {
   email?: Maybe<Scalars['EmailAddress']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
+  isVerified?: Maybe<Scalars['Boolean']['output']>;
   lastName?: Maybe<Scalars['String']['output']>;
   profile?: Maybe<Profile>;
   projects?: Maybe<Array<Maybe<Project>>>;
@@ -619,6 +633,7 @@ export type ResolversTypes = {
   LoginInput: LoginInput;
   MemberRole: MemberRole;
   Mutation: ResolverTypeWrapper<{}>;
+  Name: ResolverTypeWrapper<Scalars['Name']['output']>;
   Password: ResolverTypeWrapper<Scalars['Password']['output']>;
   Project: ResolverTypeWrapper<Project>;
   ProjectStatus: ProjectStatus;
@@ -669,6 +684,7 @@ export type ResolversParentTypes = {
   Json: Scalars['Json']['output'];
   LoginInput: LoginInput;
   Mutation: {};
+  Name: Scalars['Name']['output'];
   Password: Scalars['Password']['output'];
   Project: Project;
   ProjectTeam: ProjectTeam;
@@ -723,7 +739,7 @@ export type AuthResolvers<ContextType = MyContext, ParentType extends ResolversP
 
 export type AuthDataResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthData'] = ResolversParentTypes['AuthData']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  profile?: Resolver<ResolversTypes['profile'], ParentType, ContextType>;
+  profile?: Resolver<Maybe<ResolversTypes['profile']>, ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -820,9 +836,15 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   removeSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveSprintArgs, 'input'>>;
   removeTeam?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveTeamArgs, 'teamId'>>;
   removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'input'>>;
-  signup?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  sendVerificationLink?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationSendVerificationLinkArgs, 'email'>>;
+  signup?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateIssueStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateIssueStatusArgs, 'issueId' | 'projectId' | 'status'>>;
+  verifyUser?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationVerifyUserArgs, 'token'>>;
 };
+
+export interface NameScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Name'], any> {
+  name: 'Name';
+}
 
 export interface PasswordScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Password'], any> {
   name: 'Password';
@@ -931,6 +953,7 @@ export type UserResolvers<ContextType = MyContext, ParentType extends ResolversP
   email?: Resolver<Maybe<ResolversTypes['EmailAddress']>, ParentType, ContextType>;
   firstName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  isVerified?: Resolver<Maybe<ResolversTypes['Boolean']>, ParentType, ContextType>;
   lastName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   profile?: Resolver<Maybe<ResolversTypes['profile']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
@@ -979,6 +1002,7 @@ export type Resolvers<ContextType = MyContext> = {
   IssueCreator?: IssueCreatorResolvers<ContextType>;
   Json?: GraphQLScalarType;
   Mutation?: MutationResolvers<ContextType>;
+  Name?: GraphQLScalarType;
   Password?: GraphQLScalarType;
   Project?: ProjectResolvers<ContextType>;
   ProjectTeam?: ProjectTeamResolvers<ContextType>;

@@ -6,4 +6,5 @@ export const scalars = gql`
   scalar Json
   scalar Date
   scalar Password
+  scalar Name
 `;
