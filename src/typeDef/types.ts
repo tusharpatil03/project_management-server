@@ -4,7 +4,7 @@ export const types = gql`
   # Auth Data
   type AuthData {
     user: User!
-    profile: profile!
+    profile: profile
     accessToken: String!
     refreshToken: String!
   }
@@ -17,10 +17,11 @@ export const types = gql`
   # User Type
   type User {
     id: ID!
-    email: EmailAddress!
-    username: String!
-    firstName: String!
-    lastName: String!
+    email: EmailAddress
+    username: String
+    firstName: String
+    lastName: String
+    isVerified: Boolean
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]

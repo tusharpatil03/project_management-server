@@ -19,7 +19,7 @@ export const mutations = gql`
 
     assineIssue(input: AssignIssueInput!): ResponseMessage! @auth
 
-    signup(input: SignupInput!): AuthData!
+    signup(input: SignupInput!): ResponseMessage!
 
     login(input: LoginInput!): AuthData!
 
@@ -44,5 +44,9 @@ export const mutations = gql`
     addIssueInSprint(input: addIssueInput!): ResponseMessage @auth
 
     addProjectTeam(input: addProjectTeamInput!): ResponseMessage @auth
+
+    sendVerificationLink(email:String!): ResponseMessage
+
+    verifyUser(token:String!): AuthData!
   }
 `;

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
-import { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
+import { ACCESS_TOKEN_SECRET, EMAIL_VERIFICATION_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
 import 'dotenv/config'
 import { client } from '../db';
 
@@ -52,8 +52,22 @@ export const createRefreshToken = (
   )
 };
 
+export const emailVerificationToken = (
+  email: string
+): string => {
+  return jwt.sign(
+    {
+      email: email,
+    },
+    EMAIL_VERIFICATION_SECRET as string,
+    {
+      expiresIn: 15 * 60,
+    },
+  )
+};
+
 export const revokeRefreshToken = async (userId: string) => {
-  const userProfiel = await client.userProfile.update({
+  await client.userProfile.update({
     where: {
       userId: userId
     },
@@ -61,8 +75,6 @@ export const revokeRefreshToken = async (userId: string) => {
       token: "",
     }
   });
-
-
 }
 
 
@@ -70,32 +82,39 @@ const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 
-export const sendVerificationEmail = (token: string, email: string) => {
+export const sendVerificationEmail = async (token: string, email: string) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: EMAIL_USER as string,
+        pass: EMAIL_PASSWORD as string,
+      },
+    });
 
-  const mailTransporter =
-    nodemailer.createTransport(
-      {
-        service: 'gmail',
-        auth: {
-          user: EMAIL_USER as string,
-          pass: EMAIL_PASSWORD as string
-        }
-      }
-    );
+    const url = `http://localhost:5173/auth/verify?token=${token}`;
 
-  const url = `https://localhost:8080/auth/verify?token=${token}`
+    const mailOptions = {
+      from: `"TaskFlow Support" <${EMAIL_USER}>`,
+      to: email,
+      subject: 'Verify Your Email Address',
+      html: `
+        <div style="font-family: Arial, sans-serif; font-size: 16px;">
+          <p>Hi there,</p>
+          <p>Thanks for signing up! Please verify your email address by clicking the link below:</p>
+          <a href="${url}" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+          <p>Or copy and paste this URL into your browser:</p>
+          <p>${url}</p>
+          <br>
+          <p>— TaskFlow Team</p>
+        </div>
+      `,
+    };
 
-  const mailDetails = {
-    from: EMAIL_USER as string,
-    to: email,
-    subject: 'Verifiaction Email',
-    text: url
-  };
-
-  mailTransporter.sendMail(mailDetails, (err, data) => {
-    if (err) {
-      throw new Error("Unable to send mail")
-    }
-  })
-
-}
+    await transporter.sendMail(mailOptions);
+    console.log(`Verification email sent to ${email}`);
+  } catch (err) {
+    console.error('Email send error:', err);
+    throw new Error('Unable to send verification email');
+  }
+};

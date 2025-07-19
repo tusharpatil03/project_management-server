@@ -1,8 +1,7 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
-import { createAccessToken, createRefreshToken, InterfaceCreateRefreshToken } from '../../utility/auth';
-import { InterfaceCreateAccessToken } from '../../utility/auth';
-import { TransactionClient } from '../../db';
+import { emailVerificationToken, sendVerificationEmail } from '../../utility/auth';
+import { client, TransactionClient } from '../../db';
 
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   const existingUser = await context.client.user.findFirst({
@@ -36,94 +35,76 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
     throw error;
   }
 
-  await context.client.$transaction(async (prisma: TransactionClient) => {
+  const token = emailVerificationToken(args.input.email);
+  if (!token) {
+    throw new Error("Unable to generate verification token");
+  }
 
+  try {
+    sendVerificationEmail(token, args.input.email);
+  }
+  catch (e) {
+    throw new Error("Unable to send verification email")
+  }
 
-    const user = await prisma.user.create({
-      data: {
-        firstName: args.input.firstName,
-        lastName: args.input.lastName,
-        email: args.input.email,
-        password: hashedPassword,
-        username: args.input.username,
-        salt: salt,
-      },
-    });
-    const userProfile = await prisma.userProfile.create({
-      data: {
-        user: {
-          connect: {
-            id: user.id
+  try {
+    await context.client.$transaction(async (prisma: TransactionClient) => {
+
+      const user = await prisma.user.create({
+        data: {
+          firstName: args.input.firstName,
+          lastName: args.input.lastName,
+          email: args.input.email,
+          password: hashedPassword,
+          username: args.input.username,
+          salt: salt,
+        },
+      });
+      await prisma.userProfile.create({
+        data: {
+          user: {
+            connect: {
+              id: user.id
+            }
           }
-        }
-      },
+        },
+      });
     });
-  });
-
-  const user = await context.client.user.findUnique({
-    where: {
-      email: args.input.email,
-    }
-  });
-
-  if (!user) {
-    const error = new Error('Unable to create user');
-    error.name = 'UserCreationError';
-    throw error;
+  }
+  catch (e) {
+    throw new Error("Unable to create user");
   }
 
-  const userProfile = await context.client.userProfile.findUnique({
-    where: {
-      userId: user.id
-    },
-    include: {
-      social: true,
-    }
-  });
+  // const user = await context.client.user.findUnique({
+  //   where: {
+  //     email: args.input.email,
+  //   }
+  // });
 
-  if (!userProfile) {
-    const error = new Error('Unable to create user profile');
-    error.name = 'UserProfileCreationError';
-    throw error;
-  }
+  // if (!user) {
+  //   const error = new Error('Unable to create user');
+  //   error.name = 'UserCreationError';
+  //   throw error;
+  // }
 
-  const accessTokenPayload: InterfaceCreateAccessToken = {
-    userId: user.id,
-    email: user.email,
-    username: user.username,
-  };
+  // const userProfile = await context.client.userProfile.findUnique({
+  //   where: {
+  //     userId: user.id
+  //   },
+  //   include: {
+  //     social: true,
+  //   }
+  // });
 
-  const accessToken = createAccessToken(accessTokenPayload);
-
-  const refreshTokenPayload: InterfaceCreateRefreshToken = {
-    userId: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    tokenVersion: userProfile.tokenVersion,
-  }
-
-  const refreshToken = createRefreshToken(refreshTokenPayload);
-
-  if (!refreshToken) {
-    const error = new Error('Failed to create refresh token');
-    error.name = 'RefreshTokenError';
-    throw error;
-  }
-
-  // Update the user's profile with the new refresh token
-  await context.client.userProfile.update({
-    where: { id: userProfile.id },
-    data: {
-      token: refreshToken,
-      tokenVersion: userProfile.tokenVersion + 1,
-    },
-  });
+  // if (!userProfile) {
+  //   const error = new Error('Unable to create user profile');
+  //   error.name = 'UserProfileCreationError';
+  //   throw error;
+  // }
 
   return {
-    user,
-    profile: userProfile,
-    accessToken,
-    refreshToken
+    message: "user signup complete",
+    status: 200,
+    success: true
   };
 }

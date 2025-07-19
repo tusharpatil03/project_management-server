@@ -1,9 +1,7 @@
-// passwordScalar.ts
 import { GraphQLScalarType, Kind } from 'graphql';
 
 const isValidPassword = (value: string): boolean => {
-  // Example rules: min 8 chars, at least 1 digit & 1 special char
-  const regex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).{8,}$/;
   return regex.test(value);
 };
 
@@ -12,7 +10,6 @@ export const PasswordScalar = new GraphQLScalarType({
   description: 'Custom scalar for password validation',
 
   serialize(value) {
-    // Don't expose passwords back
     throw new Error('Passwords cannot be output from the server.');
   },
 
