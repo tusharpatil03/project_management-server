@@ -30,5 +30,7 @@ export const queries = gql`
     getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
 
     checkAuth: User
+
+    getActiveSprint(projectId: ID!): Sprint @auth
   }
 `;
