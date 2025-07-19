@@ -1,5 +1,4 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { InterfaceIssue } from '../Mutation/createIssue';
 import { InterfaceUserRole } from './allSprints';
 import { isUserPartOfProject } from './allSprints';
 
@@ -25,7 +24,6 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
       throw new Error("You Are Authorized person to view this project")
     }
   }
-  // Fetch the project and its issues with proper includes and pagination
   const issues = await context.client.issue.findMany({
     where: { projectId: args.projectId },
     select: {
@@ -37,6 +35,15 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
       sprintId: true,
       projectId: true,
       parentId: true,
+      creatorId: true,
+      assignee: {
+        select: {
+          firstName: true,
+          lastName: true,
+          id: true,
+          email: true,
+        }
+      }
     }
   });
 
@@ -46,4 +53,5 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
   }
 
   return issues;
+
 };

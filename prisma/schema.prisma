@@ -43,9 +43,9 @@ model UserProfile {
   userId       String   @unique @map("user_id")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
-  
-  social       Social?  @relation(fields: [socialId], references: [id])
-  user         User     @relation(fields: [userId], references: [id])
+
+  social Social? @relation(fields: [socialId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
 
   @@map("userprofile")
 }
@@ -56,7 +56,7 @@ model Project {
   key         String
   description String?
   creatorId   String        @map("creator_id")
-  status      ProjectStatus @default(TODO)
+  status      ProjectStatus @default(ACTIVE)
   createdAt   DateTime      @default(now()) @map("created_at")
   updatedAt   DateTime      @updatedAt @map("updated_at")
   teams       ProjectTeam[]
@@ -133,7 +133,7 @@ model Sprint {
   id          String       @id @default(cuid())
   title       String
   description String?
-  status      SprintStatus @default(TODO)
+  status      SprintStatus @default(ACTIVE)
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
   dueDate     DateTime?    @map("due_date")
@@ -163,15 +163,15 @@ enum IssueStatus {
 }
 
 enum SprintStatus {
-  TODO
-  IN_PROGRESS
-  DONE
+  PLANNED
+  ACTIVE
+  COMPLETE
 }
 
 enum ProjectStatus {
-  TODO
-  IN_PROGRESS
-  DONE
+  PLANNED
+  ACTIVE
+  COMPLETE
 }
 
 enum Gender {

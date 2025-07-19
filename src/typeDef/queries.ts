@@ -26,7 +26,9 @@ export const queries = gql`
     getUserByEmail(email: String!): User!  @auth
 
     getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
+    
+    checkAuth: User
 
-    checkAuth: User!
+    getActiveSprint(projectId: ID!): Sprint @auth
   }
 `;
