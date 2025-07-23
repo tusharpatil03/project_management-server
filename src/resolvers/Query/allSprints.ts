@@ -87,6 +87,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       status: true,
       title: true,
       dueDate: true,
+      projectId: true,
       creatorId: true,
       issues: {
         select: {
@@ -108,7 +109,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
   });
 
   if (!sprints || sprints.length === 0) {
-    throw new Error('No sprints found for this project');
+    return null;
   }
 
 

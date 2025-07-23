@@ -49,7 +49,7 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
 
 
   if (!issues) {
-    throw new Error('issues not found');
+    return null;
   }
 
   return issues;

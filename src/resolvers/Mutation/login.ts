@@ -12,6 +12,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
           id: true,
           token: true,
           tokenVersion: true,
+          avatar: true
         }
       },
     }
@@ -22,16 +23,16 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
   }
 
 
-  const userProfile = await context.client.userProfile.findUnique({
-    where: {
-      userId: user.id,
-    },
-    include: {
-      social: true,
-    },
-  });
+  // const userProfile = await context.client.userProfile.findUnique({
+  //   where: {
+  //     userId: user.id,
+  //   },
+  //   include: {
+  //     social: true,
+  //   },
+  // });
 
-  if (!userProfile) {
+  if (!user.profile) {
     throw new Error('User profile not found');
   }
 
@@ -54,7 +55,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    tokenVersion: userProfile.tokenVersion,
+    tokenVersion: user.profile.tokenVersion,
   }
 
   const refreshToken = createRefreshToken(refreshTokenPayload);
@@ -65,16 +66,16 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   // Update the user's profile with the new refresh token
   await context.client.userProfile.update({
-    where: { id: userProfile.id },
+    where: { id: user.profile.id },
     data: {
       token: refreshToken,
-      tokenVersion: userProfile.tokenVersion + 1,
+      tokenVersion: user.profile.tokenVersion + 1,
     },
   });
 
   return {
     user,
-    profile: userProfile,
+    profile: user.profile,
     accessToken,
     refreshToken
   };

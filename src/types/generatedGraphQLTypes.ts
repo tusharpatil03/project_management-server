@@ -331,13 +331,11 @@ export type ProjectTeam = {
 
 export type Query = {
   __typename?: 'Query';
-
   checkAuth?: Maybe<User>;
   getActiveSprint?: Maybe<Sprint>;
-
   getAllIssues?: Maybe<Array<Maybe<Issue>>>;
   getAllProjects?: Maybe<Array<Maybe<Project>>>;
-  getAllSprints: Array<Maybe<Sprint>>;
+  getAllSprints?: Maybe<Array<Maybe<Sprint>>>;
   getAllUserTeams: Array<Maybe<UserTeam>>;
   getIssueById: Issue;
   getProjectById: Project;
@@ -883,13 +881,11 @@ export type ProjectTeamResolvers<ContextType = MyContext, ParentType extends Res
 };
 
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-
   checkAuth?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getActiveSprint?: Resolver<Maybe<ResolversTypes['Sprint']>, ParentType, ContextType, RequireFields<QueryGetActiveSprintArgs, 'projectId'>>;
-
   getAllIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType, RequireFields<QueryGetAllIssuesArgs, 'projectId'>>;
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
-  getAllSprints?: Resolver<Array<Maybe<ResolversTypes['Sprint']>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
+  getAllSprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
   getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['UserTeam']>>, ParentType, ContextType>;
   getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId'>>;
   getProjectById?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<QueryGetProjectByIdArgs, 'projectId'>>;

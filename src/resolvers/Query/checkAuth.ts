@@ -23,7 +23,6 @@ export const checkAuth: QueryResolvers["checkAuth"] = async (_, args, context) =
         }
     });
 
-    console.log(user);
 
     if (!user || !user.profile) {
         throw new notFoundError(USER_NOT_FOUND_ERROR.MESSAGE, USER_NOT_FOUND_ERROR.CODE);

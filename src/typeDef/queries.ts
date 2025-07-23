@@ -17,7 +17,7 @@ export const queries = gql`
 
     getAllIssues(projectId: ID!): [Issue] @auth
 
-    getAllSprints(projectId: ID!): [Sprint]! @auth
+    getAllSprints(projectId: ID!): [Sprint] @auth
 
     getAllUserTeams: [UserTeam]! @auth
 
@@ -27,7 +27,7 @@ export const queries = gql`
 
     getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
     
-    checkAuth: User
+    checkAuth: User @auth
 
     getActiveSprint(projectId: ID!): Sprint @auth
   }

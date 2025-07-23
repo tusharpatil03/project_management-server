@@ -11,6 +11,7 @@ import { getRecentProject } from './getRecentProject';
 import { getUserByEmail } from './getUserByEmail';
 import { getAllUserTeams } from './allUserTeams';
 import { getProjectTeamsMembers } from './getProjectTeamsMembers';
+import { getActiveSprint } from './getActiveSprint';
 
 export const Query = {
   checkAuth,
@@ -26,4 +27,5 @@ export const Query = {
   getAllUserTeams,
   getUserByEmail,
   getProjectTeamsMembers,
+  getActiveSprint
 };
