@@ -59,19 +59,25 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
   }
 
   const refreshToken = createRefreshToken(refreshTokenPayload);
-
   if (!refreshToken) {
     throw new Error('Failed to create refresh token');
   }
 
-  // Update the user's profile with the new refresh token
-  await context.client.userProfile.update({
-    where: { id: user.profile.id },
-    data: {
-      token: refreshToken,
-      tokenVersion: user.profile.tokenVersion + 1,
-    },
-  });
+  try {
+    await context.client.userProfile.update({
+      where: {
+        id: user.profile.id
+      },
+      data: {
+        token: refreshToken,
+        tokenVersion: {
+          increment: 1
+        }
+      }
+    })
+  } catch (e) {
+    throw new Error("falied to updated user profile with new token");
+  }
 
   return {
     user,

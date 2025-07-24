@@ -24,8 +24,13 @@ export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, c
         throw error;
     }
 
-    const isValid = (user.profile.tokenVersion !== decoded.tokenVersion) && (user.profile.token !== refreshToken)
-    if (isValid) {
+    // console.log((user.profile.tokenVersion === decoded.tokenVersion) && (user.profile.token === refreshToken));
+    // console.log("user token version:", user.profile.tokenVersion, "decoded token version:", decoded.tokenVersion);
+    // console.log(user.profile.token, refreshToken);
+
+
+    const isValid = (user.profile.tokenVersion === decoded.tokenVersion) && (user.profile.token === refreshToken)
+    if (!isValid) {
         await revokeRefreshToken(user.id);
         const error = new Error("Invalid Token");
         error.name = "TokenVersionMismatchError";
@@ -56,7 +61,10 @@ export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, c
             userId: user.id,
         },
         data: {
-            tokenVersion: user.profile?.tokenVersion ? user.profile.tokenVersion + 1 : 1,
+            token: newRefreshToken,
+            tokenVersion: {
+                increment: 1
+            },
         },
     });
 

@@ -2,6 +2,7 @@ import { EMAIL_VERIFICATION_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken";
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
+import { connect } from "http2";
 
 export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, context) => {
     console.log("CORRECT HIT");
@@ -30,6 +31,16 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
                 select: {
                     id: true,
                     tokenVersion: true
+                }
+            },
+            projects: {
+                select: {
+                    id: true
+                }
+            },
+            teams: {
+                select: {
+                    id: true
                 }
             }
         },
@@ -63,12 +74,15 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         throw error;
     }
 
+
     // Update the user's profile with the new refresh token
     await context.client.userProfile.update({
         where: { id: user.profile.id },
         data: {
             token: refreshToken,
-            tokenVersion: user.profile.tokenVersion + 1,
+            tokenVersion: {
+                increment: 1
+            }
         },
     });
 
@@ -80,6 +94,47 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
             isVerified: true
         }
     });
+
+    if (user.projects.length === 0) {
+        const project = await context.client.project.create({
+            data: {
+                name: 'sample project',
+                key: "SMP",
+                description: "learn project management in 10 min",
+                creator: {
+                    connect: {
+                        id: user.id,
+                    }
+                },
+            },
+            select: {
+                id: true
+            }
+        });
+
+        const team = await context.client.team.create({
+            data: {
+                name: "Team X",
+                creatorId: user.id
+            }
+        });
+
+        await context.client.projectTeam.create({
+            data: {
+                project: {
+                    connect: {
+                        id: project.id
+                    }
+                },
+                team: {
+                    connect: {
+                        id: team.id
+                    }
+                }
+            }
+        });
+
+    }
 
     const updatedUser = await context.client.user.findUnique({
         where: {

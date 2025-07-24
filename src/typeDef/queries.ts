@@ -25,7 +25,7 @@ export const queries = gql`
 
     getUserByEmail(email: String!): User!  @auth
 
-    getProjectTeamsMembers(projectId: ID!): [Team]  @auth @role(requires:Contributor)
+    getProjectTeamsMembers(projectId: ID!): [User]  @auth @role(requires:Contributor)
     
     checkAuth: User @auth
 

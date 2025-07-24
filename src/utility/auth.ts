@@ -21,7 +21,7 @@ export const createAccessToken = (
     },
     ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: 10 * 60,
+      expiresIn: 5 * 60,
     }
   );
 };
@@ -35,11 +35,11 @@ export interface InterfaceCreateRefreshToken {
 }
 
 export const createRefreshToken = (
-  payload: InterfaceCreateRefreshToken
+  payload: InterfaceCreateRefreshToken,
 ): string => {
   return jwt.sign(
     {
-      tokenVersion: payload.tokenVersion,
+      tokenVersion: payload.tokenVersion + 1,
       userId: payload.userId,
       firstName: payload.firstName,
       lastName: payload.lastName,

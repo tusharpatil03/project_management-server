@@ -2,10 +2,6 @@ import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
 export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = async (_, args, context) => {
 
-    if (!context.userRole) {
-        throw new Error("unauthorized access")
-    }
-
     const teams = await context.client.team.findMany({
         where: {
             projects: {
@@ -24,6 +20,12 @@ export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = 
                             username: true,
                             firstName: true,
                             lastName: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    avatar: true
+                                }
+                            }
                         }
                     },
                     id: true,
@@ -38,7 +40,17 @@ export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = 
         throw new Error("Teams not found")
     }
 
-    return teams;
+    const members = teams
+        .flatMap(team => team.users)
+        .map(member => {
+            const user = member.user;
+            return {
+                id: user.id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                profile: user.profile
+            };
+        });
 
-
+    return members;
 }
