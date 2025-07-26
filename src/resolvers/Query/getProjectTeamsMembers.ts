@@ -1,7 +1,7 @@
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
 export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = async (_, args, context) => {
-
+    console.log("MEMBERS HIT BY CLIENT");
     const teams = await context.client.team.findMany({
         where: {
             projects: {

@@ -1,6 +1,6 @@
 import { MutationResolvers, RemoveIssueInput } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { PrismaClientType, TransactionClient } from '../../db';
+import {  TransactionClient } from '../../db';
 
 export const removeIssue: MutationResolvers['removeIssue'] = async (
   _,

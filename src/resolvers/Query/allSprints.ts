@@ -98,7 +98,14 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
           dueDate: true,
           assignee: {
             select: {
-              username: true,
+              firstName: true,
+              lastName: true,
+              profile: {
+                select: {
+                  id: true,
+                  avatar: true,
+                }
+              },
               email: true,
               id: true
             }

@@ -113,7 +113,6 @@ export const types = gql`
     creator: IssueCreator
     assignee: IssueAssignee
     sprintId: String
-
     parentId: String
     parent: Issue
     childrens: [Issue]
@@ -124,6 +123,7 @@ export const types = gql`
     firstName: String
     lastName: String
     email: String
+    profile: profile
   }
 
   type IssueAssignee {
@@ -132,7 +132,7 @@ export const types = gql`
     lastName: String
     username: String
     email: String
-    avatar: String
+    profile: profile
     createdAt: DateTime
     updatedAt: DateTime
   }
