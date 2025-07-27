@@ -22,7 +22,6 @@ export const getAllUserTeams: QueryResolvers["getAllUserTeams"] = async (_, args
     //                     select: {
     //                         id: true,
     //                         email: true,
-    //                         username: true,
     //                     },
     //                 },
     //             },

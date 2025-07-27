@@ -6,14 +6,7 @@ import { client, TransactionClient } from '../../db';
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   const existingUser = await context.client.user.findFirst({
     where: {
-      OR: [
-        {
-          email: args.input.email
-        },
-        {
-          username: args.input.username
-        }
-      ]
+       email: args.input.email
     },
     include: {
       profile: true,
@@ -56,7 +49,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
           lastName: args.input.lastName,
           email: args.input.email,
           password: hashedPassword,
-          username: args.input.username,
           salt: salt,
         },
       });

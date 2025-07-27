@@ -12,36 +12,44 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
       id: args.id,
       projectId: args.projectId,
     },
-    select: {
-      id: true,
-      projectId: true,
-      title: true,
-      dueDate: true,
-      status: true,
+    include: {
       issues: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          status: true,
-          dueDate: true,
+        include: {
+          creator: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+              profile: {
+                select: {
+                  id: true,
+                  avatar: true,
+                }
+              },
+            },
+          },
           assignee: {
             select: {
               id: true,
-              username: true,
+              firstName: true,
+              lastName: true,
               email: true,
-            },
+              profile: {
+                select: { id: true, avatar: true }
+              }
+            }
           },
         },
+
       },
-      creatorId: true,
       project: {
         select: {
+          key: true,
           id: true,
           creatorId: true,
-          key: true,
-        },
-      },
+        }
+      }
     },
   });
   if (!sprint) {

@@ -43,6 +43,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
       data: {
         title: input.title,
         description: input.description,
+        key: input.key,
         dueDate: input.dueDate,
         creatorId: context.userId,
         project: {

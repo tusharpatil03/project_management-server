@@ -83,6 +83,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       projectId: project.id
     },
     select: {
+      key: true,
       id: true,
       status: true,
       title: true,
@@ -92,6 +93,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       issues: {
         select: {
           id: true,
+          key: true,
           title: true,
           status: true,
           type: true,

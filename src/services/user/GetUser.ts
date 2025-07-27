@@ -17,7 +17,6 @@ export const getUserWithProfile = async (userId: string) => {
         select: {
             id: true,
             email: true,
-            username: true,
             firstName: true,
             lastName: true,
             createdAt: true,
@@ -39,7 +38,6 @@ export const getUserWithProfile = async (userId: string) => {
 export const CreateUser = async (user: User) => {
     return Prisma.validator<Prisma.UserCreateInput>()({
         email: user.email,
-        username: user.email,
         password: user.password,
         firstName: user.firstName,
         lastName: user.lastName,

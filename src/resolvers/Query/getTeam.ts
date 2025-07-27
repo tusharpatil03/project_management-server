@@ -15,7 +15,6 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
           user: {
             select: {
               id: true,
-              username: true,
               email: true,
               firstName: true,
               lastName: true,

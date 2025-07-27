@@ -1,31 +1,10 @@
 import { IssueStatus, IssueType, Prisma } from "@prisma/client";
 import { client } from "../../db";
 
-// // the base structure for issue creation
-// export const IssueCreateSchema = Prisma.validator<Prisma.IssueCreateInput>()({
-//     title: '',
-//     description: '',
-//     type: IssueType.TASK,
-//     status: IssueStatus.TODO,
-//     dueDate: new Date(),
-//     creatorId: '',
-//     project: {
-//         connect: { id: '' }
-//     },
-//     sprint: {
-//         connect: { id: '' }
-//     },
-//     parent: {
-//         connect: { id: '' }
-//     }
-// });
 
-// // can be used as input validation
-// export type IssueCreateInput = typeof IssueCreateSchema;
-
-//create input
 export interface IssueCreateInput {
     title: string;
+    key: string;
     description?: string | null;
     type?: IssueType;
     dueDate: Date | string;
@@ -40,6 +19,7 @@ export interface IssueCreateInput {
 // builder function to create issue data
 export const buildIssueData = ({
     title,
+    key,
     description,
     type = IssueType.TASK,
     dueDate,
@@ -51,11 +31,14 @@ export const buildIssueData = ({
 }: IssueCreateInput): Prisma.IssueCreateInput => {
     let issueData: Prisma.IssueCreateInput = {
         title,
+        key,
         description,
         type,
         status: IssueStatus.TODO,
         dueDate,
-        creatorId: creatorId,
+        creator: {
+            connect: { id: creatorId }
+        },
         project: {
             connect: { id: projectId }
         }
@@ -94,6 +77,19 @@ export const buildIssueData = ({
 };
 
 export async function createNewIssue(input: IssueCreateInput) {
+    const existingIssue = await client.issue.findFirst({
+        where: {
+            title: input.title,
+            projectId: input.projectId,
+            parentId: input.parentId || undefined, // Handle null parentId
+        },
+        select: {
+            id: true,
+        },
+    });
+    if (existingIssue) {
+        throw new Error(`An issue with the title "${input.title}" already exists in this project.`);
+    }
     const issue = await client.issue.create({
         data: buildIssueData(input)
     });

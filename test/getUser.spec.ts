@@ -82,7 +82,6 @@ import {createAccessToken, InterfaceCreateAccessToken} from "../src/utility/auth
 const jwtPayload:InterfaceCreateAccessToken = {
     userId: "user103",
     email: "tushar@gmail.com",
-    username: "tushar03"
 }
 
 describe('greet()', () => {

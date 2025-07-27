@@ -14,20 +14,23 @@ datasource db {
 }
 
 model User {
-  id             String       @id @default(cuid())
-  email          String       @unique
-  username       String       @unique
-  firstName      String       @map("first_name")
-  lastName       String       @map("last_name")
-  password       String
-  salt           String
-  isVerified     Boolean     @default(false)
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
+  id         String   @id @default(cuid())
+  email      String   @unique
+  firstName  String   @map("first_name")
+  lastName   String   @map("last_name")
+  password   String
+  salt       String
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
   projects       Project[]
-  assignedIssues Issue[]      @relation("AssignedIssues")
   teams          UserTeam[]
   profile        UserProfile?
+  createdIssue   Issue[]      @relation("CreatedIssues")
+  assignedIssues Issue[]      @relation("AssignedIssues")
+  comments       Comment[]
+  activities     Activity[]
 
   @@map("users")
 }
@@ -36,6 +39,7 @@ model UserProfile {
   id           String   @id @default(cuid())
   avatar       String?
   phone        String?
+  bio          String?
   gender       Gender?
   socialId     String?  @unique @map("social_id")
   token        String?  @unique
@@ -44,8 +48,8 @@ model UserProfile {
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @updatedAt @map("updated_at")
 
-  social Social? @relation(fields: [socialId], references: [id])
-  user   User    @relation(fields: [userId], references: [id])
+  social Social? @relation(fields: [socialId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("userprofile")
 }
@@ -63,18 +67,20 @@ model Project {
   creator     User          @relation(fields: [creatorId], references: [id])
   sprints     Sprint[]
   issues      Issue[]       @relation("ProjectIssues")
+  activities  Activity[]
 
   @@map("projects")
 }
 
 model Team {
-  id        String        @id @default(cuid())
-  name      String
-  creatorId String        @map("creator_id")
-  createdAt DateTime      @default(now()) @map("created_at")
-  updatedAt DateTime      @updatedAt @map("updated_at")
-  projects  ProjectTeam[]
-  users     UserTeam[]
+  id         String        @id @default(cuid())
+  name       String
+  creatorId  String        @map("creator_id")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  updatedAt  DateTime      @updatedAt @map("updated_at")
+  projects   ProjectTeam[]
+  users      UserTeam[]
+  activities Activity[]
 
   @@map("teams")
 }
@@ -85,7 +91,7 @@ model UserTeam {
   teamId   String
   role     MemberRole @default(Viewer)
   joinedAt DateTime?  @default(now())
-  team     Team       @relation(fields: [teamId], references: [id])
+  team     Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
   user     User       @relation(fields: [userId], references: [id])
 
   @@map("user_teams")
@@ -96,51 +102,60 @@ model ProjectTeam {
   projectId String
   teamId    String
   joinedAt  DateTime @default(now())
-  project   Project  @relation(fields: [projectId], references: [id])
-  team      Team     @relation(fields: [teamId], references: [id])
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@map("project_teams")
 }
 
 model Issue {
-  id          String      @id @default(cuid())
+  id          String        @id @default(cuid())
+  key         String
   title       String
   description String?
-  status      IssueStatus @default(TODO)
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @updatedAt @map("updated_at")
-  dueDate     DateTime    @map("due_date")
-  type        IssueType   @default(TASK)
+  status      IssueStatus   @default(TODO)
+  priority    IssuePriority @default(MEDIUM)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+  dueDate     DateTime      @map("due_date")
+  type        IssueType     @default(TASK)
   assigneeId  String?
-  creatorId   String      @map("creator_id")
-  projectId   String      @map("project_id")
-  sprintId    String?     @map("sprint_id")
+  creatorId   String        @map("creator_id")
+  projectId   String        @map("project_id")
+  sprintId    String?        @map("sprint_id")
 
   depth Int @default(0) @map("depth")
 
+  creator  User    @relation("CreatedIssues", fields: [creatorId], references: [id])
   assignee User?   @relation("AssignedIssues", fields: [assigneeId], references: [id])
-  project  Project @relation("ProjectIssues", fields: [projectId], references: [id])
-  sprint   Sprint? @relation(fields: [sprintId], references: [id])
+  project  Project @relation("ProjectIssues", fields: [projectId], references: [id], onDelete: Cascade)
+  sprint   Sprint? @relation(fields: [sprintId], references: [id], onDelete: SetNull)
 
-  parentId  String? @map("parent_id")
-  parent    Issue?  @relation("IssueHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  childrens Issue[] @relation("IssueHierarchy")
+  parentId   String?    @map("parent_id")
+  parent     Issue?     @relation("IssueHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  childrens  Issue[]    @relation("IssueHierarchy")
+  comments   Comment[]
+  activities Activity[]
 
   @@map("issues")
 }
 
+
 model Sprint {
   id          String       @id @default(cuid())
+  key         String
+  startDate   DateTime?    @map("start_date")
+  dueDate     DateTime?    @map("due_date")
   title       String
   description String?
   status      SprintStatus @default(ACTIVE)
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
-  dueDate     DateTime?    @map("due_date")
   creatorId   String       @map("creator_id")
   projectId   String       @map("project_id")
-  project     Project      @relation(fields: [projectId], references: [id])
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
   issues      Issue[]
+  activities  Activity[]
 
   @@map("sprints")
 }
@@ -153,7 +168,47 @@ model Social {
   linkedin    String?      @unique
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  userProfile UserProfile?
+  userProfile UserProfile? 
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  issueId   String   @map("issue_id")
+  authorId  String   @map("author_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  issue  Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id])
+
+  @@map("comments")
+}
+
+model Activity {
+  id          String         @id @default(cuid())
+  action      ActivityAction
+  entityType  EntityType     @map("entity_type")
+  entityId    String?        @map("entity_id")
+  entityName  String?        @map("entity_name")
+  description String?        @map("description")
+
+  userId    String  @map("user_id")
+  projectId String? @map("project_id")
+  sprintId  String? @map("sprint_id")
+  issueId   String? @map("issue_id")
+  teamId    String? @map("team_id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User     @relation(fields: [userId], references: [id])
+    project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sprint  Sprint?  @relation(fields: [sprintId], references: [id], onDelete: Cascade)
+  issue   Issue?   @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  team    Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("activities")
 }
 
 enum IssueStatus {
@@ -191,4 +246,60 @@ enum IssueType {
   STORY
   TASK
   BUG
+}
+
+enum IssuePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ActivityAction {
+  // Work/Time tracking activities
+  LOGGED_TIME
+
+  // Sprint management
+  SPRINT_CREATED
+  SPRINT_STARTED
+  SPRINT_COMPLETED
+  SPRINT_UPDATED
+  ISSUE_ADDED_TO_SPRINT
+  ISSUE_REMOVED_FROM_SPRINT
+
+  // Issue management
+  ISSUE_CREATED
+  ISSUE_UPDATED
+  ISSUE_DELETED
+  ISSUE_ASSIGNED
+  ISSUE_UNASSIGNED
+  ISSUE_STATUS_CHANGED
+  ISSUE_PRIORITY_CHANGED
+
+  // Project management
+  PROJECT_CREATED
+  PROJECT_UPDATED
+  PROJECT_DELETED
+  PROJECT_TEAM_ADDED
+  PROJECT_TEAM_REMOVED
+
+  // Team management
+  TEAM_CREATED
+  TEAM_UPDATED
+  TEAM_MEMBER_ADDED
+  TEAM_MEMBER_REMOVED
+  TEAM_MEMBER_ROLE_CHANGED
+
+  // Collaboration
+  COMMENTED
+  COMMENT_DELETED
+}
+
+enum EntityType {
+  PROJECT
+  TEAM
+  SPRINT
+  ISSUE
+  COMMENT
+  USER
 }
