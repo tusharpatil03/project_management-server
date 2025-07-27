@@ -40,7 +40,6 @@ export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, c
     const accessTokenPayload: InterfaceCreateAccessToken = {
         userId: user.id,
         email: user.email,
-        username: user.username,
     }
 
     const newAccessToken = createAccessToken(accessTokenPayload);

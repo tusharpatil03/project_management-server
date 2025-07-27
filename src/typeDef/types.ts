@@ -18,7 +18,6 @@ export const types = gql`
   type User {
     id: ID!
     email: EmailAddress
-    username: String
     firstName: String
     lastName: String
     isVerified: Boolean
@@ -70,8 +69,8 @@ export const types = gql`
 
   type ProjectTeam {
     id: ID!
-    projectId: ID!
-    teamId: ID!
+    projectId: ID
+    teamId: ID
     project: Project
     team: Team
     joinedAt: DateTime
@@ -100,8 +99,9 @@ export const types = gql`
 
   # Issue Type
   type Issue {
-    id: String!
+    id: String
     title: String!
+    key: String!
     description: String
     type: IssueType
     status: IssueStatus
@@ -113,7 +113,6 @@ export const types = gql`
     creator: IssueCreator
     assignee: IssueAssignee
     sprintId: String
-
     parentId: String
     parent: Issue
     childrens: [Issue]
@@ -124,15 +123,15 @@ export const types = gql`
     firstName: String
     lastName: String
     email: String
+    profile: profile
   }
 
   type IssueAssignee {
     id: ID!
     firstName: String
     lastName: String
-    username: String
     email: String
-    avatar: String
+    profile: profile
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -141,8 +140,9 @@ export const types = gql`
   type Sprint {
     id: ID!
     title: String!
+    key: String!
     description: String
-    status: SprintStatus!
+    status: SprintStatus
     createdAt: DateTime
     updatedAt: DateTime
     dueDate: DateTime!
@@ -150,7 +150,7 @@ export const types = gql`
     project: Project
     projectId: String
     creatorId: String
-    issues: [Issue]!
+    issues: [Issue]
   }
 
   type ResponseMessage {

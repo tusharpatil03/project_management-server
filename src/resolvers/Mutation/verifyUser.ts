@@ -24,7 +24,6 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         select: {
             id: true,
             email: true,
-            username: true,
             firstName: true,
             lastName: true,
             profile: {
@@ -53,7 +52,6 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
     const accessTokenPayload: InterfaceCreateAccessToken = {
         userId: user.id,
         email: user.email,
-        username: user.username,
     };
 
     const accessToken = createAccessToken(accessTokenPayload);
@@ -143,7 +141,6 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         select: {
             id: true,
             email: true,
-            username: true,
             firstName: true,
             lastName: true,
             isVerified: true,

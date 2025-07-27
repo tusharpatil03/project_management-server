@@ -7,7 +7,7 @@ export const mutations = gql`
 
     createTeam(input: CreateTeamInput!): Team! @auth
 
-    createIssue(input: CreateIssueInput!): Issue! @auth
+    createIssue(input: CreateIssueInput!): ResponseMessage! @auth
 
     createSprint(input: CreateSprintInput!): Sprint! @auth
 

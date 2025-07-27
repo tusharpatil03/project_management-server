@@ -1,6 +1,7 @@
 import { IssueStatus, IssueType } from '@prisma/client';
-import { MutationResolvers, User } from '../../types/generatedGraphQLTypes';
+import { CreateIssueInput, MutationResolvers, User } from '../../types/generatedGraphQLTypes';
 import { client, TransactionClient } from '../../db';
+import { createNewIssue, IssueCreateInput } from '../../services/Issue/CreateIssue';
 
 export interface InterfaceIssue {
   id: string;
@@ -72,11 +73,11 @@ export const createIssue: MutationResolvers['createIssue'] = async (
 ) => {
   const { input } = args;
 
-  const status: IssueStatus = Object.values(IssueStatus).includes(
-    input.status as IssueStatus
-  )
-    ? (input.status as IssueStatus)
-    : IssueStatus.TODO;
+  // const status: IssueStatus = Object.values(IssueStatus).includes(
+  //   input.status as IssueStatus
+  // )
+  //   ? (input.status as IssueStatus)
+  //   : IssueStatus.TODO;
 
   const validParent = await validateParent(input.parentId as string, input.projectId, input.type);
 
@@ -85,127 +86,33 @@ export const createIssue: MutationResolvers['createIssue'] = async (
   }
 
 
-  return await context.client.$transaction(async (prisma: TransactionClient) => {
-    const creator = await prisma.user.findUnique({
+  if (input.assigneeId) {
+    await context.client.user.findUniqueOrThrow({
       where: {
-        id: context.userId,
+        id: input.assigneeId,
       },
     });
+  }
 
-    if (!creator) {
-      throw new Error('Unauthorized: Creator not found');
-    }
-
-    if (input.assigneeId) {
-      await prisma.user.findUniqueOrThrow({
-        where: {
-          id: input.assigneeId,
-        },
-      });
-    }
-
-    await prisma.project.findUniqueOrThrow({
-      where: {
-        id: input.projectId,
-      },
-    });
-
-    const issue = await prisma.issue.create({
-      data: {
-        title: input.title,
-        description: input.description,
-        dueDate: input.dueDate,
-        type: input.type as IssueType,
-        status: status,
-        ...(input.assigneeId && {
-          assignee: {
-            connect: { id: input.assigneeId },
-          },
-        }),
-        creatorId: context.userId,
-        project: {
-          connect: {
-            id: input.projectId,
-          },
-        },
-        ...(input.sprintId && {
-          sprint: {
-            connect: { id: input.sprintId },
-          },
-        }),
-        ...((validParent && input.parentId) && {
-          parent: {
-            connect: {
-              id: input.parentId
-            }
-          }
-        })
-      },
-      include: {
-        assignee: {
-          include: {
-            profile: true,
-          },
-        },
-      },
-    });
-
-    if (!issue) {
-      throw new Error('Issue creation failed');
-    }
-
-    try {
-      if (input.sprintId) {
-        await prisma.sprint.update({
-          where: {
-            id: input.sprintId,
-          },
-          data: {
-            issues: {
-              connect: {
-                id: issue.id,
-              },
-            },
-          },
-        });
-      }
-
-    }
-    catch (e) {
-      throw new Error("Failed to update Sprint");
-    }
-
-    try {
-      if (input.assigneeId) {
-        await prisma.user.update({
-          where: {
-            id: input.assigneeId,
-          },
-          data: {
-            assignedIssues: {
-              connect: {
-                id: issue.id,
-              },
-            },
-          },
-        });
-      }
-    } catch (e) {
-      throw new Error("Failed to update user")
-    }
-
-    return {
-      id: issue.id,
-      title: issue.title,
-      description: issue.description,
-      creatorId: issue.creatorId,
-      assignee: issue.assignee,
-      projectId: issue.projectId,
-      sprintId: issue.sprintId,
-      createdAt: issue.createdAt,
-      updatedAt: issue.updatedAt,
-      status: issue.status,
-      dueDate: issue.dueDate,
-    };
+  await context.client.project.findUniqueOrThrow({
+    where: {
+      id: input.projectId,
+    },
   });
+
+  const data: IssueCreateInput = {
+    ...args.input,
+    creatorId: context.userId
+  };
+
+  try {
+    await createNewIssue(data);
+  } catch (e) {
+    throw new Error('Issue creation failed');
+  }
+
+  return {
+    message: "Issue Created Successfully",
+    success: true,
+  }
 };

@@ -125,7 +125,6 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
           user: {
             select: {
               id: true,
-              username: true,
               email: true,
               teams: true,
             },

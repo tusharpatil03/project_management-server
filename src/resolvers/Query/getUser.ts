@@ -1,5 +1,5 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { getUserWithProfile, type UserWithProfile } from '../../services/db/user';
+import { getUserWithProfile, type UserWithProfile } from '../../services/user/GetUser';
 
 export const getUserById: QueryResolvers['getUserById'] = async (
   _,

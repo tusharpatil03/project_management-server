@@ -60,7 +60,6 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
           user: {
             select: {
               id: true,
-              username: true,
               email: true,
             },
           },

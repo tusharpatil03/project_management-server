@@ -14,6 +14,7 @@ export const getActiveSprint: QueryResolvers['getActiveSprint'] = async (
         },
         select: {
             id: true,
+            key: true,
             projectId: true,
             title: true,
             dueDate: true,
@@ -21,6 +22,7 @@ export const getActiveSprint: QueryResolvers['getActiveSprint'] = async (
             issues: {
                 select: {
                     id: true,
+                    key: true,
                     title: true,
                     description: true,
                     status: true,
@@ -28,7 +30,6 @@ export const getActiveSprint: QueryResolvers['getActiveSprint'] = async (
                     assignee: {
                         select: {
                             id: true,
-                            username: true,
                             email: true,
                         },
                     },

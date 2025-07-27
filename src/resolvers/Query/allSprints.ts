@@ -83,6 +83,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       projectId: project.id
     },
     select: {
+      key: true,
       id: true,
       status: true,
       title: true,
@@ -92,13 +93,21 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
       issues: {
         select: {
           id: true,
+          key: true,
           title: true,
           status: true,
           type: true,
           dueDate: true,
           assignee: {
             select: {
-              username: true,
+              firstName: true,
+              lastName: true,
+              profile: {
+                select: {
+                  id: true,
+                  avatar: true,
+                }
+              },
               email: true,
               id: true
             }

@@ -11,7 +11,6 @@ export const checkAuth: QueryResolvers["checkAuth"] = async (_, args, context) =
             id: true,
             firstName: true,
             lastName: true,
-            username: true,
             email: true,
             isVerified: true,
             profile: {

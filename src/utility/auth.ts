@@ -7,7 +7,6 @@ import { client } from '../db';
 export interface InterfaceCreateAccessToken {
   userId: string;
   email: string;
-  username: string;
 }
 
 export const createAccessToken = (
@@ -17,11 +16,10 @@ export const createAccessToken = (
     {
       userId: payload.userId.toString(),
       email: payload.email,
-      username: payload.username,
     },
     ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: 5 * 60,
+      expiresIn: 60 * 60,
     }
   );
 };

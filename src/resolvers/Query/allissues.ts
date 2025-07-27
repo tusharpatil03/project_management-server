@@ -24,10 +24,12 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
       throw new Error("You Are Authorized person to view this project")
     }
   }
+  
   const issues = await context.client.issue.findMany({
     where: { projectId: args.projectId },
     select: {
       id: true,
+      key: true,
       title: true,
       type: true,
       status: true,

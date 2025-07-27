@@ -45,7 +45,6 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
   const accessTokenPayload = {
     userId: user.id,
     email: user.email,
-    username: user.username,
   };
 
   const accessToken = createAccessToken(accessTokenPayload);

@@ -1,3 +1,4 @@
+import { SprintStatus } from "@prisma/client";
 import { client } from "../../db";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import { GraphQLError } from "graphql";
@@ -15,41 +16,23 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
             id: true,
             key: true,
             name: true,
+            description: true,
+            sprints: {
+                where: {
+                    status: SprintStatus.ACTIVE,
+                },
+                select: {
+                    id: true,
+                    key: true,
+                    title: true,
+                    projectId: true,
+                    dueDate: true,
+                    status: true,
+                }
+            },
             createdAt: true,
             updatedAt: true,
             status: true,
-            issues: {
-                select: {
-                    id: true,
-                    title: true,
-                    dueDate: true,
-                    type: true,
-                    parent: {
-                        select: {
-                            id: true,
-                            title: true,
-                            dueDate: true,
-                            type: true
-                        }
-                    }
-
-                }
-            },
-            sprints: {
-                select: {
-                    id: true,
-                    title: true,
-                    dueDate: true,
-                    status: true,
-                    issues: {
-                        select: {
-                            id: true,
-                            title: true,
-                            dueDate: true,
-                        }
-                    }
-                }
-            },
             creatorId: true,
         }
     });
@@ -61,7 +44,7 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
         });
     }
 
-    if(project.creatorId !== context.userId){
+    if (project.creatorId !== context.userId) {
         throw new Error("you are not authorized")
     }
 
