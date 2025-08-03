@@ -51,7 +51,6 @@ export const addIssueInSprint: MutationResolvers["addIssueInSprint"] = async (_,
         throw new conflictError(ALREADY_PART_OF_SPRINT.MESSAGE, ALREADY_PART_OF_SPRINT.CODE)
     }
 
-
     if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
         throw new Error('Epic and Story cannot be added in sprint');
     }

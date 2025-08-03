@@ -1,25 +1,36 @@
-import _ from 'lodash';
-import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { IssueType, MemberRole, Project, User } from '@prisma/client';
-import { TransactionClient } from '../../db';
-import { notFoundError } from '../../libraries/errors/notFoundError';
-import { conflictError } from '../../libraries/errors/conflictError';
-import {  ISSUE_NOT_FOUND, ALREADY_ASSIGNED_ISSUE, ASSIGNEE_NOT_MEMBER, ASSIGNEE_NOT_CONTRIBUTOR, PROJECT_NOT_FOUND, ASSIGNEE_NOT_FOUND, INVALID_ISSUE_TYPE } from '../../globals';
+import _ from "lodash";
+import { MutationResolvers } from "../../types/generatedGraphQLTypes";
+import { IssueType, MemberRole, Project, User } from "@prisma/client";
+import { TransactionClient } from "../../db";
+import { notFoundError } from "../../libraries/errors/notFoundError";
+import { conflictError } from "../../libraries/errors/conflictError";
+import {
+  ISSUE_NOT_FOUND,
+  ALREADY_ASSIGNED_ISSUE,
+  ASSIGNEE_NOT_MEMBER,
+  ASSIGNEE_NOT_CONTRIBUTOR,
+  PROJECT_NOT_FOUND,
+  ASSIGNEE_NOT_FOUND,
+  INVALID_ISSUE_TYPE,
+} from "../../globals";
 
-export const assineIssue: MutationResolvers['assineIssue'] = async (
+export const assineIssue: MutationResolvers["assineIssue"] = async (
   _,
   args,
   context
 ) => {
-  const assignee: User = await context.client.user.findUnique({
+  const assignee: User = (await context.client.user.findUnique({
     where: { id: args.input.assigneeId },
     select: {
       id: true,
     },
-  }) as User
+  })) as User;
 
   if (!assignee) {
-    throw new notFoundError(ASSIGNEE_NOT_FOUND.MESSAGE, ASSIGNEE_NOT_FOUND.CODE);
+    throw new notFoundError(
+      ASSIGNEE_NOT_FOUND.MESSAGE,
+      ASSIGNEE_NOT_FOUND.CODE
+    );
   }
 
   const project = await context.client.project.findUnique({
@@ -72,10 +83,16 @@ export const assineIssue: MutationResolvers['assineIssue'] = async (
   }
 
   if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
-    throw new conflictError(INVALID_ISSUE_TYPE.MESSAGE, INVALID_ISSUE_TYPE.CODE);
+    throw new conflictError(
+      INVALID_ISSUE_TYPE.MESSAGE,
+      INVALID_ISSUE_TYPE.CODE
+    );
   }
   if (issue.assigneeId === args.input.assigneeId) {
-    throw new conflictError(ALREADY_ASSIGNED_ISSUE.MESSAGE, ALREADY_ASSIGNED_ISSUE.CODE);
+    throw new conflictError(
+      ALREADY_ASSIGNED_ISSUE.MESSAGE,
+      ALREADY_ASSIGNED_ISSUE.CODE
+    );
   }
   if (issue.projectId !== args.input.projectId) {
     throw new conflictError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
@@ -92,11 +109,17 @@ export const assineIssue: MutationResolvers['assineIssue'] = async (
     })
   );
   if (!isMember) {
-    throw new conflictError(ASSIGNEE_NOT_MEMBER.MESSAGE, ASSIGNEE_NOT_MEMBER.CODE);
+    throw new conflictError(
+      ASSIGNEE_NOT_MEMBER.MESSAGE,
+      ASSIGNEE_NOT_MEMBER.CODE
+    );
   }
 
   if (role === MemberRole.Viewer) {
-    throw new conflictError(ASSIGNEE_NOT_CONTRIBUTOR.MESSAGE, ASSIGNEE_NOT_CONTRIBUTOR.CODE);
+    throw new conflictError(
+      ASSIGNEE_NOT_CONTRIBUTOR.MESSAGE,
+      ASSIGNEE_NOT_CONTRIBUTOR.CODE
+    );
   }
 
   try {
@@ -127,14 +150,13 @@ export const assineIssue: MutationResolvers['assineIssue'] = async (
         },
       });
     });
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
-    throw new Error("update issue and user failed")
+    throw new Error("update issue and user failed");
   }
 
   return {
-    message: 'Issue assigned successfully',
+    message: "Issue assigned successfully",
     success: true,
   };
 };

@@ -24,7 +24,6 @@ export const inputs = gql`
 
   input CreateIssueInput {
     title: String!
-    key: String!
     description: String
     assigneeId: ID
     projectId: ID!
@@ -47,7 +46,6 @@ export const inputs = gql`
 
   input CreateSprintInput {
     title: String!
-    key: String!
     description: String
     projectId: ID!
     dueDate: DateTime!

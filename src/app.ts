@@ -16,9 +16,5 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/voyager', voyagerMiddleware({ endpointUrl: '/graphql' }));
 
 
-app.get('/hello', (req: Request, res: Response, next: NextFunction) => {
-  res.status(200).json({ message: 'hello, welcome to project' });
-});
-
 
 export default app;

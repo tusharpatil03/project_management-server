@@ -34,7 +34,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   }
 
   try {
-    sendVerificationEmail(token, args.input.email);
+    await sendVerificationEmail(token, args.input.email);
   }
   catch (e) {
     throw new Error("Unable to send verification email")
@@ -66,33 +66,6 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   catch (e) {
     throw new Error("Unable to create user");
   }
-
-  // const user = await context.client.user.findUnique({
-  //   where: {
-  //     email: args.input.email,
-  //   }
-  // });
-
-  // if (!user) {
-  //   const error = new Error('Unable to create user');
-  //   error.name = 'UserCreationError';
-  //   throw error;
-  // }
-
-  // const userProfile = await context.client.userProfile.findUnique({
-  //   where: {
-  //     userId: user.id
-  //   },
-  //   include: {
-  //     social: true,
-  //   }
-  // });
-
-  // if (!userProfile) {
-  //   const error = new Error('Unable to create user profile');
-  //   error.name = 'UserProfileCreationError';
-  //   throw error;
-  // }
 
   return {
     message: "user signup complete",

@@ -1,6 +1,6 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 
-export const getAllProjects:QueryResolvers['getAllProjects'] = async (
+export const getAllProjects: QueryResolvers['getAllProjects'] = async (
   _,
   args,
   context
@@ -18,7 +18,19 @@ export const getAllProjects:QueryResolvers['getAllProjects'] = async (
 
 
   const projects = await context.client.project.findMany({
-    where: { creatorId: userId },
+    where: {
+      teams: {
+        some: {
+          team: {
+            users: {
+              some: {
+                userId: context.userId
+              }
+            }
+          }
+        }
+      }
+    },
     include: {
       issues: {
         include: {

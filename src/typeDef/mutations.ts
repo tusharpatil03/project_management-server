@@ -9,7 +9,7 @@ export const mutations = gql`
 
     createIssue(input: CreateIssueInput!): ResponseMessage! @auth
 
-    createSprint(input: CreateSprintInput!): Sprint! @auth
+    createSprint(input: CreateSprintInput!): ResponseMessage! @auth
 
     updateIssueStatus(
       projectId: ID!

@@ -17,7 +17,7 @@ export interface IssueCreateInput {
 
 
 // builder function to create issue data
-export const buildIssueData = ({
+const buildIssueData = ({
     title,
     key,
     description,
@@ -77,17 +77,19 @@ export const buildIssueData = ({
 };
 
 export async function createNewIssue(input: IssueCreateInput) {
-    const existingIssue = await client.issue.findFirst({
+    const existingIssue = await client.issue.findUnique({
         where: {
-            title: input.title,
-            projectId: input.projectId,
-            parentId: input.parentId || undefined, // Handle null parentId
+            projectId_key: {
+                projectId: input.projectId,
+                key: input.key,
+            }
         },
         select: {
             id: true,
         },
     });
     if (existingIssue) {
+        console.log(`An issue with the title "${input.title}" already exists in this project.`)
         throw new Error(`An issue with the title "${input.title}" already exists in this project.`);
     }
     const issue = await client.issue.create({

@@ -16,34 +16,15 @@ export const createSprint: MutationResolvers['createSprint'] = async (
 ) => {
   const input = args.input;
 
-  const creatorId: string = context.userId;
-
-  const activeSprint = await context.client.sprint.findFirst({
-    where: {
-      AND: [
-        {
-          projectId: args.input.projectId,
-        },
-        {
-          status: SprintStatus.ACTIVE
-        }
-      ]
-    },
-    select: {
-      id: true,
-    }
-  });
-
-  if(activeSprint){
-    throw new Error("Present Sprint is ACTIVE ");
-  }
-
+  const sprintCount = await context.client.sprint.count();
+  const key = `Sprint${sprintCount+1}`;
+  
   try {
     const sprint = await context.client.sprint.create({
       data: {
         title: input.title,
         description: input.description,
-        key: input.key,
+        key: key,
         dueDate: input.dueDate,
         creatorId: context.userId,
         project: {
@@ -109,11 +90,16 @@ export const createSprint: MutationResolvers['createSprint'] = async (
     //     data: issuesInput,
     //     skipDuplicates: true,
     //   });
-    //}
+    // }
 
-    return sprint;
+
   } catch (error: any) {
     console.error('Error in Creating Sprint:', error.message);
     throw new Error(`Unable to create Sprint`);
+  }
+
+  return {
+    message: "Sprint Created",
+    success: true
   }
 };

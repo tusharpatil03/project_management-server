@@ -94,21 +94,28 @@ export const createIssue: MutationResolvers['createIssue'] = async (
     });
   }
 
-  await context.client.project.findUniqueOrThrow({
+  const project = await context.client.project.findUniqueOrThrow({
     where: {
       id: input.projectId,
     },
+    select: {
+      key: true,
+    }
   });
+
+  const issueCount = await context.client.issue.count();
+  const key = `${project.key}${issueCount}`;
 
   const data: IssueCreateInput = {
     ...args.input,
+    key: key,
     creatorId: context.userId
   };
 
   try {
     await createNewIssue(data);
   } catch (e) {
-    throw new Error('Issue creation failed');
+    throw new Error('failed to create Issue');
   }
 
   return {

@@ -1,12 +1,12 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 import { getUserWithProfile, type UserWithProfile } from '../../services/user/GetUser';
 
-export const getUserById: QueryResolvers['getUserById'] = async (
+export const getUser: QueryResolvers['getUser'] = async (
   _,
   args,
   context
 ) => {
-  const user: UserWithProfile = await getUserWithProfile(args.userId)
+  const user: UserWithProfile | null = await getUserWithProfile(args.userId as string, args.email as string)
   if (!user) {
     throw new Error("Unable to Find User")
   }

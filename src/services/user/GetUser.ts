@@ -9,10 +9,13 @@ const userWihtPorfile = Prisma.validator<Prisma.UserDefaultArgs>()({
 
 export type UserWithProfile = Prisma.UserGetPayload<typeof userWihtPorfile>
 
-export const getUserWithProfile = async (userId: string) => {
+export const getUserWithProfile = async (userId: string | undefined, email: string | undefined) => {
+    if (!userId && !email) {
+        return null;
+    };
     return await client.user.findUnique({
         where: {
-            id: userId
+            ...(userId ? {id: userId} : {email: email})
         },
         select: {
             id: true,

@@ -78,9 +78,13 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
     throw new Error("falied to updated user profile with new token");
   }
 
+  //console.log(user);
+
   return {
-    user,
-    profile: user.profile,
+    user : {
+      ...user,
+      profile: user.profile
+    },
     accessToken,
     refreshToken
   };

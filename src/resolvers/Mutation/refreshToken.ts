@@ -24,6 +24,8 @@ export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, c
         throw error;
     }
 
+    // console.log(user.profile);
+
     // console.log((user.profile.tokenVersion === decoded.tokenVersion) && (user.profile.token === refreshToken));
     // console.log("user token version:", user.profile.tokenVersion, "decoded token version:", decoded.tokenVersion);
     // console.log(user.profile.token, refreshToken);

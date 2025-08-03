@@ -6,12 +6,12 @@ import { MemberRole } from '@prisma/client';
 export interface InterfaceUserRole {
   role: MemberRole | undefined
 }
+
 export const isUserPartOfProject = async (
   userId: string,
   projectId: string,
   client: PrismaClientType
 ): Promise<InterfaceUserRole> => {
-
 
   const userTeam = await client.userTeam.findFirst({
     where: {
@@ -73,7 +73,7 @@ export const getAllSprints: QueryResolvers['getAllSprints'] = async (
 
   if (project.creatorId !== context.userId) {
     if (!isPartOfProject) {
-      throw new Error("You Are Authorized person to view this project")
+      throw new Error("Unauthorized Access")
     }
   }
 

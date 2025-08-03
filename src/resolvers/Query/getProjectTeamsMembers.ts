@@ -1,55 +1,34 @@
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
 export const getProjectTeamsMembers: QueryResolvers["getProjectTeamsMembers"] = async (_, args, context) => {
-    console.log("MEMBERS HIT BY CLIENT");
-    const teams = await context.client.team.findMany({
+    const users = await context.client.user.findMany({
         where: {
-            projects: {
+            teams: {
                 some: {
-                    projectId: args.projectId
+                    team: {
+                        projects: {
+                            some: {
+                                projectId: args.projectId
+                            }
+                        }
+                    }
                 }
             }
         },
-        include: {
-            users: {
+        select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            profile: {
                 select: {
-                    user: {
-                        select: {
-                            id: true,
-                            email: true,
-                            firstName: true,
-                            lastName: true,
-                            profile: {
-                                select: {
-                                    id: true,
-                                    avatar: true
-                                }
-                            }
-                        }
-                    },
                     id: true,
-                    role: true,
-                    joinedAt: true,
+                    avatar: true
                 }
             }
         }
     });
 
-    if (teams.length <= 0) {
-        throw new Error("Teams not found")
-    }
 
-    const members = teams
-        .flatMap(team => team.users)
-        .map(member => {
-            const user = member.user;
-            return {
-                id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                profile: user.profile
-            };
-        });
-
-    return members;
+    return users;
 }

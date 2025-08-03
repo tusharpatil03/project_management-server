@@ -2,10 +2,10 @@ import { EMAIL_VERIFICATION_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken";
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
-import { connect } from "http2";
+import { CreateActivity } from "../../services/Activity/Create";
+import { ActivityAction, EntityType } from "@prisma/client";
 
 export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, context) => {
-    console.log("CORRECT HIT");
     const token = args.token;
     if (!token) {
         console.log("Inavlid Token");
@@ -26,6 +26,7 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
             email: true,
             firstName: true,
             lastName: true,
+            isVerified: true,
             profile: {
                 select: {
                     id: true,
@@ -48,6 +49,7 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
     if (!user || !user.profile) {
         throw new Error("User or user profile not found");
     }
+
 
     const accessTokenPayload: InterfaceCreateAccessToken = {
         userId: user.id,
@@ -93,11 +95,11 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         }
     });
 
-    if (user.projects.length === 0) {
+    if (!user.isVerified) {
         const project = await context.client.project.create({
             data: {
-                name: 'sample project',
-                key: "SMP",
+                name: 'Project01',
+                key: "PRJ",
                 description: "learn project management in 10 min",
                 creator: {
                     connect: {
@@ -117,6 +119,21 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
             }
         });
 
+        await context.client.userTeam.create({
+            data: {
+                team: {
+                    connect: {
+                        id: team.id
+                    }
+                },
+                user: {
+                    connect: {
+                        id: user.id
+                    }
+                }
+            }
+        })
+
         await context.client.projectTeam.create({
             data: {
                 project: {
@@ -132,6 +149,25 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
             }
         });
 
+
+        let createActivityInput: CreateActivity = {
+            action: ActivityAction.PROJECT_CREATED,
+            entityType: EntityType.PROJECT,
+            entityId: project.id,
+            entityName: "Project",
+            userId: context.userId,
+            projectId: project.id,
+            teamId: team.id
+        }
+
+        try {
+            await CreateActivity(createActivityInput);
+        }
+        catch (e) {
+            console.log(e);
+        }
+    }else{
+        console.log("user is already verified");
     }
 
     const updatedUser = await context.client.user.findUnique({

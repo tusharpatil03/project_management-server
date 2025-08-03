@@ -34,6 +34,12 @@ export const createProject: MutationResolvers['createProject'] = async (
         throw new Error('Unauthorized: Creator not found');
       }
 
+      const team = await prisma.team.findFirst({
+        where: {
+          creatorId: context.userId
+        }
+      });
+
       const project = await prisma.project.create({
         data: {
           name: args.input.name,
@@ -49,6 +55,23 @@ export const createProject: MutationResolvers['createProject'] = async (
           id: true,
         },
       });
+
+      if (team && project) {
+        await prisma.projectTeam.create({
+          data: {
+            team: {
+              connect: {
+                id: team.id
+              }
+            },
+            project: {
+              connect: {
+                id: project.id
+              }
+            }
+          }
+        })
+      }
 
     });
   } catch (e) {

@@ -69,6 +69,7 @@ model Project {
   issues      Issue[]       @relation("ProjectIssues")
   activities  Activity[]
 
+  @@unique([creatorId, key])
   @@map("projects")
 }
 
@@ -122,7 +123,7 @@ model Issue {
   assigneeId  String?
   creatorId   String        @map("creator_id")
   projectId   String        @map("project_id")
-  sprintId    String?        @map("sprint_id")
+  sprintId    String?       @map("sprint_id")
 
   depth Int @default(0) @map("depth")
 
@@ -137,9 +138,10 @@ model Issue {
   comments   Comment[]
   activities Activity[]
 
+  @@unique([projectId, key]) // This ensures that the 'key' is unique only within the scope of a 'projectId'.
+  @@index([projectId])
   @@map("issues")
 }
-
 
 model Sprint {
   id          String       @id @default(cuid())
@@ -157,6 +159,7 @@ model Sprint {
   issues      Issue[]
   activities  Activity[]
 
+  @@unique([projectId, key])
   @@map("sprints")
 }
 
@@ -168,7 +171,7 @@ model Social {
   linkedin    String?      @unique
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  userProfile UserProfile? 
+  userProfile UserProfile?
 }
 
 model Comment {
@@ -202,7 +205,7 @@ model Activity {
   createdAt DateTime @default(now()) @map("created_at")
 
   user    User     @relation(fields: [userId], references: [id])
-    project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
   sprint  Sprint?  @relation(fields: [sprintId], references: [id], onDelete: Cascade)
   issue   Issue?   @relation(fields: [issueId], references: [id], onDelete: Cascade)
   team    Team?    @relation(fields: [teamId], references: [id], onDelete: Cascade)
