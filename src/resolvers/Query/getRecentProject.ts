@@ -49,6 +49,8 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
                 }
             });
 
+            // console.log(project)
+
             return project;
         }
 
@@ -98,7 +100,11 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
             throw new Error("you are not authorized")
         }
 
+
+        // console.log(project)
+
         return project;
+
 
     } catch (e) {
         console.log(e);

@@ -19,7 +19,7 @@ export const createAccessToken = (
     },
     ACCESS_TOKEN_SECRET as string,
     {
-      expiresIn: 1 * 60,
+      expiresIn: 30 * 60,
     }
   );
 };

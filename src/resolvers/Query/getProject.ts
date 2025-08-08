@@ -1,7 +1,7 @@
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
-export const getProjectByKey: QueryResolvers["getProjectByKey"] = async (_, args, context) => {
-    if (!args.projectKey && args.projectId) {
+export const getProject: QueryResolvers["getProject"] = async (_, args, context) => {
+    if (!args.projectKey && !args.projectId) {
         return null;
     }
 

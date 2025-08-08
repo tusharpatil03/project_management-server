@@ -22,6 +22,6 @@ export const queries = gql`
 
     getRecentProject: Project @auth
     getAllProjects: [Project] @auth
-    getProjectByKey(projectKey: String , projectId: String): Project @auth
+    getProject(projectKey: String , projectId: String): Project @auth
   }
 `;

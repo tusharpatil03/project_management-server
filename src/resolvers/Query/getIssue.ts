@@ -7,7 +7,6 @@ export const getIssueById: QueryResolvers['getIssueById'] = async (
   args,
   context
 ) => {
-  console.log("GET_ISSUE");
   let issue = await context.client.issue.findUnique({
     where: { id: args.issueId },
     include: {
