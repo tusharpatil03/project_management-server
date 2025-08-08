@@ -4,7 +4,7 @@ import { getAllIssues } from './allissues';
 import { getSprintById } from './getSprintById';
 import { getIssueById } from './getIssue';
 import { getTeamById } from './getTeam';
-import { getUser } from './getUser';
+import { getUserById } from './getUser';
 import { checkAuth } from './checkAuth';
 import { getRecentProject } from './getRecentProject';
 import { getAllUserTeams } from './allUserTeams';
@@ -14,7 +14,7 @@ import { getProject } from './getProject';
 
 export const Query = {
   checkAuth,
-  getUser,
+  getUserById,
   getIssueById,
   getSprintById,
   getAllSprints,

@@ -9,7 +9,7 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
 
   const userExists = await context.client.user.findUnique({
     where: { id: userId },
-    select: { id: true }, // Lightweight fetch
+    select: { id: true }, // lightweight fetch
   });
 
   if (!userExists) {
@@ -32,27 +32,9 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
       }
     },
     include: {
-      issues: {
-        include: {
-          assignee: {
-            include: {
-              profile: true,
-            },
-          },
-        },
-      },
       creator: {
         include: {
           profile: true,
-        },
-      },
-      sprints: {
-        include: {
-          issues: {
-            include: {
-              assignee: true,
-            },
-          },
         },
       },
     },

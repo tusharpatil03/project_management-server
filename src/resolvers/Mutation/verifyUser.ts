@@ -106,6 +106,7 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
                         id: user.id,
                     }
                 },
+                starred: true,
             },
             select: {
                 id: true
@@ -166,7 +167,7 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         catch (e) {
             console.log(e);
         }
-    }else{
+    } else {
         console.log("user is already verified");
     }
 

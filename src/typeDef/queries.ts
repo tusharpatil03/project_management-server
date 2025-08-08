@@ -3,7 +3,8 @@ import gql from 'graphql-tag';
 export const queries = gql`
   # Queries
   type Query {
-    getUser(userId: ID, email:String): User! @auth
+    getUserById(userId: ID, email:String): User! @auth
+    getUserInfo: User @auth
     checkAuth: User @auth
 
     getTeamById(teamId: ID!): Team! @auth

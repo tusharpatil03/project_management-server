@@ -90,7 +90,7 @@ export const sendVerificationEmail = async (token: string, email: string) => {
       },
     });
 
-    const url = `http://localhost:5173/auth/verify?token=${token}`;
+    const url = `http://localhost:5173/signup/verify?token=${token}`;
 
     const mailOptions = {
       from: `"TaskFlow Support" <${EMAIL_USER}>`,

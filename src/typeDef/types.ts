@@ -24,7 +24,6 @@ export const types = gql`
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]
-    sprints: [Sprint]
     teams: [Team]
     createdTeams: [Team]
     createdIssues: [Issue]
@@ -64,7 +63,8 @@ export const types = gql`
     issues: [Issue]
     sprints: [Sprint]
     status: ProjectStatus
-    creatorId: String!
+    creatorId: String
+    creator: User
   }
 
   type ProjectTeam {
