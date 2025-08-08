@@ -10,7 +10,7 @@ import { getRecentProject } from './getRecentProject';
 import { getAllUserTeams } from './allUserTeams';
 import { getProjectTeamsMembers } from './getProjectTeamsMembers';
 import { getActiveSprint } from './getActiveSprint';
-import { getProjectByKey } from './getProjectBykey';
+import { getProject } from './getProject';
 
 export const Query = {
   checkAuth,
@@ -25,5 +25,5 @@ export const Query = {
   getAllUserTeams,
   getProjectTeamsMembers,
   getActiveSprint,
-  getProjectByKey
+  getProject
 };
