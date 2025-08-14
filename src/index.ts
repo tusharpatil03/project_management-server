@@ -4,17 +4,19 @@ import { SEVER_PORT } from './globals';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { typeDef } from './typeDef';
 import { resolvers } from './resolvers';
-import { ApolloServer, BaseContext } from '@apollo/server';
+import { ApolloServer } from '@apollo/server';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { client, MyContext } from './db';
+import { client, initializePrisma, MyContext } from './db';
 import 'dotenv/config';
 import { isAuth } from './middlewares/isAuth';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';
 import { roleDirectiveTransformer } from './directives/directiveTransformers/roleDirectiveTransformer';
+
+
 const httpServer = http.createServer(app);
 
 let schema = makeExecutableSchema({
@@ -56,6 +58,7 @@ const server = new ApolloServer({
 let serverHost = 'localhost';
 
 async function startServer() {
+ await initializePrisma();
   await server.start();
   app.use(
     '/graphql',

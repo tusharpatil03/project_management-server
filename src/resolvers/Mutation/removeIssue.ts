@@ -11,9 +11,11 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
 
   const { issueId, projectId } = input;
 
+  console.log("input:",input);
+
   try {
     return await context.client.$transaction(async (prisma:TransactionClient) => {
-      // Fetch the issue with its project
+      // fetch the issue with its project
       const issue = await prisma.issue.findUnique({
         where: { id: issueId },
         include: { project: true },
@@ -23,7 +25,7 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
         throw new Error('Issue is not part of this project');
       }
 
-      // Fetch the project to verify the creator
+      // fetch the project to verify the creator
       const project = await prisma.project.findUnique({
         where: { id: projectId },
       });
@@ -43,7 +45,7 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
         );
       }
 
-      // Disconnect issue from sprint if it belongs to one
+      // disconnect issue from sprint if it belongs to one
       if (issue.sprintId) {
         await prisma.sprint.update({
           where: { id: issue.sprintId },
@@ -55,7 +57,7 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
         });
       }
 
-      // Disconnect issue from assignee if it has one
+      // disconnect issue from assignee if it has one
       if (issue.assigneeId) {
         await prisma.user.update({
           where: { id: issue.assigneeId },
@@ -67,7 +69,7 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
         });
       }
 
-      // Delete the issue (this automatically removes it from the project)
+      //delete the issue
       await prisma.issue.delete({
         where: { id: issueId },
       });
