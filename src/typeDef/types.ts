@@ -177,4 +177,20 @@ export const types = gql`
     lastName: String
     phone: String
   }
+
+  type activeSprintStat {
+    totalIssues: Int
+    openIssues: Int
+    closedIssues: Int
+    inProgressIssues: Int
+  }
+
+  type ProjectStat {
+    totalIssues: Int
+    openIssues: Int
+    closedIssues: Int
+    inProgressIssues: Int
+    totalSprints: Int
+    activeSprintStat: activeSprintStat
+  }
 `;

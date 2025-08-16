@@ -12,6 +12,7 @@ import { getProjectTeamsMembers } from './getProjectTeamsMembers';
 import { getActiveSprint } from './getActiveSprint';
 import { getProject } from './getProject';
 import { getUserInfo } from './getUserInfo';
+import { getProjectStat } from './getProjectStat';
 
 export const Query = {
   checkAuth,
@@ -27,5 +28,6 @@ export const Query = {
   getProjectTeamsMembers,
   getActiveSprint,
   getProject,
-  getUserInfo
+  getUserInfo,
+  getProjectStat
 };
