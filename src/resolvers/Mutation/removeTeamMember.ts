@@ -1,5 +1,7 @@
+import { ActivityAction, EntityType } from '@prisma/client';
 import { TransactionClient } from '../../db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 import { MutationResolvers, RemoveTeamMemberInput } from '../../types/generatedGraphQLTypes';
 
 export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
@@ -67,6 +69,21 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
       },
     },
   });
+
+  //create activity
+  const createActivityInput: CreateActivityInput = {
+    action: ActivityAction.TEAM_MEMBER_REMOVED,
+    entityType: EntityType.TEAM,
+    entityId: team.id,
+    description: `member removed from team`,
+    userId: context.userId,
+    teamId: team.id
+  }
+  try {
+    await CreateActivity(createActivityInput, context.client);
+  } catch (e) {
+    console.log("Failed to create activity", e);
+  }
 
   if (!updatedTeam) {
     throw new Error('Team does not exist');

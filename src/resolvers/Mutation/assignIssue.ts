@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
-import { IssueType, MemberRole, Project, User } from "@prisma/client";
+import { ActivityAction, EntityType, IssueType, MemberRole, Project, User } from "@prisma/client";
 import { TransactionClient } from "../../db";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { conflictError } from "../../libraries/errors/conflictError";
@@ -13,7 +13,11 @@ import {
   ASSIGNEE_NOT_FOUND,
   INVALID_ISSUE_TYPE,
 } from "../../globals";
+import { UnauthorizedError } from "../../libraries/errors/unAuthorizedError";
+import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
 
+
+//this resolver is to assign the issue to a user
 export const assineIssue: MutationResolvers["assineIssue"] = async (
   _,
   args,
@@ -26,6 +30,7 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
     },
   })) as User;
 
+  //if assigneee not exist throw a error
   if (!assignee) {
     throw new notFoundError(
       ASSIGNEE_NOT_FOUND.MESSAGE,
@@ -33,6 +38,7 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
     );
   }
 
+  //fetch project by id which is required to 
   const project = await context.client.project.findUnique({
     where: { id: args.input.projectId },
     include: {
@@ -45,6 +51,7 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
           assigneeId: true,
           projectId: true,
           type: true,
+          key: true,
         },
       },
       teams: {
@@ -82,24 +89,30 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
     throw new notFoundError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
   }
 
-  if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
-    throw new conflictError(
-      INVALID_ISSUE_TYPE.MESSAGE,
-      INVALID_ISSUE_TYPE.CODE
-    );
-  }
+  // //issue type EPIC and STORY can not be assigned
+  // if (issue.type === IssueType.EPIC || issue.type === IssueType.STORY) {
+  //   throw new conflictError(
+  //     INVALID_ISSUE_TYPE.MESSAGE,
+  //     INVALID_ISSUE_TYPE.CODE
+  //   );
+  // }
+
+  //in case issue is already assigned to same user
   if (issue.assigneeId === args.input.assigneeId) {
     throw new conflictError(
       ALREADY_ASSIGNED_ISSUE.MESSAGE,
       ALREADY_ASSIGNED_ISSUE.CODE
     );
   }
+
+  //check issue belongs to requested project
   if (issue.projectId !== args.input.projectId) {
     throw new conflictError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
   }
 
   let role = null;
 
+  //check assigner is authorized to perform this action
   const isMember = project.teams.some((team: any) =>
     team.team.users.some((user: any) => {
       if (user.userId === assignee.id) {
@@ -116,12 +129,10 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
   }
 
   if (role === MemberRole.Viewer) {
-    throw new conflictError(
-      ASSIGNEE_NOT_CONTRIBUTOR.MESSAGE,
-      ASSIGNEE_NOT_CONTRIBUTOR.CODE
-    );
+    throw new UnauthorizedError("you are not authorized to perform this action");
   }
 
+  //since user is not direclty in relation with issues we have to update each manually
   try {
     await context.client.$transaction(async (prisma: TransactionClient) => {
       await prisma.issue.update({
@@ -155,6 +166,24 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
     throw new Error("update issue and user failed");
   }
 
+  //create activity
+  const createActivityInput: CreateActivityInput = {
+    action: ActivityAction.ISSUE_ASSIGNED,
+    entityType: EntityType.ISSUE,
+    entityId: issue.id,
+    entityName: issue.id,
+    description: `issue assigned ${issue.key}`,
+    userId: context.userId,
+    issueId: issue.id,
+    projectId: issue.projectId,
+  }
+  try {
+    await CreateActivity(createActivityInput, context.client);
+  } catch (e) {
+    console.log("Failed to create activity", e);
+  }
+
+  //create issues assigned message
   return {
     message: "Issue assigned successfully",
     success: true,

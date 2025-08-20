@@ -1,5 +1,6 @@
-import { IssueType, SprintStatus } from '@prisma/client';
+import { ActivityAction, EntityType, IssueType, SprintStatus } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 
 export interface InterfaceSprint {
   id: string;
@@ -9,6 +10,7 @@ export interface InterfaceSprint {
   dueDate: Date;
 }
 
+//this resolver will create new sprint and return created sprint
 export const createSprint: MutationResolvers['createSprint'] = async (
   _,
   args,
@@ -16,9 +18,14 @@ export const createSprint: MutationResolvers['createSprint'] = async (
 ) => {
   const input = args.input;
 
+  //the sprint count is consider to make key unique
   const sprintCount = await context.client.sprint.count();
-  const key = `Sprint${sprintCount+1}`;
-  
+  const key = `Sprint${sprintCount + 1}`;
+
+  let sprintId: string | null = "";
+  let sprintKey: string | null = "";
+
+  //create a sprint
   try {
     const sprint = await context.client.sprint.create({
       data: {
@@ -33,12 +40,16 @@ export const createSprint: MutationResolvers['createSprint'] = async (
           },
         },
       },
-      include: {
-        project: true,
-        issues: true,
-      },
+      select: {
+        id: true,
+        key: true,
+      }
     });
 
+    sprintId = sprint.id;
+    sprintKey = sprint.key;
+
+    //if existing issue ids are provided in input by user, then add it in this sprint
     if (input.issues && input.issues.length > 0) {
       for (let issue of input.issues) {
         if (
@@ -96,6 +107,22 @@ export const createSprint: MutationResolvers['createSprint'] = async (
   } catch (error: any) {
     console.error('Error in Creating Sprint:', error.message);
     throw new Error(`Unable to create Sprint`);
+  }
+
+  //create activity
+  const createActivityInput: CreateActivityInput = {
+    action: ActivityAction.SPRINT_CREATED,
+    entityType: EntityType.SPRINT,
+    entityId: sprintId,
+    entityName: sprintKey,
+    description: "new sprint created",
+    userId: context.userId,
+    projectId: args.input.projectId
+  }
+  try {
+    await CreateActivity(createActivityInput);
+  } catch (e) {
+    console.log("Failed to create activity", e);
   }
 
   return {

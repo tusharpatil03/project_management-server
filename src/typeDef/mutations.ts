@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export const mutations = gql`
   # Mutations
   type Mutation {
-    createProject(input: CreateProjectInput!): Project! @auth
+    createProject(input: CreateProjectInput!): ResponseMessage! @auth
 
     createTeam(input: CreateTeamInput!): Team! @auth
 

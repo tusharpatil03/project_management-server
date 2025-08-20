@@ -3,6 +3,8 @@ import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers, RemoveSprintInput } from '../../types/generatedGraphQLTypes';
 import { InterfaceSprint } from './createSprint';
 import { InterfaceIssue } from './createIssue';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { ActivityAction, EntityType } from '@prisma/client';
 
 export const removeSprint: MutationResolvers['removeSprint'] = async (
   _,
@@ -98,6 +100,22 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
           id: input.sprintId,
         },
       });
+
+      //create activity
+      const createActivityInput: CreateActivityInput = {
+        action: ActivityAction.SPRINT_REMOVED,
+        entityType: EntityType.PROJECT,
+        entityId: project.id,
+        entityName: project.key,
+        description: `sprint removed from project${project.key}`,
+        userId: context.userId,
+        projectId: project.id,
+      }
+      try {
+        await CreateActivity(createActivityInput, context.client);
+      } catch (e) {
+        console.log("Failed to create activity", e);
+      }
     });
 
     return {

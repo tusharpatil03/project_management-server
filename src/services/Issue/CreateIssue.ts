@@ -1,7 +1,8 @@
-import { IssueStatus, IssueType, Prisma } from "@prisma/client";
+import { ActivityAction, EntityType, IssueStatus, IssueType, Prisma } from "@prisma/client";
 import { client } from "../../db";
+import { CreateActivity, CreateActivityInput } from "../Activity/Create";
 
-
+//this interface defines the input for create Issue
 export interface IssueCreateInput {
     title: string;
     key: string;
@@ -44,7 +45,7 @@ const buildIssueData = ({
         }
     };
 
-    // Only add sprint connection if sprintId is provided and not null
+    // only add sprint connection if sprintId is provided and not null
     if (sprintId) {
         issueData = {
             ...issueData,
@@ -54,7 +55,7 @@ const buildIssueData = ({
         };
     }
 
-    // Only add parent connection if parentId is provided and not null
+    // only add parent connection if parentId is provided and not null
     if (parentId) {
         issueData = {
             ...issueData,
@@ -77,24 +78,45 @@ const buildIssueData = ({
 };
 
 export async function createNewIssue(input: IssueCreateInput) {
-    const existingIssue = await client.issue.findUnique({
-        where: {
-            projectId_key: {
-                projectId: input.projectId,
-                key: input.key,
-            }
-        },
-        select: {
-            id: true,
-        },
-    });
-    if (existingIssue) {
-        console.log(`An issue with the title "${input.title}" already exists in this project.`)
-        throw new Error(`An issue with the title "${input.title}" already exists in this project.`);
-    }
-    const issue = await client.issue.create({
-        data: buildIssueData(input)
-    });
+    try {
+        const existingIssue = await client.issue.findUnique({
+            where: {
+                projectId_key: {
+                    projectId: input.projectId,
+                    key: input.key,
+                }
+            },
+            select: {
+                id: true,
+            },
+        });
+        if (existingIssue) {
+            console.log(`An issue with the title "${input.title}" already exists in this project.`)
+            throw new Error(`An issue with the title "${input.title}" already exists in this project.`);
+        }
 
-    return issue;
+        client.$transaction(async (prisma) => {
+
+            const issue = await prisma.issue.create({
+                data: buildIssueData(input)
+            });
+
+            //create activity
+            const createActivityInput: CreateActivityInput = {
+                action: ActivityAction.ISSUE_CREATED,
+                entityType: EntityType.ISSUE,
+                entityId: issue.key,
+                entityName: issue.key,
+                description: `issue created ${issue.key}`,
+                userId: input.creatorId,
+                issueId: issue.id,
+                projectId: input.projectId,
+            }
+            await CreateActivity(createActivityInput, prisma);
+            return issue;
+        })
+    } catch (e) {
+        console.log(e);
+        throw new Error("Failed to create new Issue");
+    }
 }

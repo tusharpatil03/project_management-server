@@ -1,7 +1,8 @@
-import { IssueStatus, IssueType } from '@prisma/client';
+import { ActivityAction, EntityType, IssueStatus, IssueType } from '@prisma/client';
 import { CreateIssueInput, MutationResolvers, User } from '../../types/generatedGraphQLTypes';
 import { client, TransactionClient } from '../../db';
 import { createNewIssue, IssueCreateInput } from '../../services/Issue/CreateIssue';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 
 export interface InterfaceIssue {
   id: string;
@@ -17,6 +18,7 @@ export interface InterfaceIssue {
   dueDate: string | null;
 }
 
+//validate parent function to validate issue can become parent
 const validateParent = async (parentId: string | undefined, projectId: string, issueType: IssueType): Promise<boolean> => {
   if (!parentId || issueType === IssueType.EPIC) {
     return false;
@@ -81,11 +83,12 @@ export const createIssue: MutationResolvers['createIssue'] = async (
 
   const validParent = await validateParent(input.parentId as string, input.projectId, input.type);
 
+  //if parentId exists then validation is needed
   if (input.parentId && !validParent) {
     throw new Error("Not valid parent")
   }
 
-
+  //check assignee exists
   if (input.assigneeId) {
     await context.client.user.findUniqueOrThrow({
       where: {
@@ -94,6 +97,7 @@ export const createIssue: MutationResolvers['createIssue'] = async (
     });
   }
 
+  //check project exist
   const project = await context.client.project.findUniqueOrThrow({
     where: {
       id: input.projectId,
@@ -103,9 +107,11 @@ export const createIssue: MutationResolvers['createIssue'] = async (
     }
   });
 
+  //for unique key issue count is taken
   const issueCount = await context.client.issue.count();
   const key = `${project.key}${issueCount}`;
 
+  //input for create issue
   const data: IssueCreateInput = {
     ...args.input,
     key: key,
@@ -113,6 +119,7 @@ export const createIssue: MutationResolvers['createIssue'] = async (
   };
 
   try {
+    //create new issue
     await createNewIssue(data);
   } catch (e) {
     throw new Error('failed to create Issue');
