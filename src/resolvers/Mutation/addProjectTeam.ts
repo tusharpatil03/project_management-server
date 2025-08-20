@@ -1,13 +1,18 @@
+import { ActivityAction, EntityType } from "@prisma/client";
 import { AddProjectTeamInput, MutationResolvers } from "../../types/generatedGraphQLTypes";
+import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
 
-
+//this resolver creates ProjectTeam which will connect the project with a team
+//inputs: projectId, teamsId
 export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, args, context) => {
     const input: AddProjectTeamInput = args.input;
 
-    if (!context.userId) {
-        throw new Error("you are not authorized")
-    }
+    // //check user is authorized
+    // if (!context.userId) {
+    //     throw new Error("you are not authorized")
+    // }
 
+    //fetch project from DB to chec projecct exist
     const project = await context.client.project.findFirst({
         where: {
             AND: [
@@ -17,6 +22,7 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
         },
         select: {
             id: true,
+            key: true,
             teams: {
                 select: {
                     id: true,
@@ -32,7 +38,7 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
     }
 
 
-
+    //fetch team from DB to chec team exist
     const team = await context.client.team.findFirst({
         where: {
             id: input.teamId
@@ -47,6 +53,7 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
         throw new Error("Team not exist")
     }
 
+    //check is team already part of project
     let teamExist: boolean = false;
 
     project?.teams.map((t) => {
@@ -59,20 +66,36 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
         throw new Error(`Team with name ${team?.name}already Exist`)
     }
 
-
+    //create projectTeam
     try {
-        await context.client.$transaction(async (prisma) => {
-            await prisma.projectTeam.create({
-                data: {
-                    teamId: input.teamId,
-                    projectId: input.projectId
-                }
-            });
-        })
+        await context.client.projectTeam.create({
+            data: {
+                teamId: input.teamId,
+                projectId: input.projectId
+            }
+        });
     } catch (e) {
         throw new Error("Unable to add team in project")
     }
 
+    //create activity
+    const createActivityInput: CreateActivityInput = {
+        action: ActivityAction.PROJECT_TEAM_ADDED,
+        entityType: EntityType.SPRINT,
+        entityId: project.id,
+        entityName: project.key,
+        description: `PROJECT_TEAM_ADDED to project ${project.key}`,
+        userId: context.userId,
+        projectId: project.id,
+        teamId: team.id,
+    }
+    try {
+        await CreateActivity(createActivityInput, context.client);
+    } catch (e) {
+        console.log("Failed to create activity", e);
+    }
+
+    //return sucess message
     return {
         message: "new team added in project",
         success: true

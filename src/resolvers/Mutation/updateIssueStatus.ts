@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { IssueStatus, MemberRole} from '@prisma/client';
+import { ActivityAction, EntityType, IssueStatus, MemberRole } from '@prisma/client';
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { conflictError } from '../../libraries/errors/conflictError';
 import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, PROJECT_NOT_FOUND } from '../../globals';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 
 export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   _,
@@ -102,6 +103,21 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
     });
   } catch (e) {
     throw new conflictError('Unable to Update Issue', 'issue.updateFailed');
+  }
+
+  //create activity
+  const createActivityInput: CreateActivityInput = {
+    action: ActivityAction.ISSUE_UPDATED,
+    entityType: EntityType.ISSUE,
+    entityId: args.issueId,
+    userId: context.userId,
+    issueId: args.issueId,
+    projectId: args.projectId,
+  }
+  try {
+    await CreateActivity(createActivityInput, context.client);
+  } catch (e) {
+    console.log("Failed to create activity", e);
   }
 
   return {

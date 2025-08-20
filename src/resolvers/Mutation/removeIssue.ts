@@ -1,20 +1,22 @@
 import { MutationResolvers, RemoveIssueInput } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import {  TransactionClient } from '../../db';
+import { TransactionClient } from '../../db';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { ActivityAction, EntityType } from '@prisma/client';
 
 export const removeIssue: MutationResolvers['removeIssue'] = async (
   _,
   args,
   context
 ) => {
-  const input:RemoveIssueInput = args.input;
+  const input: RemoveIssueInput = args.input;
 
   const { issueId, projectId } = input;
 
-  console.log("input:",input);
+  console.log("input:", input);
 
   try {
-    return await context.client.$transaction(async (prisma:TransactionClient) => {
+    return await context.client.$transaction(async (prisma: TransactionClient) => {
       // fetch the issue with its project
       const issue = await prisma.issue.findUnique({
         where: { id: issueId },
@@ -73,13 +75,31 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
       await prisma.issue.delete({
         where: { id: issueId },
       });
-      
+
+      //create activity
+      const createActivityInput: CreateActivityInput = {
+        action: ActivityAction.ISSUE_ASSIGNED,
+        entityType: EntityType.ISSUE,
+        entityId: issue.id,
+        entityName: issue.id,
+        description: `issue assigned ${issue.key}`,
+        userId: context.userId,
+        issueId: issue.id,
+        projectId: issue.projectId,
+      }
+      try {
+        await CreateActivity(createActivityInput, context.client);
+      } catch (e) {
+        console.log("Failed to create activity", e);
+      }
+
 
       return {
         success: true,
         message: 'Issue removed successfully.',
         status: 200,
       };
+
     });
   } catch (error) {
     console.error('Error removing Issue:', error);

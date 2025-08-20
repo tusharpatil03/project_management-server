@@ -2,6 +2,8 @@ import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { TransactionClient } from '../../db';
 import { InterfaceUserRole, isUserPartOfProject } from '../Query/allSprints';
+import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { ActivityAction, EntityType } from '@prisma/client';
 
 export const removeAssineeOfIssue: MutationResolvers['removeAssineeOfIssue'] =
   async (_, args, context) => {
@@ -65,6 +67,23 @@ export const removeAssineeOfIssue: MutationResolvers['removeAssineeOfIssue'] =
     } catch (e) {
       console.log(e);
       throw new Error("Unable to remove assignee")
+    }
+
+    //create activity
+    const createActivityInput: CreateActivityInput = {
+      action: ActivityAction.ISSUE_ASSIGNED,
+      entityType: EntityType.ISSUE,
+      entityId: issue.id,
+      entityName: issue.id,
+      description: `issue assigned ${issue.key}`,
+      userId: context.userId,
+      issueId: issue.id,
+      projectId: issue.projectId,
+    }
+    try {
+      await CreateActivity(createActivityInput, context.client);
+    } catch (e) {
+      console.log("Failed to create activity", e);
     }
 
     return {
