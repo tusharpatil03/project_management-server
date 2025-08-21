@@ -10,7 +10,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { client, initializePrisma, MyContext } from './db';
+import { client, initializePrisma, MyContext } from './db/db';
 import 'dotenv/config';
 import { isAuth } from './middlewares/isAuth';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';

@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
 import { ACCESS_TOKEN_SECRET, EMAIL_VERIFICATION_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
 import 'dotenv/config'
-import { client } from '../db';
+import { client } from '../db/db';
 
 export interface InterfaceCreateAccessToken {
   userId: string;

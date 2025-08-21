@@ -1,5 +1,5 @@
 import { Prisma, User } from "@prisma/client";
-import { client } from "../../db"
+import { client } from "../../db/db"
 
 const userWihtPorfile = Prisma.validator<Prisma.UserDefaultArgs>()({
     include: {

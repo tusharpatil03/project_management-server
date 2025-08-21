@@ -2,5 +2,8 @@
 **/dist
 .env
 *notes.md
-/prisma/migrations
+**/prisma
+
+/src/generated/prisma
+
 /src/generated/prisma

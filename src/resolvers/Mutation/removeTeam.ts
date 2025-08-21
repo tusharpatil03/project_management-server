@@ -1,4 +1,4 @@
-import { PrismaClientType, TransactionClient } from '../../db';
+import { PrismaClientType, TransactionClient } from '../../db/db';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 export const removeTeam: MutationResolvers['removeTeam'] = async (

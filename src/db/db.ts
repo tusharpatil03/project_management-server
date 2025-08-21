@@ -1,7 +1,7 @@
 import { BaseContext } from '@apollo/server';
 import { MemberRole, PrismaClient } from '@prisma/client';
-import { InterfaceAuthData } from './middlewares/isAuth';
-import PrismaManager from './utility/dbConnectivity';
+import { InterfaceAuthData } from '../middlewares/isAuth';
+import PrismaManager from '../utility/dbConnectivity';
 
 export const client = new PrismaClient();
 export type PrismaClientType = PrismaClient;

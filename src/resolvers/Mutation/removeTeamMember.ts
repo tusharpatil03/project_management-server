@@ -1,5 +1,5 @@
 import { ActivityAction, EntityType } from '@prisma/client';
-import { TransactionClient } from '../../db';
+import { TransactionClient } from '../../db/db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 import { MutationResolvers, RemoveTeamMemberInput } from '../../types/generatedGraphQLTypes';

@@ -1,7 +1,7 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
 import { emailVerificationToken, sendVerificationEmail } from '../../utility/auth';
-import { client, TransactionClient } from '../../db';
+import { client, TransactionClient } from '../../db/db';
 
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   const existingUser = await context.client.user.findFirst({

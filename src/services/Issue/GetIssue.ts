@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { client } from "../../db";
+import { client } from "../../db/db";
 
 const issueQuery = Prisma.validator<Prisma.IssueDefaultArgs>()({
     include: {

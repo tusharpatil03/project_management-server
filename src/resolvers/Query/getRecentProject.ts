@@ -1,5 +1,5 @@
 import { Prisma, SprintStatus } from "@prisma/client";
-import { client } from "../../db";
+import { client } from "../../db/db";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import { GraphQLError } from "graphql";
 
