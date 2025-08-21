@@ -57,16 +57,22 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   const input: AddTeamMemberInput = args.input;
 
   //this DB query will fetch team created by this user (user who called this mutation)
-  const AdminUserTeam = await context.client.userTeam.findFirst({
+  const adminUserTeam = await context.client.userTeam.findFirst({
     where: {
-      teamId: input.teamId,
-      userId: context.userId,
+      AND: [
+        { teamId: input.teamId },
+        { userId: context.userId }
+      ]
     },
     select: TeamAdminSelect
   });
 
+  if(!adminUserTeam){
+    throw new Error("User Team Not found");
+  }
+
   //check for role of user === Admin
-  if (AdminUserTeam?.role !== MemberRole.Admin) {
+  if (adminUserTeam?.role !== MemberRole.Admin) {
     throw new Error('Unauthorized access');
   }
 

@@ -75,26 +75,17 @@ export const createTeam: MutationResolvers['createTeam'] = async (
   }
 
   //fetch user_team
-  const userTeam = await context.client.userTeam.findFirst({
+  const team = await context.client.team.findFirst({
     where: {
       AND: [
-        {
-          team: {
-            name: args.input.name
-          }
-        },
-        {
-          userId: context.userId
-        },
-        {
-          role: MemberRole.Admin
-        }
+        { creatorId: context.userId },
+        { name: args.input.name }
       ]
     }
   });
 
-  if (!userTeam) {
+  if (!team) {
     throw new Error("Something went wrong");
   }
-  return userTeam;
+  return team;
 };

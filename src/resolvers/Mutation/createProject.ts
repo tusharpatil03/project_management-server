@@ -110,7 +110,7 @@ export const createProject: MutationResolvers['createProject'] = async (
     userId: context.userId,
   }
   try {
-    await CreateActivity(createActivityInput);
+    await CreateActivity(createActivityInput, context.client);
   } catch (e) {
     console.log("Failed to create activity", e);
   }

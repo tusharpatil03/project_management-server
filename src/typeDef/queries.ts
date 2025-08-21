@@ -8,7 +8,7 @@ export const queries = gql`
     checkAuth: User @auth
 
     getTeamById(teamId: ID!): Team! @auth
-    getAllTeams(name: String!): [Team] @auth
+    getAllTeams: [Team] @auth
     getAllUserTeams: [UserTeam]! @auth
     getProjectTeamsMembers(projectId: ID!): [User]  @auth @role(requires:Contributor)
 
