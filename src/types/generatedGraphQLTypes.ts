@@ -178,7 +178,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   addIssueInSprint?: Maybe<ResponseMessage>;
   addProjectTeam?: Maybe<ResponseMessage>;
-  addTeamMember: Team;
+  addTeamMember: UserTeam;
   assineIssue: ResponseMessage;
   createIssue: ResponseMessage;
   createProject: ResponseMessage;
@@ -359,6 +359,7 @@ export type Query = {
   getTeamById: Team;
   getUserById: User;
   getUserInfo?: Maybe<User>;
+  getUsersBySearch: Array<Maybe<User>>;
 };
 
 
@@ -413,6 +414,11 @@ export type QueryGetTeamByIdArgs = {
 export type QueryGetUserByIdArgs = {
   email?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetUsersBySearchArgs = {
+  search: Scalars['String']['input'];
 };
 
 export type ResponseMessage = {
@@ -855,7 +861,7 @@ export interface JsonScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
 export type MutationResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   addIssueInSprint?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationAddIssueInSprintArgs, 'input'>>;
   addProjectTeam?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationAddProjectTeamArgs, 'input'>>;
-  addTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'input'>>;
+  addTeamMember?: Resolver<ResolversTypes['UserTeam'], ParentType, ContextType, RequireFields<MutationAddTeamMemberArgs, 'input'>>;
   assineIssue?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationAssineIssueArgs, 'input'>>;
   createIssue?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationCreateIssueArgs, 'input'>>;
   createProject?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
@@ -936,6 +942,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
   getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<QueryGetUserByIdArgs>>;
   getUserInfo?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  getUsersBySearch?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryGetUsersBySearchArgs, 'search'>>;
 };
 
 export type ResponseMessageResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['ResponseMessage'] = ResolversParentTypes['ResponseMessage']> = {
