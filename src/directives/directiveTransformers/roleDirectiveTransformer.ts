@@ -30,6 +30,7 @@ export function roleDirectiveTransformer(
             try {
               const projectId = args.projectId || args.input.projectId;
               const userRole = await isUserPartOfProject(context.userId, projectId, context.client);
+              console.log("Role of the User(Role directive):", userRole);
               context.userRole = userRole.role;
             }
             catch (e) {
