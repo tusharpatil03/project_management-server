@@ -33,7 +33,7 @@ export const mutations = gql`
 
     removeTeam(teamId: ID!): ResponseMessage @auth
 
-    addTeamMember(input: addTeamMemberInput!): Team! @auth @role(requires: Admin)
+    addTeamMember(input: addTeamMemberInput!): UserTeam! @auth @role(requires: Admin)
 
     logout: Boolean! @auth
 

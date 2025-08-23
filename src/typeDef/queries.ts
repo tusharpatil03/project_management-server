@@ -6,6 +6,7 @@ export const queries = gql`
     getUserById(userId: ID, email:String): User! @auth
     getUserInfo: User @auth
     checkAuth: User @auth
+    getUsersBySearch(search: String!): [User]! @auth
 
     getTeamById(teamId: ID!): Team! @auth
     getAllTeams: [Team] @auth
