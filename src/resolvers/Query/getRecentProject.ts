@@ -2,6 +2,7 @@ import { Prisma, SprintStatus } from "@prisma/client";
 import { client } from "../../db/db";
 import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 import { GraphQLError } from "graphql";
+import { isUserPartOfProject } from "./allSprints";
 
 
 export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, args, context) => {
@@ -96,7 +97,9 @@ export const getRecentProject: QueryResolvers["getRecentProject"] = async (_, ar
             });
         }
 
-        if (project.creatorId !== context.userId) {
+        const isAuthorized = await isUserPartOfProject(context.userId, project.id, context.client)
+
+        if (!isAuthorized) {
             throw new Error("you are not authorized")
         }
 

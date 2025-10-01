@@ -6,34 +6,6 @@ export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context)
         return null;
     }
 
-    const projects = await context.client.project.findMany({
-        where: {
-            teams: {
-                some: {
-                    team: {
-                        users: {
-                            some: {
-                                userId: context.userId
-                            }
-                        }
-                    }
-                }
-            },
-            status: ProjectStatus.ACTIVE
-        },
-        include: {
-            creator: {
-                include: {
-                    profile: true,
-                },
-            },
-        },
-        orderBy: {
-            updatedAt: 'desc',
-        },
-        take: 4 // limit to 4 projects
-    });
-
     const user = await context.client.user.findUnique({
         where: {
             id: context.userId,
@@ -46,19 +18,38 @@ export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context)
             profile: {
                 select: {
                     id: true,
-                    avatar: true
+                    avatar: true,
+                    social: true,
+                }
+            },
+            projects: {
+                where: {
+                    status: ProjectStatus.ACTIVE,
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    key: true,
+                    description: true,
+                    createdAt: true,
+                    updatedAt: true,
+                    status: true,
+                },
+            },
+            activities: {
+                select: {
+                    id: true,
+                    action: true,
+                    createdAt: true,
+                    projectId: true,
+                    issueId: true,
+                    userId: true,
+                    project: { select: { id: true, name: true, key: true } },
                 }
             }
         }
     });
 
-    if (!user) {
-        return null;
-    }
-
-    return {
-        ...user,
-        projects: projects,
-    }
+    return user;
 
 }

@@ -1,4 +1,4 @@
-import { ActivityAction, EntityType, MemberRole, Prisma } from '@prisma/client';
+import { ActivityAction, EntityType, MemberRole, Prisma, UserTeam } from '@prisma/client';
 import { AddTeamMemberInput, MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { client } from '../../db/db';
 import { notFoundError } from '../../libraries/errors/notFoundError';
@@ -67,7 +67,7 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     select: TeamAdminSelect
   });
 
-  if(!adminUserTeam){
+  if (!adminUserTeam) {
     throw new Error("User Team Not found");
   }
 
@@ -111,11 +111,33 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
   }
 
   // create the user_team and update the user with new user_team
+  let userTeam: UserTeam
   try {
-    const userTeam = await context.client.userTeam.create({
+    userTeam = await context.client.userTeam.create({
       data: createUserTeam(
         input.memberId, input.teamId, input.role as MemberRole
-      )
+      ),
+      select: {
+        id: true,
+        userId: true,
+        teamId: true,
+        role: true,
+        joinedAt: true,
+        user: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            profile: {
+              select: {
+                id: true,
+                avatar: true,
+              }
+            }
+          }
+        },
+      }
     });
 
     await context.client.user.update({
@@ -134,30 +156,8 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     throw new Error("Failed to create user team")
   }
 
-  // fetch the update team
-  const updatedTeam = await context.client.team.findUnique({
-    where: { id: input.teamId },
-    select: {
-      id: true,
-      name: true,
-      users: {
-        select: {
-          id: true,
-          user: {
-            select: {
-              id: true,
-              email: true,
-              teams: true,
-            },
-          },
-          role: true,
-        },
-      },
-      updatedAt: true,
-    },
-  });
 
-  if (!updatedTeam) {
+  if (!userTeam) {
     throw new Error('Failed to fetch updated team after adding member');
   }
 
@@ -177,10 +177,5 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     console.log("Failed to create activity", e);
   }
 
-  return {
-    id: updatedTeam.id,
-    name: updatedTeam.name,
-    userTeams: updatedTeam.users.map((ut) => ut),
-    updatedAt: updatedTeam.updatedAt,
-  };
+  return userTeam;
 };

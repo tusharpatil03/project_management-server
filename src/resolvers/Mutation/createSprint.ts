@@ -25,6 +25,16 @@ export const createSprint: MutationResolvers['createSprint'] = async (
   let sprintId: string | null = "";
   let sprintKey: string | null = "";
 
+  const project = await context.client.project.findUnique({
+    where: {
+      id: args.input.projectId,
+    }
+  });
+
+  if(!project){
+    throw new Error("Project Not Found");
+  }
+
   //create a sprint
   try {
     const sprint = await context.client.sprint.create({
