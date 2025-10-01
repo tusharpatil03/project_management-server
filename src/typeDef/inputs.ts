@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const inputs = gql`
   # Inputs for Mutations
@@ -35,13 +35,13 @@ export const inputs = gql`
   }
 
   input addIssueInput {
-    id: ID!,
+    id: ID!
     sprintId: ID!
   }
 
   input IssueInput {
-    id: ID,
-    type: IssueType,
+    id: ID
+    type: IssueType
   }
 
   input CreateSprintInput {
@@ -86,25 +86,25 @@ export const inputs = gql`
   }
 
   input UpdateProfileInput {
-  firstName: String
-  lastName: String
-  profile: ProfileInput
-}
+    firstName: String
+    lastName: String
+    profile: ProfileInput
+  }
 
-# A nested input type for the user's profile information.
-input ProfileInput {
-  bio: String
-  phone: String
-  gender: String
-  avatar: String # This would typically be a URL to the uploaded image.
-  social: SocialInput
-}
+  # A nested input type for the user's profile information.
+  input ProfileInput {
+    bio: String
+    phone: String
+    gender: String
+    avatar: String # This would typically be a URL to the uploaded image.
+    social: SocialInput
+  }
 
-# A nested input type for social media links.
-input SocialInput {
-  github: String
-  linkedin: String
-  twitter: String
-  facebook: String
-}
+  # A nested input type for social media links.
+  input SocialInput {
+    github: String
+    linkedin: String
+    twitter: String
+    facebook: String
+  }
 `;

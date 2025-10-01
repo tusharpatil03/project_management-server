@@ -1,6 +1,6 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLError, GraphQLSchema } from 'graphql';
-import {  isUserPartOfProject } from '../../resolvers/Query/allSprints';
+import { isUserPartOfProject } from '../../resolvers/Query/allSprints';
 
 export function roleDirectiveTransformer(
   schema: GraphQLSchema,
@@ -14,7 +14,7 @@ export function roleDirectiveTransformer(
         directiveName
       )?.[0];
 
-        if (roleDirective) {
+      if (roleDirective) {
         const { resolve = defaultFieldResolver } = fieldConfig;
 
         const { requires } = roleDirective;
@@ -27,9 +27,10 @@ export function roleDirectiveTransformer(
           info
         ): Promise<any> => {
           let userRole = null;
-          if (args.projectId || args.input?.projectId) {
+          const projectId = args.projectId || args.input?.projectId;
+          if (projectId) {
             try {
-              const projectId = args.projectId || args.input.projectId;
+              console.log("ProjectId:", projectId)
               const roleInfo = await isUserPartOfProject(context.userId, projectId, context.client);
               userRole = roleInfo.role;
               console.log("User's actual role:", userRole);
