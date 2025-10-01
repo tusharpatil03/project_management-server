@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { PrismaClientType } from '../../db';
+import { PrismaClientType } from '../../db/db';
 import { MemberRole } from '@prisma/client';
 
 export interface InterfaceUserRole {
@@ -29,13 +29,7 @@ export const isUserPartOfProject = async (
       ]
     },
     select: {
-      role: true,
-      team: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
+      role: true
     },
   });
 

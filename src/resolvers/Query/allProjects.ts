@@ -17,6 +17,29 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
   }
 
 
+  // const projects = await context.client.project.findMany({
+  //   where: {
+  //     teams: {
+  //       some: {
+  //         team: {
+  //           users: {
+  //             some: {
+  //               userId: context.userId
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   },
+  //   include: {
+  //     creator: {
+  //       include: {
+  //         profile: true,
+  //       },
+  //     },
+  //   },
+  // });
+
   const projects = await context.client.project.findMany({
     where: {
       teams: {
@@ -24,12 +47,12 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
           team: {
             users: {
               some: {
-                userId: context.userId
-              }
-            }
-          }
-        }
-      }
+                userId: context.userId, // current user
+              },
+            },
+          },
+        },
+      },
     },
     include: {
       creator: {
@@ -37,8 +60,23 @@ export const getAllProjects: QueryResolvers['getAllProjects'] = async (
           profile: true,
         },
       },
+      teams: {
+        include: {
+          team: {
+            include: {
+              users: {
+                include: {
+                  user: true, // fetch user details too
+                },
+              },
+            },
+          },
+        },
+      },
     },
   });
+
+  console.log("All Projects: ", projects);
 
   return projects;
 };

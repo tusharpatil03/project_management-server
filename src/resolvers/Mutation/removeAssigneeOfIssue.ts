@@ -1,6 +1,6 @@
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { TransactionClient } from '../../db';
+import { TransactionClient } from '../../db/db';
 import { InterfaceUserRole, isUserPartOfProject } from '../Query/allSprints';
 import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
 import { ActivityAction, EntityType } from '@prisma/client';

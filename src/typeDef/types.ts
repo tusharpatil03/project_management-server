@@ -29,6 +29,20 @@ export const types = gql`
     createdIssues: [Issue]
     assignedIssues: [Issue]
     profile: profile
+    activities: [Activity]
+  }
+
+  type Activity {
+    id: ID!
+    action: String
+    userId: ID
+    projectId: ID
+    issueId: ID
+    createdAt: DateTime
+    updatedAt: DateTime
+    user: User
+    project: Project
+    issue: Issue
   }
 
   type profile {
@@ -36,6 +50,7 @@ export const types = gql`
     gender: Gender
     phone: String
     avatar: String
+    bio: String
     social: Social
     createdAt: DateTime
     updatedAt: DateTime

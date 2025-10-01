@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import { ActivityAction, EntityType, IssueType, MemberRole, Project, User } from "@prisma/client";
-import { TransactionClient } from "../../db";
+import { TransactionClient } from "../../db/db";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { conflictError } from "../../libraries/errors/conflictError";
 import {

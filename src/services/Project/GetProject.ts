@@ -1,5 +1,5 @@
 import { Prisma, SprintStatus } from "@prisma/client";
-import { client } from "../../db";
+import { client } from "../../db/db";
 
 class ProjectQueryBuilder {
     private query: Prisma.ProjectFindManyArgs = {};

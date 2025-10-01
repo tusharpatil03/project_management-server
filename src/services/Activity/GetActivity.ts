@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { client } from "../../db";
+import { client } from "../../db/db";
 
 export class IssuesQuery {
 	public query: { select: Prisma.IssueSelect };

@@ -1,6 +1,6 @@
 import { ActivityAction, EntityType, MemberRole, Prisma, UserTeam } from '@prisma/client';
 import { AddTeamMemberInput, MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { client } from '../../db';
+import { client } from '../../db/db';
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { ALREADY_MEMBER_OF_TEAM, MEMEBER_NOT_FOUND_ERROR, TEAM_NOT_FOUND } from '../../globals';
 import { conflictError } from '../../libraries/errors/conflictError';

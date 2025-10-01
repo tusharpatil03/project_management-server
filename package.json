@@ -6,7 +6,11 @@
     "build": "tsc --pretty --project tsconfig.json",
     "dev": "npm run build && node dist/index.js",
     "generate": "graphql-codegen",
-    "test": "vitest"
+    "test": "vitest",
+    "prisma:generate": "prisma generate --schema=src/db/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=src/db/schema.prisma",
+    "prisma:push": "prisma db push --schema=src/db/schema.prisma",
+    "prisma:migrate:reset": "prisma migrate reset --schema=src/db/schema.prisma"
   },
   "keywords": [],
   "author": "",

@@ -1,4 +1,4 @@
-import { PrismaClientType, TransactionClient } from '../../db';
+import { PrismaClientType, TransactionClient } from '../../db/db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers, RemoveSprintInput } from '../../types/generatedGraphQLTypes';
 import { InterfaceSprint } from './createSprint';
