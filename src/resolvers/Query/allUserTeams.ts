@@ -40,8 +40,15 @@ export const getAllUserTeams: QueryResolvers["getAllUserTeams"] = async (_, args
                     name: true,
                     createdAt: true,
                     updatedAt: true,
-                    creatorId: true
-                }
+                    creatorId: true,
+                    users: {
+                        select: {
+                            id: true,
+                            user: true,
+                            role: true
+                        }
+                    }
+                },
             }
         }
     })

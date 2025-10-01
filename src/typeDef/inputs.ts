@@ -84,4 +84,27 @@ export const inputs = gql`
     projectId: ID!
     teamId: ID!
   }
+
+  input UpdateProfileInput {
+  firstName: String
+  lastName: String
+  profile: ProfileInput
+}
+
+# A nested input type for the user's profile information.
+input ProfileInput {
+  bio: String
+  phone: String
+  gender: String
+  avatar: String # This would typically be a URL to the uploaded image.
+  social: SocialInput
+}
+
+# A nested input type for social media links.
+input SocialInput {
+  github: String
+  linkedin: String
+  twitter: String
+  facebook: String
+}
 `;

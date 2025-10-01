@@ -23,6 +23,20 @@ export type Scalars = {
   Password: { input: any; output: any; }
 };
 
+export type Activity = {
+  __typename?: 'Activity';
+  action?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  issue?: Maybe<Issue>;
+  issueId?: Maybe<Scalars['ID']['output']>;
+  project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['ID']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
+};
+
 export type AssignIssueInput = {
   assigneeId: Scalars['ID']['input'];
   issueId: Scalars['ID']['input'];
@@ -196,6 +210,7 @@ export type Mutation = {
   sendVerificationLink?: Maybe<ResponseMessage>;
   signup: ResponseMessage;
   updateIssueStatus: ResponseMessage;
+  updateUserProfile: ResponseMessage;
   verifyUser: AuthData;
 };
 
@@ -297,8 +312,21 @@ export type MutationUpdateIssueStatusArgs = {
 };
 
 
+export type MutationUpdateUserProfileArgs = {
+  input: UpdateProfileInput;
+};
+
+
 export type MutationVerifyUserArgs = {
   token: Scalars['String']['input'];
+};
+
+export type ProfileInput = {
+  avatar?: InputMaybe<Scalars['String']['input']>;
+  bio?: InputMaybe<Scalars['String']['input']>;
+  gender?: InputMaybe<Scalars['String']['input']>;
+  phone?: InputMaybe<Scalars['String']['input']>;
+  social?: InputMaybe<SocialInput>;
 };
 
 export type Project = {
@@ -357,7 +385,7 @@ export type Query = {
   getRecentProject?: Maybe<Project>;
   getSprintById: Sprint;
   getTeamById: Team;
-  getUserById: User;
+  getUserById?: Maybe<User>;
   getUserInfo?: Maybe<User>;
   getUsersBySearch: Array<Maybe<User>>;
 };
@@ -412,8 +440,7 @@ export type QueryGetTeamByIdArgs = {
 
 
 export type QueryGetUserByIdArgs = {
-  email?: InputMaybe<Scalars['String']['input']>;
-  userId?: InputMaybe<Scalars['ID']['input']>;
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -444,6 +471,13 @@ export type Social = {
   linkedin?: Maybe<Scalars['String']['output']>;
   twitter?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
+};
+
+export type SocialInput = {
+  facebook?: InputMaybe<Scalars['String']['input']>;
+  github?: InputMaybe<Scalars['String']['input']>;
+  linkedin?: InputMaybe<Scalars['String']['input']>;
+  twitter?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Sprint = {
@@ -489,8 +523,15 @@ export type UnauthorizedError = Error & {
   message: Scalars['String']['output'];
 };
 
+export type UpdateProfileInput = {
+  firstName?: InputMaybe<Scalars['String']['input']>;
+  lastName?: InputMaybe<Scalars['String']['input']>;
+  profile?: InputMaybe<ProfileInput>;
+};
+
 export type User = {
   __typename?: 'User';
+  activities?: Maybe<Array<Maybe<Activity>>>;
   assignedIssues?: Maybe<Array<Maybe<Issue>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   createdIssues?: Maybe<Array<Maybe<Issue>>>;
@@ -544,6 +585,7 @@ export type AddTeamMemberInput = {
 export type Profile = {
   __typename?: 'profile';
   avatar?: Maybe<Scalars['String']['output']>;
+  bio?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   gender?: Maybe<Gender>;
   id: Scalars['ID']['output'];
@@ -641,6 +683,7 @@ export type ResolversInterfaceTypes<_RefType extends Record<string, unknown>> = 
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
+  Activity: ResolverTypeWrapper<Activity>;
   AssignIssueInput: AssignIssueInput;
   Auth: ResolverTypeWrapper<Auth>;
   AuthData: ResolverTypeWrapper<AuthData>;
@@ -670,6 +713,7 @@ export type ResolversTypes = {
   Mutation: ResolverTypeWrapper<{}>;
   Name: ResolverTypeWrapper<Scalars['Name']['output']>;
   Password: ResolverTypeWrapper<Scalars['Password']['output']>;
+  ProfileInput: ProfileInput;
   Project: ResolverTypeWrapper<Project>;
   ProjectStat: ResolverTypeWrapper<ProjectStat>;
   ProjectStatus: ProjectStatus;
@@ -678,12 +722,14 @@ export type ResolversTypes = {
   ResponseMessage: ResolverTypeWrapper<ResponseMessage>;
   SignupInput: SignupInput;
   Social: ResolverTypeWrapper<Social>;
+  SocialInput: SocialInput;
   Sprint: ResolverTypeWrapper<Sprint>;
   SprintStatus: SprintStatus;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Team: ResolverTypeWrapper<Team>;
   UnauthenticatedError: ResolverTypeWrapper<UnauthenticatedError>;
   UnauthorizedError: ResolverTypeWrapper<UnauthorizedError>;
+  UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
   UserTeam: ResolverTypeWrapper<UserTeam>;
   activeSprintStat: ResolverTypeWrapper<ActiveSprintStat>;
@@ -698,6 +744,7 @@ export type ResolversTypes = {
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
+  Activity: Activity;
   AssignIssueInput: AssignIssueInput;
   Auth: Auth;
   AuthData: AuthData;
@@ -723,6 +770,7 @@ export type ResolversParentTypes = {
   Mutation: {};
   Name: Scalars['Name']['output'];
   Password: Scalars['Password']['output'];
+  ProfileInput: ProfileInput;
   Project: Project;
   ProjectStat: ProjectStat;
   ProjectTeam: ProjectTeam;
@@ -730,11 +778,13 @@ export type ResolversParentTypes = {
   ResponseMessage: ResponseMessage;
   SignupInput: SignupInput;
   Social: Social;
+  SocialInput: SocialInput;
   Sprint: Sprint;
   String: Scalars['String']['output'];
   Team: Team;
   UnauthenticatedError: UnauthenticatedError;
   UnauthorizedError: UnauthorizedError;
+  UpdateProfileInput: UpdateProfileInput;
   User: User;
   UserTeam: UserTeam;
   activeSprintStat: ActiveSprintStat;
@@ -752,10 +802,24 @@ export type AuthDirectiveArgs = { };
 export type AuthDirectiveResolver<Result, Parent, ContextType = MyContext, Args = AuthDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type RoleDirectiveArgs = {
-  requires?: Maybe<MemberRole>;
+  requires: Array<Maybe<MemberRole>>;
 };
 
 export type RoleDirectiveResolver<Result, Parent, ContextType = MyContext, Args = RoleDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+
+export type ActivityResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Activity'] = ResolversParentTypes['Activity']> = {
+  action?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  issue?: Resolver<Maybe<ResolversTypes['Issue']>, ParentType, ContextType>;
+  issueId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
 
 export type AuthResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Auth'] = ResolversParentTypes['Auth']> = {
   accessToken?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -879,6 +943,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   sendVerificationLink?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationSendVerificationLinkArgs, 'email'>>;
   signup?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
   updateIssueStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateIssueStatusArgs, 'issueId' | 'projectId' | 'status'>>;
+  updateUserProfile?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateUserProfileArgs, 'input'>>;
   verifyUser?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationVerifyUserArgs, 'token'>>;
 };
 
@@ -940,7 +1005,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getRecentProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
   getSprintById?: Resolver<ResolversTypes['Sprint'], ParentType, ContextType, RequireFields<QueryGetSprintByIdArgs, 'id' | 'projectId'>>;
   getTeamById?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<QueryGetTeamByIdArgs, 'teamId'>>;
-  getUserById?: Resolver<ResolversTypes['User'], ParentType, ContextType, Partial<QueryGetUserByIdArgs>>;
+  getUserById?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserByIdArgs, 'userId'>>;
   getUserInfo?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getUsersBySearch?: Resolver<Array<Maybe<ResolversTypes['User']>>, ParentType, ContextType, RequireFields<QueryGetUsersBySearchArgs, 'search'>>;
 };
@@ -1002,6 +1067,7 @@ export type UnauthorizedErrorResolvers<ContextType = MyContext, ParentType exten
 };
 
 export type UserResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
+  activities?: Resolver<Maybe<Array<Maybe<ResolversTypes['Activity']>>>, ParentType, ContextType>;
   assignedIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   createdIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
@@ -1039,6 +1105,7 @@ export type ActiveSprintStatResolvers<ContextType = MyContext, ParentType extend
 
 export type ProfileResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['profile'] = ResolversParentTypes['profile']> = {
   avatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  bio?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   gender?: Resolver<Maybe<ResolversTypes['Gender']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1051,6 +1118,7 @@ export type ProfileResolvers<ContextType = MyContext, ParentType extends Resolve
 };
 
 export type Resolvers<ContextType = MyContext> = {
+  Activity?: ActivityResolvers<ContextType>;
   Auth?: AuthResolvers<ContextType>;
   AuthData?: AuthDataResolvers<ContextType>;
   Date?: GraphQLScalarType;

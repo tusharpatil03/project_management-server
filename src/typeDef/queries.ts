@@ -3,7 +3,7 @@ import gql from 'graphql-tag';
 export const queries = gql`
   # Queries
   type Query {
-    getUserById(userId: ID, email:String): User! @auth
+    getUserById(userId: ID!): User @auth
     getUserInfo: User @auth
     checkAuth: User @auth
     getUsersBySearch(search: String!): [User]! @auth
@@ -11,20 +11,20 @@ export const queries = gql`
     getTeamById(teamId: ID!): Team! @auth
     getAllTeams: [Team] @auth
     getAllUserTeams: [UserTeam]! @auth
-    getProjectTeamsMembers(projectId: ID!): [User]  @auth @role(requires:Contributor)
+    getProjectTeamsMembers(projectId: ID!): [User]  @auth @role(requires:[Contributor, Admin, Viewer])
 
 
-    getIssueById(issueId: ID!): Issue! @auth
-    getAllIssues(projectId: ID!, sprintId:String): [Issue] @auth
+    getIssueById(issueId: ID!): Issue! @auth @role(requires:[Contributor, Admin, Viewer])
+    getAllIssues(projectId: ID!, sprintId:String): [Issue] @auth @role(requires:[Contributor, Admin, Viewer])
 
     getAllSprints(projectId: ID!): [Sprint] @auth
-    getActiveSprint(projectId: ID!): Sprint @auth
-    getSprintById(id: ID!, projectId: ID!): Sprint! @auth
+    getActiveSprint(projectId: ID!): Sprint @auth @role(requires:[Contributor, Admin, Viewer])
+    getSprintById(id: ID!, projectId: ID!): Sprint! @auth @role(requires:[Contributor, Admin, Viewer])
 
 
     getRecentProject: Project @auth
     getAllProjects: [Project] @auth
-    getProject(projectKey: String , projectId: String): Project @auth
-    getProjectStat(projectId: ID!): ProjectStat @auth
+    getProject(projectKey: String , projectId: String): Project @auth @role(requires:[Contributor, Admin, Viewer])
+    getProjectStat(projectId: ID!): ProjectStat @auth @role(requires:[Contributor, Admin, Viewer])
   }
 `;

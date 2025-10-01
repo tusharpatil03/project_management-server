@@ -1,6 +1,5 @@
 import crypto from "crypto";
 import { PrismaClient } from "@prisma/client";
-import { act } from "react";
 const client = new PrismaClient();
 
 const data = [
@@ -9,7 +8,7 @@ const data = [
       email: "adi123@gmail.com",
       firstName: "Adiraj",
       lastName: "Patil",
-      password: "Adiraj1234",
+      password: "Adiraj@1234",
       salt: generateSalt(),
       isVerified: true,
     },
@@ -30,7 +29,7 @@ const data = [
       email: "kunal123@gmail.com",
       firstName: "Kunal",
       lastName: "Patil",
-      password: "Kunal1234",
+      password: "Kunal@1234",
       salt: generateSalt(),
       isVerified: true,
     },
@@ -51,7 +50,7 @@ const data = [
       email: "amol123@gmail.com",
       firstName: "Amol",
       lastName: "Patil",
-      password: "amol1234",
+      password: "amol@1234",
       salt: generateSalt(),
       isVerified: true,
     },
@@ -72,7 +71,7 @@ const data = [
       email: "suraj@gmail.com",
       firstName: "Suraj",
       lastName: "Patil",
-      password: "suraj1234",
+      password: "suraj@1234",
       salt: generateSalt(),
       isVerified: true,
     },
@@ -93,7 +92,7 @@ const data = [
       email: "harshad123@gmail.com",
       firstName: "Harshad",
       lastName: "Patil",
-      password: "harshad1234",
+      password: "harshad@1234",
       salt: generateSalt(),
       isVerified: true,
     },

@@ -1,18 +1,55 @@
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
-import { getUserWithProfile, type UserWithProfile } from '../../services/user/GetUser';
 
 export const getUserById: QueryResolvers['getUserById'] = async (
   _,
   args,
   context
 ) => {
-  const user: UserWithProfile | null = await getUserWithProfile(args.userId as string, args.email as string)
+
+  const isAuthorized = context.userId === args.userId;
+
+  const user = await context.client.user.findUnique({
+    where: {
+      id: args.userId,
+    },
+    include: {
+      profile: {
+        include: {
+          social: true,
+        }
+      },
+      ...(isAuthorized && {
+        activities: {
+          take: 3,
+          orderBy: {
+            createdAt: 'desc'
+          },
+          select: {
+            id: true,
+            action: true,
+            createdAt: true,
+          },
+        },
+        projects: {
+          take: 3,
+          orderBy: {
+            createdAt: 'desc'
+          },
+          select: {
+            id: true,
+            name: true,
+            key: true,
+            description: true,
+            createdAt: true,
+          }
+        }
+      })
+    }
+  });
+
   if (!user) {
     throw new Error("Unable to Find User")
   }
-
-  if (user.id !== context.userId) {
-    throw new Error("unauthorized access")
-  }
+  
   return user;
 };

@@ -29,13 +29,7 @@ export const isUserPartOfProject = async (
       ]
     },
     select: {
-      role: true,
-      team: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
+      role: true
     },
   });
 
