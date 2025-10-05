@@ -4,7 +4,6 @@ export const types = gql`
   # Auth Data
   type AuthData {
     user: User!
-    profile: profile!
     accessToken: String!
     refreshToken: String!
   }
@@ -17,32 +16,35 @@ export const types = gql`
   # User Type
   type User {
     id: ID!
-    email: EmailAddress
-    firstName: String
-    lastName: String
+    email: EmailAddress!
+    firstName: String!
+    lastName: String!
     isVerified: Boolean
     createdAt: DateTime
     updatedAt: DateTime
     projects: [Project]
-    teams: [Team]
+    teams: [UserTeam]
     createdTeams: [Team]
     createdIssues: [Issue]
     assignedIssues: [Issue]
     profile: profile
     activities: [Activity]
+    comments: [Comment]
   }
 
   type Activity {
     id: ID!
-    action: String
-    userId: ID
-    projectId: ID
-    issueId: ID
-    createdAt: DateTime
-    updatedAt: DateTime
+    action: ActivityAction!
+    entityType: EntityType!
+    entityId: String
+    entityName: String
+    description: String
     user: User
     project: Project
+    sprint: Sprint
     issue: Issue
+    team: Team
+    createdAt: DateTime
   }
 
   type profile {
@@ -64,108 +66,94 @@ export const types = gql`
     facebook: String
     twitter: String
     linkedin: String
-    createdAt: DateTime!
-    updatedAt: DateTime!
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type Project {
     id: ID!
     key: String!
-    name: String
+    name: String!
     description: String
+    starred: Boolean
+    creator: User
+    status: ProjectStatus
     createdAt: DateTime
     updatedAt: DateTime
-    issues: [Issue]
+    teams: [ProjectTeam]
     sprints: [Sprint]
-    status: ProjectStatus
-    creatorId: String
-    creator: User
+    issues: [Issue]
+    activities: [Activity]
   }
 
-  type ProjectTeam {
+  type Team {
     id: ID!
-    projectId: ID
-    teamId: ID
-    project: Project
-    team: Team
-    joinedAt: DateTime
+    name: String
+    creator: User
+    createdAt: DateTime
+    updatedAt: DateTime
+    projects: [ProjectTeam]
+    users: [UserTeam]
+    activities: [Activity]
   }
 
   type UserTeam {
     id: ID!
-    userId: ID
-    teamId: ID
-    role: MemberRole
-    joinedAt: DateTime
     user: User
     team: Team
+    role: MemberRole
+    joinedAt: DateTime
   }
 
-  # Team Type
-  type Team {
+  type ProjectTeam {
     id: ID!
-    name: String
-    creatorId: String
-    users: [UserTeam]
-    projects: [Project]
-    createdAt: DateTime
-    updatedAt: DateTime
+    project: Project
+    team: Team
+    joinedAt: DateTime
   }
 
   # Issue Type
   type Issue {
-    id: String
-    title: String!
+    id: ID!
     key: String!
+    title: String!
     description: String
-    type: IssueType
     status: IssueStatus
-    dueDate: DateTime!
+    priority: IssuePriority
     createdAt: DateTime
     updatedAt: DateTime
-    projectId: String
-    creatorId: String
-    creator: IssueCreator
-    assignee: IssueAssignee
-    sprintId: String
-    parentId: String
-    parent: Issue
-    childrens: [Issue]
+    dueDate: DateTime
+    type: IssueType
+    creator: User
+    assignee: User
+    project: Project
+    sprint: Sprint
+    comments: [Comment]
+    activities: [Activity]
   }
 
-  type IssueCreator {
+  type Comment {
     id: ID!
-    firstName: String
-    lastName: String
-    email: String
-    profile: profile
-  }
-
-  type IssueAssignee {
-    id: ID!
-    firstName: String
-    lastName: String
-    email: String
-    profile: profile
+    content: String!
+    issue: Issue
+    author: User
     createdAt: DateTime
     updatedAt: DateTime
   }
 
-  # Sprint Type
   type Sprint {
     id: ID!
-    title: String!
     key: String!
+    startDate: DateTime
+    dueDate: DateTime
+    title: String
     description: String
     status: SprintStatus
     createdAt: DateTime
     updatedAt: DateTime
-    dueDate: DateTime!
-    creator: User
     project: Project
-    projectId: String
-    creatorId: String
     issues: [Issue]
+    activities: [Activity]
   }
 
   type ResponseMessage {
@@ -174,24 +162,6 @@ export const types = gql`
     message: String
   }
 
-  # Auth Type
-  type Auth {
-    user: User
-    token: String
-    accessToken: String
-    expiresIn: Int
-    tokenType: String
-    scope: String
-    idToken: String
-    authData: AuthData
-    userId: String
-    email: String
-    createdAt: DateTime
-    updatedAt: DateTime
-    firstName: String
-    lastName: String
-    phone: String
-  }
 
   type activeSprintStat {
     totalIssues: Int

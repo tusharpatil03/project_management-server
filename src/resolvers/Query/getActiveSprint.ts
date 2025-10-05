@@ -31,6 +31,14 @@ export const getActiveSprint: QueryResolvers['getActiveSprint'] = async (
                         select: {
                             id: true,
                             email: true,
+                            firstName: true,
+                            lastName: true,
+                            profile: {
+                                select: {
+                                    id: true,
+                                    avatar: true,
+                                }
+                            }
                         },
                     },
                 },
@@ -41,12 +49,13 @@ export const getActiveSprint: QueryResolvers['getActiveSprint'] = async (
                     id: true,
                     creatorId: true,
                     key: true,
+                    name: true,
                 },
             },
         },
     });
     if (!sprint) {
-        return null;
+        throw new Error("Active Sprint not found");
     }
 
 

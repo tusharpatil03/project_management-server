@@ -3,7 +3,7 @@ import { QueryResolvers } from "../../types/generatedGraphQLTypes";
 
 export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context) => {
     if (!context.userId) {
-        return null;
+        throw new Error("Unauthorized");
     }
 
     const user = await context.client.user.findUnique({
@@ -14,6 +14,8 @@ export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context)
             id: true,
             firstName: true,
             lastName: true,
+            createdAt: true,
+            updatedAt: true,
             email: true,
             profile: {
                 select: {
@@ -41,6 +43,7 @@ export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context)
                     id: true,
                     action: true,
                     createdAt: true,
+                    entityType: true,
                     projectId: true,
                     issueId: true,
                     userId: true,
@@ -49,6 +52,10 @@ export const getUserInfo: QueryResolvers['getUserInfo'] = async (_, __, context)
             }
         }
     });
+
+    if(!user){
+        throw new Error("User not found");
+    }
 
     return user;
 

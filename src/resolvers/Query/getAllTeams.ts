@@ -20,6 +20,7 @@ export const getAllTeams: QueryResolvers["getAllTeams"] = async (_, args, contex
                 select: {
                     id: true,
                     role: true,
+                    joinedAt: true,
                     user: {
                         select: {
                             id: true,

@@ -136,7 +136,6 @@ model Issue {
   project  Project @relation("ProjectIssues", fields: [projectId], references: [id], onDelete: Cascade)
   sprint   Sprint? @relation(fields: [sprintId], references: [id], onDelete: SetNull)
 
-  parentId   String?    @map("parent_id")
   comments   Comment[]
   activities Activity[]
 

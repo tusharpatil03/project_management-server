@@ -48,6 +48,7 @@ export const getSprintById: QueryResolvers['getSprintById'] = async (
           key: true,
           id: true,
           creatorId: true,
+          name: true,
         }
       }
     },
