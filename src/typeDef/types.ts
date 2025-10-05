@@ -4,7 +4,7 @@ export const types = gql`
   # Auth Data
   type AuthData {
     user: User!
-    profile: profile
+    profile: profile!
     accessToken: String!
     refreshToken: String!
   }

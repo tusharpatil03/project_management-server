@@ -1,7 +1,7 @@
 import _ from "lodash";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import { ActivityAction, EntityType, IssueType, MemberRole, Project, User } from "@prisma/client";
-import { TransactionClient } from "../../db/db";
+import { client, TransactionClient } from "../../db/db";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { conflictError } from "../../libraries/errors/conflictError";
 import {
@@ -14,7 +14,7 @@ import {
   INVALID_ISSUE_TYPE,
 } from "../../globals";
 import { UnauthorizedError } from "../../libraries/errors/unAuthorizedError";
-import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
+import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
 
 
 //this resolver is to assign the issue to a user
@@ -178,7 +178,9 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
     projectId: issue.projectId,
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

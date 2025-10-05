@@ -14,7 +14,7 @@ export const queries = gql`
     getProjectTeamsMembers(projectId: ID!): [User]  @auth @role(requires:[Contributor, Admin, Viewer])
 
 
-    getIssueById(issueId: ID!): Issue! @auth @role(requires:[Contributor, Admin, Viewer])
+    getIssueById(issueId: ID!, projectId: ID!): Issue! @auth @role(requires:[Contributor, Admin, Viewer])
     getAllIssues(projectId: ID!, sprintId:String): [Issue] @auth @role(requires:[Contributor, Admin, Viewer])
 
     getAllSprints(projectId: ID!): [Sprint] @auth

@@ -1,6 +1,7 @@
-import { ActivityAction, EntityType } from "@prisma/client";
+import { ActivityAction, EntityType, ProjectTeam, Team } from "@prisma/client";
 import { AddProjectTeamInput, MutationResolvers } from "../../types/generatedGraphQLTypes";
-import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
+import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
+import { client } from "../../db/db";
 
 //this resolver creates ProjectTeam which will connect the project with a team
 //inputs: projectId, teamsId
@@ -90,7 +91,9 @@ export const addProjectTeam: MutationResolvers["addProjectTeam"] = async (_, arg
         teamId: team.id,
     }
     try {
-        await CreateActivity(createActivityInput, context.client);
+        await client.activity.create({
+            data: buildActivityData(createActivityInput)
+        });
     } catch (e) {
         console.log("Failed to create activity", e);
     }

@@ -1,7 +1,7 @@
 import { MutationResolvers, RemoveIssueInput } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { TransactionClient } from '../../db/db';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData,  CreateActivityInput } from '../../services/Activity/Create';
 import { ActivityAction, EntityType } from '@prisma/client';
 
 export const removeIssue: MutationResolvers['removeIssue'] = async (
@@ -87,12 +87,9 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
         issueId: issue.id,
         projectId: issue.projectId,
       }
-      try {
-        await CreateActivity(createActivityInput, context.client);
-      } catch (e) {
-        console.log("Failed to create activity", e);
-      }
-
+      await prisma.activity.create({
+        data: buildActivityData(createActivityInput)
+      });
 
       return {
         success: true,

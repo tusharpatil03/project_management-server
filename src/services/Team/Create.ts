@@ -1,6 +1,6 @@
 import { ActivityAction, EntityType, MemberRole, Prisma } from "@prisma/client";
-import { client } from "../../db/db";
-import { CreateActivity, CreateActivityInput } from "../Activity/Create";
+import { client, TransactionClient } from "../../db/db";
+import { buildActivityData,  CreateActivityInput } from "../Activity/Create";
 
 //this interface defines the input for create Issue
 export interface TeamCreateInput {
@@ -23,7 +23,7 @@ const buildTeamData = (input: TeamCreateInput): Prisma.TeamCreateInput => {
 
 export const CreateTeam = async (input: TeamCreateInput) => {
     try {
-        client.$transaction(async (prisma) => {
+        client.$transaction(async (prisma: TransactionClient) => {
             const team = await prisma.team.create({
                 data: buildTeamData(input),
             });
@@ -54,7 +54,9 @@ export const CreateTeam = async (input: TeamCreateInput) => {
                 userId: input.creatorId,
                 teamId: team.id,
             }
-            await CreateActivity(createActivityInput, prisma);
+            await prisma.activity.create({
+                data: buildActivityData(createActivityInput)
+            });
         })
     }
     catch (e) {

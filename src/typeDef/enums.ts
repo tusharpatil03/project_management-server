@@ -35,4 +35,11 @@ export const enums = gql`
     TASK
     BUG
   }
+
+  enum IssuePriority {
+    LOW
+    MEDIUM
+    HIGH
+    CRITICAL
+  }
 `;

@@ -9,7 +9,7 @@ const config: CodegenConfig = {
       plugins: ['typescript', 'typescript-resolvers'],
 
       config: {
-        contextType: "../db#MyContext",
+        contextType: "../db/db#MyContext",
         // Generates graphQL enums as typescript union types.
         enumsAsTypes: true,
 

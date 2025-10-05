@@ -73,11 +73,13 @@ export const inputs = gql`
     memberId: ID!
     teamId: ID!
     role: String!
+    projectId: ID!
   }
 
   input removeTeamMemberInput {
     memberId: ID!
     teamId: ID!
+    projectId: ID!
   }
 
   input addProjectTeamInput {
@@ -106,5 +108,17 @@ export const inputs = gql`
     linkedin: String
     twitter: String
     facebook: String
+  }
+
+  input UpdateIssueInput {
+    issueId: String!
+    projectId: String!
+    title: String
+    description: String
+    status: IssueStatus
+    priority: IssuePriority
+    dueDate: DateTime
+    type: IssueType
+    assigneeId: String
   }
 `;

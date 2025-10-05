@@ -31,6 +31,7 @@ model User {
   assignedIssues Issue[]      @relation("AssignedIssues")
   comments       Comment[]
   activities     Activity[]
+  createdTeams   Team[]
 
   @@map("users")
 }
@@ -84,6 +85,8 @@ model Team {
   users      UserTeam[]
   activities Activity[]
 
+  creator User @relation(fields: [creatorId], references: [id])
+
   @@map("teams")
 }
 
@@ -128,16 +131,12 @@ model Issue {
   projectId   String        @map("project_id")
   sprintId    String?       @map("sprint_id")
 
-  depth Int @default(0) @map("depth")
-
   creator  User    @relation("CreatedIssues", fields: [creatorId], references: [id])
   assignee User?   @relation("AssignedIssues", fields: [assigneeId], references: [id])
   project  Project @relation("ProjectIssues", fields: [projectId], references: [id], onDelete: Cascade)
   sprint   Sprint? @relation(fields: [sprintId], references: [id], onDelete: SetNull)
 
   parentId   String?    @map("parent_id")
-  parent     Issue?     @relation("IssueHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
-  childrens  Issue[]    @relation("IssueHierarchy")
   comments   Comment[]
   activities Activity[]
 

@@ -4,7 +4,8 @@ import { ActivityAction, EntityType, IssueStatus, MemberRole } from '@prisma/cli
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { conflictError } from '../../libraries/errors/conflictError';
 import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, PROJECT_NOT_FOUND } from '../../globals';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
+import { client, TransactionClient } from '../../db/db';
 
 export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   _,
@@ -91,7 +92,7 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   }
 
   try {
-    await context.client.$transaction(async (t) => {
+    await context.client.$transaction(async (t: TransactionClient) => {
       await t.issue.update({
         where: {
           id: args.issueId,
@@ -115,7 +116,9 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
     projectId: args.projectId,
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

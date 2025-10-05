@@ -1,5 +1,6 @@
 import { Gender } from "@prisma/client";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
+import { TransactionClient } from "../../db/db";
 
 export const updateUserProfile: MutationResolvers["updateUserProfile"] = async (
     _,
@@ -10,7 +11,7 @@ export const updateUserProfile: MutationResolvers["updateUserProfile"] = async (
     try {
         const { firstName, lastName, profile } = args.input;
 
-        const result = await context.client.$transaction(async (tx) => {
+        const result = await context.client.$transaction(async (tx:TransactionClient) => {
             // Update user basic details
             const user = await tx.user.update({
                 where: { id: context.userId },

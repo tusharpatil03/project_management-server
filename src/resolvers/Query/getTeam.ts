@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { QueryResolvers } from '../../types/generatedGraphQLTypes';
 
 export const getTeamById: QueryResolvers['getTeamById'] = async (
@@ -42,7 +43,5 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
   }
 
 
-  return {
-    ...team
-  }
+  return team;
 };

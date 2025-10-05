@@ -1,6 +1,6 @@
 import { ActivityAction, EntityType, IssueStatus, IssueType, Prisma } from "@prisma/client";
-import { client } from "../../db/db";
-import { CreateActivity, CreateActivityInput } from "../Activity/Create";
+import { client, TransactionClient } from "../../db/db";
+import { buildActivityData, CreateActivityInput } from "../Activity/Create";
 
 //this interface defines the input for create Issue
 export interface IssueCreateInput {
@@ -95,7 +95,7 @@ export async function createNewIssue(input: IssueCreateInput) {
             throw new Error(`An issue with the title "${input.title}" already exists in this project.`);
         }
 
-        client.$transaction(async (prisma) => {
+        client.$transaction(async (prisma: TransactionClient) => {
 
             const issue = await prisma.issue.create({
                 data: buildIssueData(input)
@@ -112,7 +112,9 @@ export async function createNewIssue(input: IssueCreateInput) {
                 issueId: issue.id,
                 projectId: input.projectId,
             }
-            await CreateActivity(createActivityInput, prisma);
+            await prisma.activity.create({
+                data: buildActivityData(createActivityInput)
+            });
             return issue;
         })
     } catch (e) {

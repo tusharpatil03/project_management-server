@@ -1,7 +1,7 @@
 import { ActivityAction, EntityType } from '@prisma/client';
-import { TransactionClient } from '../../db/db';
+import { client, TransactionClient } from '../../db/db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
 import { MutationResolvers, RemoveTeamMemberInput } from '../../types/generatedGraphQLTypes';
 
 export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
@@ -29,9 +29,10 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
   if (team.creatorId !== context.userId) {
     throw new UnauthorizedError('You are not the creator of this team', '403');
   }
-
+  console.log(team.users)
   const user = team.users.find((t) => t.userId === input.memberId);
   if (!user) {
+    console.log(user);
     throw new Error('User is not part of the team');
   }
 
@@ -80,7 +81,9 @@ export const removeTeamMember: MutationResolvers['removeTeamMember'] = async (
     teamId: team.id
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

@@ -1,6 +1,7 @@
 import { ActivityAction, EntityType, IssueType, SprintStatus } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
+import { client } from '../../db/db';
 
 export interface InterfaceSprint {
   id: string;
@@ -31,7 +32,7 @@ export const createSprint: MutationResolvers['createSprint'] = async (
     }
   });
 
-  if(!project){
+  if (!project) {
     throw new Error("Project Not Found");
   }
 
@@ -130,7 +131,9 @@ export const createSprint: MutationResolvers['createSprint'] = async (
     projectId: args.input.projectId
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

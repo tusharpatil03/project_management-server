@@ -4,7 +4,7 @@ import { client } from '../../db/db';
 import { notFoundError } from '../../libraries/errors/notFoundError';
 import { ALREADY_MEMBER_OF_TEAM, MEMEBER_NOT_FOUND_ERROR, TEAM_NOT_FOUND } from '../../globals';
 import { conflictError } from '../../libraries/errors/conflictError';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
 
 //select team scalors method with validator returns defined feild object
 export const TeamAdminSelect = Prisma.validator(
@@ -172,7 +172,9 @@ export const addTeamMember: MutationResolvers['addTeamMember'] = async (
     teamId: team.id,
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

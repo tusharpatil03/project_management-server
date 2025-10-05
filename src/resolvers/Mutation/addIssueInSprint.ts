@@ -4,7 +4,8 @@ import { ActivityAction, EntityType, IssueType } from "@prisma/client";
 import { ALREADY_PART_OF_SPRINT, ISSUE_NOT_FOUND, SPRINT_FAILED_TO_UPDATE, SPRINT_NOT_FOUND } from "../../globals";
 import { conflictError } from "../../libraries/errors/conflictError";
 import { notFoundError } from "../../libraries/errors/notFoundError";
-import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
+import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
+import { client } from "../../db/db";
 
 //this resolver adds the existing issues in sprint
 // inputs: projectId, sprintId, issueId
@@ -95,9 +96,11 @@ export const addIssueInSprint: MutationResolvers["addIssueInSprint"] = async (_,
         sprintId: sprint.id,
         issueId: issue.id,
     }
-    try{
-        await CreateActivity(createActivityInput, context.client);
-    }catch(e){
+    try {
+        await client.activity.create({
+            data: buildActivityData(createActivityInput)
+        });
+    } catch (e) {
         console.log("Failed to create activity", e);
     }
 

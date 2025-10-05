@@ -50,5 +50,7 @@ export const mutations = gql`
     verifyUser(token:String!): AuthData!
 
     updateUserProfile(input: UpdateProfileInput!): ResponseMessage! @auth
+
+    updateIssue(input: UpdateIssueInput!): ResponseMessage! @auth @role(requires: [Admin, Contributor])
   }
 `;

@@ -1,9 +1,7 @@
-import { PrismaClientType, TransactionClient } from '../../db/db';
+import { TransactionClient } from '../../db/db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers, RemoveSprintInput } from '../../types/generatedGraphQLTypes';
-import { InterfaceSprint } from './createSprint';
-import { InterfaceIssue } from './createIssue';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
 import { ActivityAction, EntityType } from '@prisma/client';
 
 export const removeSprint: MutationResolvers['removeSprint'] = async (
@@ -112,7 +110,9 @@ export const removeSprint: MutationResolvers['removeSprint'] = async (
         projectId: project.id,
       }
       try {
-        await CreateActivity(createActivityInput, context.client);
+        await prisma.activity.create({
+          data: buildActivityData(createActivityInput)
+        });
       } catch (e) {
         console.log("Failed to create activity", e);
       }

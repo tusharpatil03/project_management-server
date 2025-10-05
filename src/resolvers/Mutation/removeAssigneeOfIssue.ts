@@ -1,9 +1,8 @@
-import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { TransactionClient } from '../../db/db';
+import { client, TransactionClient } from '../../db/db';
 import { InterfaceUserRole, isUserPartOfProject } from '../Query/allSprints';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
-import { ActivityAction, EntityType } from '@prisma/client';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
+import { ActivityAction, EntityType, Issue } from '@prisma/client';
 
 export const removeAssineeOfIssue: MutationResolvers['removeAssineeOfIssue'] =
   async (_, args, context) => {
@@ -38,7 +37,7 @@ export const removeAssineeOfIssue: MutationResolvers['removeAssineeOfIssue'] =
       throw new Error('Project does not exist');
     }
 
-    const issueInProject = project.issues.some((t) => t.id === issue.id);
+    const issueInProject = project.issues.some((t: Issue) => t.id === issue.id);
 
     if (!issueInProject) {
       throw new Error('issue is not part of this project');
@@ -81,7 +80,9 @@ export const removeAssineeOfIssue: MutationResolvers['removeAssineeOfIssue'] =
       projectId: issue.projectId,
     }
     try {
-      await CreateActivity(createActivityInput, context.client);
+      await client.activity.create({
+        data: buildActivityData(createActivityInput)
+      });
     } catch (e) {
       console.log("Failed to create activity", e);
     }

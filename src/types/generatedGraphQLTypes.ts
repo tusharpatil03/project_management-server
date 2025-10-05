@@ -167,6 +167,12 @@ export type IssueInput = {
   type?: InputMaybe<IssueType>;
 };
 
+export type IssuePriority =
+  | 'CRITICAL'
+  | 'HIGH'
+  | 'LOW'
+  | 'MEDIUM';
+
 export type IssueStatus =
   | 'DONE'
   | 'IN_PROGRESS'
@@ -209,6 +215,7 @@ export type Mutation = {
   removeTeamMember: Team;
   sendVerificationLink?: Maybe<ResponseMessage>;
   signup: ResponseMessage;
+  updateIssue: ResponseMessage;
   updateIssueStatus: ResponseMessage;
   updateUserProfile: ResponseMessage;
   verifyUser: AuthData;
@@ -302,6 +309,11 @@ export type MutationSendVerificationLinkArgs = {
 
 export type MutationSignupArgs = {
   input: SignupInput;
+};
+
+
+export type MutationUpdateIssueArgs = {
+  input: UpdateIssueInput;
 };
 
 
@@ -409,6 +421,7 @@ export type QueryGetAllSprintsArgs = {
 
 export type QueryGetIssueByIdArgs = {
   issueId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
 };
 
 
@@ -523,6 +536,18 @@ export type UnauthorizedError = Error & {
   message: Scalars['String']['output'];
 };
 
+export type UpdateIssueInput = {
+  assigneeId?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  dueDate?: InputMaybe<Scalars['DateTime']['input']>;
+  issueId: Scalars['String']['input'];
+  priority?: InputMaybe<IssuePriority>;
+  projectId: Scalars['String']['input'];
+  status?: InputMaybe<IssueStatus>;
+  title?: InputMaybe<Scalars['String']['input']>;
+  type?: InputMaybe<IssueType>;
+};
+
 export type UpdateProfileInput = {
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
@@ -578,6 +603,7 @@ export type AddProjectTeamInput = {
 
 export type AddTeamMemberInput = {
   memberId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
   role: Scalars['String']['input'];
   teamId: Scalars['ID']['input'];
 };
@@ -608,6 +634,7 @@ export type RemoveSprintInput = {
 
 export type RemoveTeamMemberInput = {
   memberId: Scalars['ID']['input'];
+  projectId: Scalars['ID']['input'];
   teamId: Scalars['ID']['input'];
 };
 
@@ -705,6 +732,7 @@ export type ResolversTypes = {
   IssueAssignee: ResolverTypeWrapper<IssueAssignee>;
   IssueCreator: ResolverTypeWrapper<IssueCreator>;
   IssueInput: IssueInput;
+  IssuePriority: IssuePriority;
   IssueStatus: IssueStatus;
   IssueType: IssueType;
   Json: ResolverTypeWrapper<Scalars['Json']['output']>;
@@ -729,6 +757,7 @@ export type ResolversTypes = {
   Team: ResolverTypeWrapper<Team>;
   UnauthenticatedError: ResolverTypeWrapper<UnauthenticatedError>;
   UnauthorizedError: ResolverTypeWrapper<UnauthorizedError>;
+  UpdateIssueInput: UpdateIssueInput;
   UpdateProfileInput: UpdateProfileInput;
   User: ResolverTypeWrapper<User>;
   UserTeam: ResolverTypeWrapper<UserTeam>;
@@ -784,6 +813,7 @@ export type ResolversParentTypes = {
   Team: Team;
   UnauthenticatedError: UnauthenticatedError;
   UnauthorizedError: UnauthorizedError;
+  UpdateIssueInput: UpdateIssueInput;
   UpdateProfileInput: UpdateProfileInput;
   User: User;
   UserTeam: UserTeam;
@@ -942,6 +972,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   removeTeamMember?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationRemoveTeamMemberArgs, 'input'>>;
   sendVerificationLink?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationSendVerificationLinkArgs, 'email'>>;
   signup?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationSignupArgs, 'input'>>;
+  updateIssue?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateIssueArgs, 'input'>>;
   updateIssueStatus?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateIssueStatusArgs, 'issueId' | 'projectId' | 'status'>>;
   updateUserProfile?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationUpdateUserProfileArgs, 'input'>>;
   verifyUser?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationVerifyUserArgs, 'token'>>;
@@ -998,7 +1029,7 @@ export type QueryResolvers<ContextType = MyContext, ParentType extends Resolvers
   getAllSprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
   getAllTeams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;
   getAllUserTeams?: Resolver<Array<Maybe<ResolversTypes['UserTeam']>>, ParentType, ContextType>;
-  getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId'>>;
+  getIssueById?: Resolver<ResolversTypes['Issue'], ParentType, ContextType, RequireFields<QueryGetIssueByIdArgs, 'issueId' | 'projectId'>>;
   getProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, Partial<QueryGetProjectArgs>>;
   getProjectStat?: Resolver<Maybe<ResolversTypes['ProjectStat']>, ParentType, ContextType, RequireFields<QueryGetProjectStatArgs, 'projectId'>>;
   getProjectTeamsMembers?: Resolver<Maybe<Array<Maybe<ResolversTypes['User']>>>, ParentType, ContextType, RequireFields<QueryGetProjectTeamsMembersArgs, 'projectId'>>;

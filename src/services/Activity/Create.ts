@@ -15,7 +15,7 @@ export interface CreateActivityInput {
     teamId?: string | null;
 }
 
-const buildActivityData = (input: CreateActivityInput): Prisma.ActivityCreateInput => {
+export const buildActivityData = (input: CreateActivityInput): Prisma.ActivityCreateInput => {
     const { action, entityName, entityId, entityType, description } = input;
     let activityData: Prisma.ActivityCreateInput = {
         action,
@@ -78,8 +78,8 @@ const buildActivityData = (input: CreateActivityInput): Prisma.ActivityCreateInp
 
 }
 
-export const CreateActivity = async (input: CreateActivityInput, prisma:TransactionClient) => {
-    await prisma.activity.create({
-        data: buildActivityData(input)
-    });
-}
+// export const CreateActivity = async (input: CreateActivityInput, prisma:TransactionClient) => {
+//     await prisma.activity.create({
+//         data: buildActivityData(input)
+//     });
+// }

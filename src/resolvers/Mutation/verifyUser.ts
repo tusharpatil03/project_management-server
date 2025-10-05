@@ -2,7 +2,7 @@ import { EMAIL_VERIFICATION_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken";
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
-import { CreateActivity, CreateActivityInput } from "../../services/Activity/Create";
+import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
 import { ActivityAction, EntityType } from "@prisma/client";
 
 export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, context) => {
@@ -162,7 +162,9 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         }
 
         try {
-            await CreateActivity(createActivityInput, context.client);
+            await context.client.activity.create({
+                data: buildActivityData(createActivityInput)
+            });
         }
         catch (e) {
             console.log(e);

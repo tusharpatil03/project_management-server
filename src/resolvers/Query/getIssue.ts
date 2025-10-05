@@ -14,6 +14,8 @@ export const getIssueById: QueryResolvers['getIssueById'] = async (
         select: {
           id: true,
           email: true,
+          firstName: true,
+          lastName: true,
           profile: {
             select: {
               id: true,

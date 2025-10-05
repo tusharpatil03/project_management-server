@@ -1,6 +1,6 @@
 import { ActivityAction, EntityType } from '@prisma/client';
-import { PrismaClientType, TransactionClient } from '../../db/db';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { client, PrismaClientType, TransactionClient } from '../../db/db';
+import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 
 //this resolver create a new Project by provided input :projectKey: unique, projectName: string, description?: string
@@ -110,7 +110,9 @@ export const createProject: MutationResolvers['createProject'] = async (
     userId: context.userId,
   }
   try {
-    await CreateActivity(createActivityInput, context.client);
+    await client.activity.create({
+      data: buildActivityData(createActivityInput)
+    });
   } catch (e) {
     console.log("Failed to create activity", e);
   }

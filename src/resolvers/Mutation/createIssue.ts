@@ -1,8 +1,8 @@
-import { ActivityAction, EntityType, IssueStatus, IssueType } from '@prisma/client';
-import { CreateIssueInput, MutationResolvers, User } from '../../types/generatedGraphQLTypes';
-import { client, TransactionClient } from '../../db/db';
+import {   IssueStatus, IssueType } from '@prisma/client';
+import {  MutationResolvers, User } from '../../types/generatedGraphQLTypes';
+import { client, } from '../../db/db';
 import { createNewIssue, IssueCreateInput } from '../../services/Issue/CreateIssue';
-import { CreateActivity, CreateActivityInput } from '../../services/Activity/Create';
+import { buildActivityData  } from '../../services/Activity/Create';
 
 export interface InterfaceIssue {
   id: string;
