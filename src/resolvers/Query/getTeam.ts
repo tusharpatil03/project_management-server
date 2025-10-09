@@ -45,6 +45,5 @@ export const getTeamById: QueryResolvers['getTeamById'] = async (
 
   return {
     ...team,
-    users: team.users.map((member) => member.user),
   };
 };

@@ -154,16 +154,20 @@ export type Issue = {
   __typename?: 'Issue';
   activities?: Maybe<Array<Maybe<Activity>>>;
   assignee?: Maybe<User>;
+  assigneeId?: Maybe<Scalars['ID']['output']>;
   comments?: Maybe<Array<Maybe<Comment>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creator?: Maybe<User>;
+  creatorId?: Maybe<Scalars['ID']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   key: Scalars['String']['output'];
   priority?: Maybe<IssuePriority>;
   project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['ID']['output']>;
   sprint?: Maybe<Sprint>;
+  sprintId?: Maybe<Scalars['ID']['output']>;
   status?: Maybe<IssueStatus>;
   title: Scalars['String']['output'];
   type?: Maybe<IssueType>;
@@ -354,6 +358,7 @@ export type Project = {
   activities?: Maybe<Array<Maybe<Activity>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creator?: Maybe<User>;
+  creatorId?: Maybe<Scalars['ID']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   issues?: Maybe<Array<Maybe<Issue>>>;
@@ -386,7 +391,9 @@ export type ProjectTeam = {
   id: Scalars['ID']['output'];
   joinedAt?: Maybe<Scalars['DateTime']['output']>;
   project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['ID']['output']>;
   team?: Maybe<Team>;
+  teamId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type Query = {
@@ -505,12 +512,15 @@ export type Sprint = {
   __typename?: 'Sprint';
   activities?: Maybe<Array<Maybe<Activity>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  creator?: Maybe<User>;
+  creatorId?: Maybe<Scalars['ID']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   dueDate?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
   issues?: Maybe<Array<Maybe<Issue>>>;
   key: Scalars['String']['output'];
   project?: Maybe<Project>;
+  projectId?: Maybe<Scalars['ID']['output']>;
   startDate?: Maybe<Scalars['DateTime']['output']>;
   status?: Maybe<SprintStatus>;
   title?: Maybe<Scalars['String']['output']>;
@@ -527,10 +537,13 @@ export type Team = {
   activities?: Maybe<Array<Maybe<Activity>>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creator?: Maybe<User>;
+  creatorId?: Maybe<Scalars['ID']['output']>;
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
   projects?: Maybe<Array<Maybe<ProjectTeam>>>;
+  teamId?: Maybe<Scalars['ID']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  userId?: Maybe<Scalars['ID']['output']>;
   users?: Maybe<Array<Maybe<UserTeam>>>;
 };
 
@@ -587,7 +600,9 @@ export type UserTeam = {
   joinedAt?: Maybe<Scalars['DateTime']['output']>;
   role?: Maybe<MemberRole>;
   team?: Maybe<Team>;
+  teamId?: Maybe<Scalars['ID']['output']>;
   user?: Maybe<User>;
+  userId?: Maybe<Scalars['ID']['output']>;
 };
 
 export type ActiveSprintStat = {
@@ -907,16 +922,20 @@ export type FieldErrorResolvers<ContextType = MyContext, ParentType extends Reso
 export type IssueResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Issue'] = ResolversParentTypes['Issue']> = {
   activities?: Resolver<Maybe<Array<Maybe<ResolversTypes['Activity']>>>, ParentType, ContextType>;
   assignee?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  assigneeId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   comments?: Resolver<Maybe<Array<Maybe<ResolversTypes['Comment']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   priority?: Resolver<Maybe<ResolversTypes['IssuePriority']>, ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   sprint?: Resolver<Maybe<ResolversTypes['Sprint']>, ParentType, ContextType>;
+  sprintId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['IssueStatus']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['IssueType']>, ParentType, ContextType>;
@@ -966,6 +985,7 @@ export type ProjectResolvers<ContextType = MyContext, ParentType extends Resolve
   activities?: Resolver<Maybe<Array<Maybe<ResolversTypes['Activity']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   issues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
@@ -993,7 +1013,9 @@ export type ProjectTeamResolvers<ContextType = MyContext, ParentType extends Res
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   joinedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -1038,12 +1060,15 @@ export type SocialResolvers<ContextType = MyContext, ParentType extends Resolver
 export type SprintResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Sprint'] = ResolversParentTypes['Sprint']> = {
   activities?: Resolver<Maybe<Array<Maybe<ResolversTypes['Activity']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   dueDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   issues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType>;
   key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType>;
+  projectId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   startDate?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   status?: Resolver<Maybe<ResolversTypes['SprintStatus']>, ParentType, ContextType>;
   title?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1055,10 +1080,13 @@ export type TeamResolvers<ContextType = MyContext, ParentType extends ResolversP
   activities?: Resolver<Maybe<Array<Maybe<ResolversTypes['Activity']>>>, ParentType, ContextType>;
   createdAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   creator?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  creatorId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProjectTeam']>>>, ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserTeam']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -1097,7 +1125,9 @@ export type UserTeamResolvers<ContextType = MyContext, ParentType extends Resolv
   joinedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
   role?: Resolver<Maybe<ResolversTypes['MemberRole']>, ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['Team']>, ParentType, ContextType>;
+  teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
+  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

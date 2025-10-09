@@ -13,8 +13,6 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
 
   const { issueId, projectId } = input;
 
-  console.log("input:", input);
-
   try {
     return await context.client.$transaction(async (prisma: TransactionClient) => {
       // fetch the issue with its project
@@ -80,11 +78,10 @@ export const removeIssue: MutationResolvers['removeIssue'] = async (
       const createActivityInput: CreateActivityInput = {
         action: ActivityAction.ISSUE_ASSIGNED,
         entityType: EntityType.ISSUE,
-        entityId: issue.id,
-        entityName: issue.id,
-        description: `issue assigned ${issue.key}`,
+        entityId: project.id,
+        entityName: project.key,
+        description: `issue removed`,
         userId: context.userId,
-        issueId: issue.id,
         projectId: issue.projectId,
       }
       await prisma.activity.create({

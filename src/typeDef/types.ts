@@ -77,6 +77,7 @@ export const types = gql`
     description: String
     starred: Boolean
     creator: User
+    creatorId: ID
     status: ProjectStatus
     createdAt: DateTime
     updatedAt: DateTime
@@ -89,6 +90,7 @@ export const types = gql`
   type Team {
     id: ID!
     name: String
+    creatorId: ID
     creator: User
     createdAt: DateTime
     updatedAt: DateTime
@@ -100,6 +102,8 @@ export const types = gql`
   type UserTeam {
     id: ID!
     user: User
+    userId: ID
+    teamId: ID
     team: Team
     role: MemberRole
     joinedAt: DateTime
@@ -110,6 +114,8 @@ export const types = gql`
     project: Project
     team: Team
     joinedAt: DateTime
+    projectId: ID
+    teamId: ID
   }
 
   # Issue Type
@@ -125,8 +131,12 @@ export const types = gql`
     dueDate: DateTime
     type: IssueType
     creator: User
+    creatorId: ID
+    assigneeId: ID
     assignee: User
+    projectId: ID
     project: Project
+    sprintId: ID
     sprint: Sprint
     comments: [Comment]
     activities: [Activity]
@@ -151,6 +161,9 @@ export const types = gql`
     status: SprintStatus
     createdAt: DateTime
     updatedAt: DateTime
+    creatorId: ID
+    creator: User
+    projectId: ID
     project: Project
     issues: [Issue]
     activities: [Activity]
