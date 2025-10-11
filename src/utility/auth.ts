@@ -1,8 +1,11 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
-import { ACCESS_TOKEN_SECRET, EMAIL_VERIFICATION_SECRET, REFRESH_TOKEN_SECRET } from '../globals';
-import 'dotenv/config'
+import { ACCESS_TOKEN_SECRET, CLIENT_PORT, EMAIL_VERIFICATION_SECRET, HOST, REFRESH_TOKEN_SECRET } from '../globals';
+import 'dotenv/config';
 import { client } from '../db/db';
+
+const EMAIL_USER = process.env.EMAIL_USER;
+const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
 
 export interface InterfaceCreateAccessToken {
   userId: string;
@@ -75,28 +78,29 @@ export const revokeRefreshToken = async (userId: string) => {
   });
 }
 
+export const sendVerificationEmail = async (email: string) => {
 
-const EMAIL_USER = process.env.EMAIL_USER;
-const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+  const token = emailVerificationToken(email);
 
+  if (!token) {
+    throw new Error("Failed to Create token");
+  }
 
-export const sendVerificationEmail = async (token: string, email: string) => {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: EMAIL_USER as string,
-        pass: EMAIL_PASSWORD as string,
-      },
-    });
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER as string,
+      pass: EMAIL_PASSWORD as string,
+    },
+  });
 
-    const url = `http://localhost:5173/signup/verify?token=${token}`;
+  const url = `http://${HOST}:${CLIENT_PORT}/signup/verify?token=${token}`;
 
-    const mailOptions = {
-      from: `"TaskFlow Support" <${EMAIL_USER}>`,
-      to: email,
-      subject: 'Verify Your Email Address',
-      html: `
+  const mailOptions = {
+    from: `"TaskFlow Support" <${EMAIL_USER}>`,
+    to: email,
+    subject: 'Verify Your Email Address',
+    html: `
         <div style="font-family: Arial, sans-serif; font-size: 16px;">
           <p>Hi there,</p>
           <p>Thanks for signing up! Please verify your email address by clicking the link below:</p>
@@ -107,12 +111,15 @@ export const sendVerificationEmail = async (token: string, email: string) => {
           <p>— TaskFlow Team</p>
         </div>
       `,
-    };
+  };
 
+  try {
     await transporter.sendMail(mailOptions);
-    console.log(`Verification email sent to ${email}`);
-  } catch (err) {
-    console.error('Email send error:', err);
-    throw new Error('Unable to send verification email');
   }
+  catch (e) {
+    throw new Error("Failed to Send Email");
+  }
+
+  console.log(`Verification email sent to ${email}`);
+
 };

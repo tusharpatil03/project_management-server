@@ -4,7 +4,7 @@ export const inputs = gql`
   # Inputs for Mutations
   input LoginInput {
     email: EmailAddress!
-    password: Password!
+    password: String!
   }
   input SignupInput {
     email: EmailAddress!

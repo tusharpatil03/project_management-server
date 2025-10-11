@@ -78,7 +78,6 @@ export type AuthData = {
   __typename?: 'AuthData';
   accessToken: Scalars['String']['output'];
   refreshToken: Scalars['String']['output'];
-  user: User;
 };
 
 export type Comment = {
@@ -198,7 +197,7 @@ export type IssueType =
 
 export type LoginInput = {
   email: Scalars['EmailAddress']['input'];
-  password: Scalars['Password']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type MemberRole =
@@ -216,7 +215,7 @@ export type Mutation = {
   createProject: ResponseMessage;
   createSprint: ResponseMessage;
   createTeam: Team;
-  login: AuthData;
+  login?: Maybe<AuthData>;
   logout: Scalars['Boolean']['output'];
   refreshToken: ExtendSession;
   removeAssineeOfIssue?: Maybe<ResponseMessage>;
@@ -541,9 +540,7 @@ export type Team = {
   id: Scalars['ID']['output'];
   name?: Maybe<Scalars['String']['output']>;
   projects?: Maybe<Array<Maybe<ProjectTeam>>>;
-  teamId?: Maybe<Scalars['ID']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  userId?: Maybe<Scalars['ID']['output']>;
   users?: Maybe<Array<Maybe<UserTeam>>>;
 };
 
@@ -876,7 +873,6 @@ export type ActivityResolvers<ContextType = MyContext, ParentType extends Resolv
 export type AuthDataResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['AuthData'] = ResolversParentTypes['AuthData']> = {
   accessToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -956,7 +952,7 @@ export type MutationResolvers<ContextType = MyContext, ParentType extends Resolv
   createProject?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>;
   createSprint?: Resolver<ResolversTypes['ResponseMessage'], ParentType, ContextType, RequireFields<MutationCreateSprintArgs, 'input'>>;
   createTeam?: Resolver<ResolversTypes['Team'], ParentType, ContextType, RequireFields<MutationCreateTeamArgs, 'input'>>;
-  login?: Resolver<ResolversTypes['AuthData'], ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
+  login?: Resolver<Maybe<ResolversTypes['AuthData']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>;
   logout?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   refreshToken?: Resolver<ResolversTypes['ExtendSession'], ParentType, ContextType, RequireFields<MutationRefreshTokenArgs, 'refreshToken'>>;
   removeAssineeOfIssue?: Resolver<Maybe<ResolversTypes['ResponseMessage']>, ParentType, ContextType, RequireFields<MutationRemoveAssineeOfIssueArgs, 'issueId'>>;
@@ -1084,9 +1080,7 @@ export type TeamResolvers<ContextType = MyContext, ParentType extends ResolversP
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   projects?: Resolver<Maybe<Array<Maybe<ResolversTypes['ProjectTeam']>>>, ParentType, ContextType>;
-  teamId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   updatedAt?: Resolver<Maybe<ResolversTypes['DateTime']>, ParentType, ContextType>;
-  userId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   users?: Resolver<Maybe<Array<Maybe<ResolversTypes['UserTeam']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

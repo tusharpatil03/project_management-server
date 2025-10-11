@@ -3,7 +3,6 @@ import gql from "graphql-tag";
 export const types = gql`
   # Auth Data
   type AuthData {
-    user: User!
     accessToken: String!
     refreshToken: String!
   }

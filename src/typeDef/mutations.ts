@@ -21,7 +21,7 @@ export const mutations = gql`
 
     signup(input: SignupInput!): ResponseMessage!
 
-    login(input: LoginInput!): AuthData!
+    login(input: LoginInput!): AuthData
 
     removeProject(projectId: ID!): ResponseMessage @auth @role(requires: [Admin])
 

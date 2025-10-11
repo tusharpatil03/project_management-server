@@ -1,12 +1,12 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import bcrypt from 'bcrypt';
 import { emailVerificationToken, sendVerificationEmail } from '../../utility/auth';
-import { client, TransactionClient } from '../../db/db';
+import { TransactionClient } from '../../db/db';
 
 export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   const existingUser = await context.client.user.findFirst({
     where: {
-       email: args.input.email
+      email: args.input.email
     },
     include: {
       profile: true,
@@ -34,7 +34,7 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
   }
 
   try {
-    await sendVerificationEmail(token, args.input.email);
+    await sendVerificationEmail(args.input.email);
   }
   catch (e) {
     throw new Error("Unable to send verification email")
@@ -50,6 +50,9 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
           email: args.input.email,
           password: hashedPassword,
           salt: salt,
+          isVerified: false,
+          projects: {},
+          teams: {},
         },
       });
       await prisma.userProfile.create({
@@ -58,7 +61,9 @@ export const signup: MutationResolvers['signup'] = async (_, args, context) => {
             connect: {
               id: user.id
             }
-          }
+          },
+          avatar: null,
+          social: {}
         },
       });
     });

@@ -3,7 +3,7 @@ import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken";
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
 import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
-import { ActivityAction, EntityType } from "@prisma/client";
+import { ActivityAction, EntityType, MemberRole } from "@prisma/client";
 
 export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, context) => {
     const token = args.token;
@@ -12,7 +12,8 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         throw new Error("Inavlid Token");
     }
 
-    const decoded: { email: string } = jwt.verify(token as string, EMAIL_VERIFICATION_SECRET as string) as { email: string }
+    const decoded: { email: string } = jwt.verify(token as string, EMAIL_VERIFICATION_SECRET as string) as { email: string };
+
     if (!decoded.email) {
         throw new Error("Invalid token payload");
     }
@@ -68,34 +69,33 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
 
     const refreshToken = createRefreshToken(refreshTokenPayload);
 
-    if (!refreshToken) {
-        const error = new Error('Failed to create refresh token');
+    if (!refreshToken || !accessToken) {
+        const error = new Error('Failed to create token');
         error.name = 'RefreshTokenError';
         throw error;
     }
 
 
-    // Update the user's profile with the new refresh token
-    await context.client.userProfile.update({
-        where: { id: user.profile.id },
-        data: {
-            token: refreshToken,
-            tokenVersion: {
-                increment: 1
+
+    if (!user.isVerified && user.projects.length === 0) {
+        await context.client.userProfile.update({
+            where: { id: user.profile.id },
+            data: {
+                token: refreshToken,
+                tokenVersion: {
+                    increment: 1
+                }
+            },
+        });
+
+        await context.client.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                isVerified: true
             }
-        },
-    });
-
-    await context.client.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            isVerified: true
-        }
-    });
-
-    if (!user.isVerified) {
+        });
         const project = await context.client.project.create({
             data: {
                 name: 'Project01',
@@ -131,7 +131,8 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
                     connect: {
                         id: user.id
                     }
-                }
+                },
+                role: MemberRole.Admin
             }
         })
 
@@ -196,11 +197,9 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         throw new Error("user not found , verification failed");
     }
 
-
     return {
         accessToken,
         refreshToken,
-        user: updatedUser
     }
 
 }
