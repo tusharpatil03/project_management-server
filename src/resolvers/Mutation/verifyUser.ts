@@ -75,9 +75,22 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         throw error;
     }
 
+    try {
+        await context.client.user.update({
+            where: {
+                email: decoded.email,
+            },
+            data: {
+                isVerified: true,
+            }
+        });
+    }
+    catch(e){
+        console.log(e);
+        throw new Error("failed to update user");
+    }
 
-
-    if (!user.isVerified && user.projects.length === 0) {
+    if (user?.projects.length === 0) {
         await context.client.userProfile.update({
             where: { id: user.profile.id },
             data: {
@@ -115,7 +128,7 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
 
         const team = await context.client.team.create({
             data: {
-                name: "Team X",
+                name: "my-team",
                 creatorId: user.id
             }
         });
@@ -170,31 +183,6 @@ export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, conte
         catch (e) {
             console.log(e);
         }
-    } else {
-        console.log("user is already verified");
-    }
-
-    const updatedUser = await context.client.user.findUnique({
-        where: {
-            email: decoded.email,
-        },
-        select: {
-            id: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            isVerified: true,
-            profile: {
-                select: {
-                    id: true,
-                    avatar: true
-                }
-            }
-        },
-    });
-
-    if (!updatedUser) {
-        throw new Error("user not found , verification failed");
     }
 
     return {

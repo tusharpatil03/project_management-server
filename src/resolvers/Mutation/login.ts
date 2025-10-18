@@ -36,7 +36,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
     throw new Error('Incorrect password');
   }
 
-  if (!user.isVerified) {
+  if (!user?.isVerified) {
     // Send verification email
     sendVerificationEmail(user.email)
       .catch(e => {

@@ -94,7 +94,7 @@ export const sendVerificationEmail = async (email: string) => {
     },
   });
 
-  const url = `http://${HOST}:${CLIENT_PORT}/signup/verify?token=${token}`;
+  const url = `http://${HOST}:${CLIENT_PORT}/verify?token=${token}`;
 
   const mailOptions = {
     from: `"TaskFlow Support" <${EMAIL_USER}>`,
