@@ -18,55 +18,6 @@ export interface InterfaceIssue {
   dueDate: string | null;
 }
 
-//validate parent function to validate issue can become parent
-const validateParent = async (parentId: string | undefined, projectId: string, issueType: IssueType): Promise<boolean> => {
-  if (!parentId || issueType === IssueType.EPIC) {
-    return false;
-  }
-
-  const parent = await client.issue.findUnique({
-    where: {
-      id: parentId,
-    },
-    select: {
-      id: true,
-      projectId: true,
-      type: true,
-      parentId: true,
-    }
-  });
-
-  if (!parent) {
-    throw new Error("Parent Does not exist")
-  }
-  if (parent.projectId !== projectId) {
-    throw new Error("Parent is from different project")
-  }
-  if (parent.type === IssueType.TASK || parent.type === IssueType.BUG) {
-    throw new Error("Task or Bug can be parent")
-  }
-
-  if (parent.type === issueType) {
-    throw new Error("Same Types cannot be nested")
-  }
-
-  if (parent.parentId) {
-    const grandParent = await client.issue.findFirst({
-      where: {
-        id: parent.parentId,
-      },
-      select: {
-        type: true
-      }
-    });
-
-    if (grandParent?.type !== IssueType.EPIC) {
-      throw new Error("Gandparent can be EPIC only")
-    }
-  }
-
-  return true;
-}
 
 export const createIssue: MutationResolvers['createIssue'] = async (
   _,
@@ -81,13 +32,7 @@ export const createIssue: MutationResolvers['createIssue'] = async (
   //   ? (input.status as IssueStatus)
   //   : IssueStatus.TODO;
 
-  const validParent = await validateParent(input.parentId as string, input.projectId, input.type);
-
-  //if parentId exists then validation is needed
-  if (input.parentId && !validParent) {
-    throw new Error("Not valid parent")
-  }
-
+  
   //check assignee exists
   if (input.assigneeId) {
     await context.client.user.findUniqueOrThrow({

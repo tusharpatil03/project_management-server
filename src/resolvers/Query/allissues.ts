@@ -36,7 +36,6 @@ export const getAllIssues: QueryResolvers['getAllIssues'] = async (
       dueDate: true,
       sprintId: true,
       projectId: true,
-      parentId: true,
       creatorId: true,
       assignee: {
         select: {

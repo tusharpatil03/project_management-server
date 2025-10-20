@@ -56,18 +56,6 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
       select: {
         id: true,
         type: true,
-        childrens: {
-          select: {
-            id: true,
-            status: true,
-            childrens: {
-              select: {
-                id: true,
-                status: true,
-              }
-            }
-          }
-        }
       }
     });
 
@@ -75,20 +63,7 @@ export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
       throw new notFoundError(ISSUE_NOT_FOUND.MESSAGE, ISSUE_NOT_FOUND.CODE);
     }
 
-    // Recursively check if all children are DONE
-    function allChildrenDone(children: any[]): boolean {
-      return children.every(child =>
-        child.status === IssueStatus.DONE &&
-        (!child.childrens || allChildrenDone(child.childrens))
-      );
-    }
 
-    if (issue.childrens && issue.childrens.length > 0 && !allChildrenDone(issue.childrens)) {
-      throw new conflictError(
-        "Children Issues are not DONE yet",
-        "issue.childNotDone"
-      );
-    }
   }
 
   try {

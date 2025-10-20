@@ -224,7 +224,6 @@ input CreateIssueInput {
   dueDate: DateTime!
   status: IssueStatus
   sprintId: ID
-  parentId: ID
 }
 
 input addIssueInput {

@@ -94,7 +94,6 @@ export type CreateIssueInput = {
   assigneeId?: InputMaybe<Scalars['ID']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   dueDate: Scalars['DateTime']['input'];
-  parentId?: InputMaybe<Scalars['ID']['input']>;
   projectId: Scalars['ID']['input'];
   sprintId?: InputMaybe<Scalars['ID']['input']>;
   status?: InputMaybe<IssueStatus>;

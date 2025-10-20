@@ -12,7 +12,6 @@ export interface IssueCreateInput {
     creatorId: string;
     projectId: string;
     sprintId?: string | null;
-    parentId?: string | null;
     assigneeId?: string | null;
 }
 
@@ -27,7 +26,6 @@ const buildIssueData = ({
     creatorId,
     projectId,
     sprintId,
-    parentId,
     assigneeId,
 }: IssueCreateInput): Prisma.IssueCreateInput => {
     let issueData: Prisma.IssueCreateInput = {
@@ -55,15 +53,6 @@ const buildIssueData = ({
         };
     }
 
-    // only add parent connection if parentId is provided and not null
-    if (parentId) {
-        issueData = {
-            ...issueData,
-            parent: {
-                connect: { id: parentId }
-            }
-        };
-    }
 
     if (assigneeId) {
         issueData = {

@@ -31,7 +31,6 @@ export const inputs = gql`
     dueDate: DateTime!
     status: IssueStatus
     sprintId: ID
-    parentId: ID
   }
 
   input addIssueInput {

@@ -26,11 +26,9 @@ export class IssuesQuery {
 					creatorId: true,
 					projectId: true,
 					sprintId: true,
-					depth: true,
 					priority: true,
 					createdAt: true,
 					updatedAt: true,
-					parentId: true,
 				}
 			}
 		}

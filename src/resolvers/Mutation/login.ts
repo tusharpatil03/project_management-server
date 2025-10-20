@@ -38,7 +38,7 @@ export const login: MutationResolvers['login'] = async (_, args, context) => {
 
   if (!user?.isVerified) {
     // Send verification email
-    sendVerificationEmail(user.email)
+    await sendVerificationEmail(user.email)
       .catch(e => {
         console.error('Failed to send verification email:', e);
       });
