@@ -31,9 +31,8 @@ function authDirectiveTransformer(
           // Call the original resolver with the context
           return resolve(root, args, context, info) as string;
         };
-
-        return fieldConfig;
       }
+      return fieldConfig;
     },
   });
 }

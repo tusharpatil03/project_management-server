@@ -1,4 +1,4 @@
-import { TransactionClient } from '../../db/db';
+import { TransactionClient } from '../../config/db';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
 import { MutationResolvers, RemoveSprintInput } from '../../types/generatedGraphQLTypes';
 import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';

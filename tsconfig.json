@@ -1,19 +1,51 @@
 {
+  // Notes:
+  // - Source -> Runtime flow (high level):
+  //   1) Edit TS in /src
+  //   2) Run codegen steps (e.g. `prisma generate`, GraphQL codegen) to produce runtime/type files before build
+  //   3) tsc (using this tsconfig.build or compilerOptions below) compiles src -> dist
+  //   4) Node runs compiled JS from dist (ensure module format in this config matches package.json "type")
+  //
+  // - Key recommendations:
+  //   * Use a small "prebuild" script to run `prisma generate` and GraphQL codegen (so generated code is present for tsc)
+  //   * Use tsconfig.json for editor/dev and add tsconfig.build.json if you need different production emit settings
+  //   * Prefer "module": "commonjs" for traditional Node deployments, or "esnext" + package.json "type":"module" if using ESM only.
+  //   * Emit declarations (declaration: true) so other TS consumers (or tooling) can consume types from dist.
+  //   * Keep "rootDir": "src" and "outDir": "dist" for predictable layout.
+  //
+  // Example npm scripts (add to package.json):
+  //   "prisma:generate": "prisma generate",
+  //   "codegen": "graphql-codegen --config codegen.yml", // if you use graphql-codegen
+  //   "prebuild": "npm run prisma:generate && npm run codegen",
+  //   "build": "npm run prebuild && tsc -p tsconfig.json",
+  //   "start:prod": "node dist/index.js"
+  //
+  // Ensure generated files are gitignored (e.g. node_modules/.prisma, generated code), but present during build.
+
   "compilerOptions": {
-    "target": "es2022",
-    "module": "commonjs",
+    "target": "ES2022", // modern runtime target
+    "module": "commonjs", // use 'esnext' if runtime is ESM and package.json has "type": "module"
     "moduleResolution": "node",
-
+    "rootDir": "src",
+    "outDir": "dist",
+    "declaration": true, // emit .d.ts for consumers / tooling
+    "declarationMap": true,
+    "sourceMap": true,
+    "inlineSources": true,
     "types": ["node"],
-
     "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "isolatedModules": false, // set true if using Babel/ts-loader that requires it
+    "preserveConstEnums": true,
+    "allowJs": false // keep source as TS only for builds; enable in dev if required
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "build"]
 }

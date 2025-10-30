@@ -1,7 +1,7 @@
 import { ActivityAction, EntityType, ProjectTeam, Team } from "@prisma/client";
 import { AddProjectTeamInput, MutationResolvers } from "../../types/generatedGraphQLTypes";
 import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
-import { client } from "../../db/db";
+import { client } from "../../config/db";
 
 //this resolver creates ProjectTeam which will connect the project with a team
 //inputs: projectId, teamsId

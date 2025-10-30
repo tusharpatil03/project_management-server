@@ -1,5 +1,5 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { client, TransactionClient } from '../../db/db';
+import { client, TransactionClient } from '../../config/db';
 import { InterfaceUserRole, isUserPartOfProject } from '../Query/allSprints';
 import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
 import { ActivityAction, EntityType, Issue } from '@prisma/client';

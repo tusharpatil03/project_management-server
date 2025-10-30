@@ -1,6 +1,6 @@
 import {   IssueStatus, IssueType } from '@prisma/client';
 import {  MutationResolvers, User } from '../../types/generatedGraphQLTypes';
-import { client, } from '../../db/db';
+import { client, } from '../../config/db';
 import { createNewIssue, IssueCreateInput } from '../../services/Issue/CreateIssue';
 import { buildActivityData  } from '../../services/Activity/Create';
 
