@@ -1,5 +1,5 @@
 import { ActivityAction, EntityType, Prisma } from "@prisma/client";
-import { client,  TransactionClient } from "../../db/db"
+import { client,  TransactionClient } from "../../config/db"
 
 
 export interface CreateActivityInput {

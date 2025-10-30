@@ -1,11 +1,14 @@
 import jwt from 'jsonwebtoken';
 import nodemailer from "nodemailer"
-import { ACCESS_TOKEN_SECRET, CLIENT_PORT, EMAIL_VERIFICATION_SECRET, HOST, REFRESH_TOKEN_SECRET } from '../globals';
-import 'dotenv/config';
-import { client } from '../db/db';
+import { client } from '../config/db';
 
+import 'dotenv/config';
+import { CLIENT_URL } from '../globals';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 const EMAIL_USER = process.env.EMAIL_USER;
 const EMAIL_PASSWORD = process.env.EMAIL_PASSWORD;
+const EMAIL_VERIFICATION_SECRET = process.env.EMAIL_VERIFICATION_SECRET;
 
 export interface InterfaceCreateAccessToken {
   userId: string;
@@ -94,8 +97,7 @@ export const sendVerificationEmail = async (email: string) => {
     },
   });
 
-  const url = `http://${HOST}:${CLIENT_PORT}/verify?token=${token}`;
-
+  const url = CLIENT_URL as string;
   const mailOptions = {
     from: `"TaskFlow Support" <${EMAIL_USER}>`,
     to: email,

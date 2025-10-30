@@ -54,8 +54,8 @@ export function roleDirectiveTransformer(
 
           return resolve(root, args, context, info);
         }
-        return fieldConfig;
       }
+      return fieldConfig;
     }
   });
 }

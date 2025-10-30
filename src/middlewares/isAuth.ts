@@ -1,12 +1,14 @@
 import type { Request } from 'express';
 import jwt from 'jsonwebtoken';
-import { ACCESS_TOKEN_SECRET } from '../globals';
+import { MemberRole } from '../types/generatedGraphQLTypes';
 
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 export interface InterfaceAuthData {
   isAuth: boolean;
   expired: boolean | undefined;
   userId: string;
+  userRole: MemberRole | null
 }
 
 export const isAuth = (request: Request): InterfaceAuthData => {
@@ -14,6 +16,7 @@ export const isAuth = (request: Request): InterfaceAuthData => {
     isAuth: false,
     expired: undefined,
     userId: "",
+    userRole: null
   };
 
   const authHeader = request.headers.authorization;

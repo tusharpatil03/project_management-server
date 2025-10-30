@@ -1,6 +1,6 @@
 import { MutationResolvers, RemoveIssueInput } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { TransactionClient } from '../../db/db';
+import { TransactionClient } from '../../config/db';
 import { buildActivityData,  CreateActivityInput } from '../../services/Activity/Create';
 import { ActivityAction, EntityType } from '@prisma/client';
 

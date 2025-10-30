@@ -1,7 +1,8 @@
-import { REFRESH_TOKEN_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken"
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken, revokeRefreshToken } from "../../utility/auth";
+
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 export const refreshToken: MutationResolvers["refreshToken"] = async (_, args, context) => {
     console.log("ENDPOINT HIT BY REACT CLIENT");

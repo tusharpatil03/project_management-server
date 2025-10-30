@@ -1,6 +1,6 @@
 import { Gender } from "@prisma/client";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
-import { TransactionClient } from "../../db/db";
+import { TransactionClient } from "../../config/db";
 
 export const updateUserProfile: MutationResolvers["updateUserProfile"] = async (
     _,

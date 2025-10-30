@@ -5,7 +5,7 @@ import { ALREADY_PART_OF_SPRINT, ISSUE_NOT_FOUND, SPRINT_FAILED_TO_UPDATE, SPRIN
 import { conflictError } from "../../libraries/errors/conflictError";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
-import { client } from "../../db/db";
+import { client } from "../../config/db";
 
 //this resolver adds the existing issues in sprint
 // inputs: projectId, sprintId, issueId

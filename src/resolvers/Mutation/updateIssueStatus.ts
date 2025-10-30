@@ -5,7 +5,7 @@ import { notFoundError } from '../../libraries/errors/notFoundError';
 import { conflictError } from '../../libraries/errors/conflictError';
 import { UNAUTHORIZED_USER, ISSUE_NOT_FOUND, PROJECT_NOT_FOUND } from '../../globals';
 import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
-import { client, TransactionClient } from '../../db/db';
+import { client, TransactionClient } from '../../config/db';
 
 export const updateIssueStatus: MutationResolvers['updateIssueStatus'] = async (
   _,

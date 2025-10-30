@@ -1,6 +1,6 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { UnauthorizedError } from '../../libraries/errors/unAuthorizedError';
-import { PrismaClientType, TransactionClient } from '../../db/db';
+import { PrismaClientType, TransactionClient } from '../../config/db';
 
 export const removeProject: MutationResolvers['removeProject'] = async (
   _,

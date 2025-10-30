@@ -1,7 +1,7 @@
 import { ActivityAction, EntityType, IssueType, SprintStatus } from '@prisma/client';
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
 import { buildActivityData, CreateActivityInput } from '../../services/Activity/Create';
-import { client } from '../../db/db';
+import { client } from '../../config/db';
 
 export interface InterfaceSprint {
   id: string;

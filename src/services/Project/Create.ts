@@ -1,5 +1,5 @@
 import { Prisma, ProjectStatus } from "@prisma/client";
-import { client } from "../../db/db";
+import { client } from "../../config/db";
 
 export interface CreateProjectInput {
     name: string;

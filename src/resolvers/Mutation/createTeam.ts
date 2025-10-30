@@ -1,5 +1,5 @@
 import { MutationResolvers } from '../../types/generatedGraphQLTypes';
-import { TransactionClient } from '../../db/db';
+import { TransactionClient } from '../../config/db';
 import { MemberRole } from '@prisma/client';
 //this resolver willl create a team and will return it
 export const createTeam: MutationResolvers['createTeam'] = async (

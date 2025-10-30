@@ -1,17 +1,15 @@
 import _ from "lodash";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
-import { ActivityAction, EntityType, IssueType, MemberRole, Project, User } from "@prisma/client";
-import { client, TransactionClient } from "../../db/db";
+import { ActivityAction, EntityType, MemberRole, User, UserTeam } from "@prisma/client";
+import { client, TransactionClient } from "../../config/db";
 import { notFoundError } from "../../libraries/errors/notFoundError";
 import { conflictError } from "../../libraries/errors/conflictError";
 import {
   ISSUE_NOT_FOUND,
   ALREADY_ASSIGNED_ISSUE,
   ASSIGNEE_NOT_MEMBER,
-  ASSIGNEE_NOT_CONTRIBUTOR,
   PROJECT_NOT_FOUND,
   ASSIGNEE_NOT_FOUND,
-  INVALID_ISSUE_TYPE,
 } from "../../globals";
 import { UnauthorizedError } from "../../libraries/errors/unAuthorizedError";
 import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
@@ -114,10 +112,13 @@ export const assineIssue: MutationResolvers["assineIssue"] = async (
 
   //check assigner is authorized to perform this action
   const isMember = project.teams.some((team: any) =>
-    team.team.users.some((user: any) => {
+    team.team.users.some((user: UserTeam) => {
       if (user.userId === assignee.id) {
         role = user.role;
         return true;
+      }
+      else {
+        return false;
       }
     })
   );

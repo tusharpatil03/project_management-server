@@ -1,9 +1,10 @@
-import { EMAIL_VERIFICATION_SECRET } from "../../globals";
 import { MutationResolvers } from "../../types/generatedGraphQLTypes";
 import jwt from "jsonwebtoken";
 import { createAccessToken, createRefreshToken, InterfaceCreateAccessToken, InterfaceCreateRefreshToken } from "../../utility/auth";
 import { buildActivityData, CreateActivityInput } from "../../services/Activity/Create";
 import { ActivityAction, EntityType, MemberRole } from "@prisma/client";
+
+const EMAIL_VERIFICATION_SECRET = process.env.EMAIL_VERIFICATION_SECRET;
 
 export const verifyUser: MutationResolvers["verifyUser"] = async (_, args, context) => {
     const token = args.token;

@@ -1,13 +1,13 @@
 import 'dotenv/config';
 
 export const DATABASE_URL = process.env.DATABASE_URL;
+
 export const SEVER_PORT = process.env.PORT;
-export const HOST = process.env.HOST;
-export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET?.trim();
-export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET?.trim();
-export const EMAIL_VERIFICATION_SECRET = process.env.EMAIL_VERIFICATION_SECRET?.trim();
-export const PORT = process.env.PORT;
-export const CLIENT_PORT = process.env.CLIENT_PORT;
+export const SERVER_HOST = process.env.SEVER_HOST;
+export const SERVER_PROTOCOL = process.env.SEVER_PROTOCOL;
+export const SERVER_URL = process.env.SERVER_URL;
+
+export const CLIENT_URL = process.env.CLIENT_URL;
 
 export const UNAUTHORIZED_USER = Object.freeze({
     code: "user.unauthorized",

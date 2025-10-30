@@ -1,5 +1,5 @@
 import { ActivityAction, EntityType, MemberRole, Prisma } from "@prisma/client";
-import { client, TransactionClient } from "../../db/db";
+import { client, TransactionClient } from "../../config/db";
 import { buildActivityData,  CreateActivityInput } from "../Activity/Create";
 
 //this interface defines the input for create Issue
