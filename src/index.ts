@@ -1,6 +1,5 @@
 import http from 'http';
 import app from './app';
-import { SEVER_PORT } from './globals';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { typeDef } from './typeDef';
 import { resolvers } from './resolvers';
@@ -10,12 +9,12 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { client, disconnectPrisma, initializePrisma } from './config/db';
-import { createGraphQLContext, MyContext } from './config/context';
+import { disconnectPrisma} from './config/db';
+import { createGraphQLContext } from './config/context';
 import 'dotenv/config';
-import { isAuth } from './middlewares/isAuth';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';
 import { roleDirectiveTransformer } from './directives/directiveTransformers/roleDirectiveTransformer';
+import { connectRedis, disconnectRedis } from './config/redis';
 
 
 const PORT = parseInt(process.env.SERVER_PORT || '4000', 10);
@@ -99,6 +98,9 @@ const server = new ApolloServer({
 // Startup function
 async function startServer() {
   try {
+    //connect to redis
+    await connectRedis();
+
     await server.start();
 
     // Apply GraphQL middleware
@@ -138,6 +140,7 @@ async function shutdown() {
     console.log('Apollo Server stopped');
 
     await disconnectPrisma();
+    await disconnectRedis();
     console.log('Database disconnected');
 
     httpServer.close(() => {
