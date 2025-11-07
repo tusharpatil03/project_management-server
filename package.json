@@ -9,6 +9,9 @@
     "prisma:push": "prisma db push --schema=prisma/schema.prisma",
     "prisma:migrate:reset": "prisma migrate reset --schema=prisma/schema.prisma",
     "prebuild": "npm run prisma:generate && npm run generate || true",
+    "prisma:deploy": "prisma migrate deploy --schema=prisma/schema.prisma",
+    "setup": "npm run prisma:generate && npm run generate && npm run prisma:deploy",
+    "setup:dev": "npm run prisma:generate && npm run generate && npm run prisma:migrate",
     "build": "tsc --pretty --project tsconfig.json",
     "build:prod": "npm run prebuild && tsc -p tsconfig.build.json",
     "start:prod": "node dist/index.js",
@@ -78,7 +81,7 @@
     "vitest-mock-extended": "^3.1.0"
   },
   "engines": {
-    "node": ">=22.14.0"
+    "node": ">=20.9.0"
   },
-  "packageManager": "npm@10.9.2"
+  "packageManager": "npm@10.2.4"
 }

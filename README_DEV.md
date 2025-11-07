@@ -28,6 +28,18 @@ Run both via the `prebuild` script (this is invoked by `build:prod`):
 npm run prebuild
 ```
 
+Alternatively use the new setup scripts which also run migrations:
+
+```bash
+# run non-interactive deploy of migrations (good for CI / production)
+npm run setup
+
+# run interactive dev migrations (creates migration files / useful locally)
+npm run setup:dev
+```
+
+If you're using Docker to run the app, run `npm run setup` locally (or inside a build step) before `docker compose up` so generated artifacts and migrations are available to the container.
+
 4) Production build
 
 ```bash

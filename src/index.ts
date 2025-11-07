@@ -9,7 +9,7 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import depthLimit from 'graphql-depth-limit';
 import type { GraphQLFormattedError } from 'graphql';
 import { expressMiddleware } from '@apollo/server/express4';
-import { disconnectPrisma} from './config/db';
+import { disconnectPrisma, initializePrisma} from './config/db';
 import { createGraphQLContext } from './config/context';
 import 'dotenv/config';
 import authDirectiveTransformer from './directives/directiveTransformers/authDirectiveTransformer';
@@ -98,6 +98,7 @@ const server = new ApolloServer({
 // Startup function
 async function startServer() {
   try {
+    await initializePrisma();
     //connect to redis
     await connectRedis();
 
