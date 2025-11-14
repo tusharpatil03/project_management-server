@@ -10,17 +10,12 @@
     "prisma:migrate:reset": "prisma migrate reset --schema=prisma/schema.prisma",
     "prebuild": "npm run prisma:generate && npm run generate || true",
     "prisma:deploy": "prisma migrate deploy --schema=prisma/schema.prisma",
-    "setup": "npm run prisma:generate && npm run generate && npm run prisma:deploy",
-    "setup:dev": "npm run prisma:generate && npm run generate && npm run prisma:migrate",
     "build": "tsc --pretty --project tsconfig.json",
     "build:prod": "npm run prebuild && tsc -p tsconfig.build.json",
     "start:prod": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage",
-    "test:unit": "vitest run src/**/__tests__/**/*.test.ts --exclude=**/*.integration.test.ts"
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",

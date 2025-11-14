@@ -5,15 +5,15 @@ services:
     container_name: server-postgres-dev
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-developer}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-developer}
-      POSTGRES_DB: ${POSTGRES_DB:-mydb}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: postgres
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,7 +26,7 @@ services:
     container_name: server-redis-dev
     restart: unless-stopped
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - "6379:6379"
     volumes:
       - redis_dev_data:/data
     healthcheck:
@@ -37,26 +37,24 @@ services:
     networks:
       - dev-network
 
-  # Your Node.js Application (Development Mode)
+  # Node.js Application (Development Mode)
   app:
     build:
       context: .
-      dockerfile: Dockerfile.yml
-      target: production
+      dockerfile: Dockerfile
     container_name: pm_server
     restart: unless-stopped
     ports:
-      - "${APP_PORT:-4000}:4000"
+      - "4000:4000"
     env_file:
       - .env
     environment:
       NODE_ENV: development
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT:-5432}/${POSTGRES_DB}?schema=public
-      REDIS_URL: redis://redis:6379
     volumes:
       - .:/app
       - /app/node_modules
       - /app/dist
+      - /app/prisma
     depends_on:
       postgres:
         condition: service_healthy
