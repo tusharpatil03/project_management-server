@@ -18,7 +18,10 @@ let prismaClient: PrismaClient | null = null;
 
 export function getPrismaClient(): PrismaClient {
   if (!prismaClient) {
-    prismaClient = new PrismaClient();
+    prismaClient = new PrismaClient({
+      datasourceUrl: process.env.DATABASE_URL,
+    }
+    );
   }
   return prismaClient;
 }

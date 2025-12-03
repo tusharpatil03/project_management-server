@@ -12,8 +12,7 @@ export async function connectRedis(): Promise<void> {
             console.info('connected to Redis');
         } catch (err) {
             console.error('Redis connect error:', (err as any)?.message || err);
-            // allow caller to handle retry logic
-            // throw err;
+            throw err;
         }
     }
 }
