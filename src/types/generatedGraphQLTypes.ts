@@ -422,6 +422,8 @@ export type QueryGetActiveSprintArgs = {
 
 
 export type QueryGetAllIssuesArgs = {
+  page: Scalars['Int']['input'];
+  pageSize: Scalars['Int']['input'];
   projectId: Scalars['ID']['input'];
   sprintId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1017,7 +1019,7 @@ export type ProjectTeamResolvers<ContextType = MyContext, ParentType extends Res
 export type QueryResolvers<ContextType = MyContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   checkAuth?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getActiveSprint?: Resolver<Maybe<ResolversTypes['Sprint']>, ParentType, ContextType, RequireFields<QueryGetActiveSprintArgs, 'projectId'>>;
-  getAllIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType, RequireFields<QueryGetAllIssuesArgs, 'projectId'>>;
+  getAllIssues?: Resolver<Maybe<Array<Maybe<ResolversTypes['Issue']>>>, ParentType, ContextType, RequireFields<QueryGetAllIssuesArgs, 'page' | 'pageSize' | 'projectId'>>;
   getAllProjects?: Resolver<Maybe<Array<Maybe<ResolversTypes['Project']>>>, ParentType, ContextType>;
   getAllSprints?: Resolver<Maybe<Array<Maybe<ResolversTypes['Sprint']>>>, ParentType, ContextType, RequireFields<QueryGetAllSprintsArgs, 'projectId'>>;
   getAllTeams?: Resolver<Maybe<Array<Maybe<ResolversTypes['Team']>>>, ParentType, ContextType>;

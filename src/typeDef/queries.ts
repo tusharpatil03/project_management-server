@@ -15,7 +15,7 @@ export const queries = gql`
 
 
     getIssueById(issueId: ID!, projectId: ID!): Issue! @auth @role(requires:[Contributor, Admin, Viewer])
-    getAllIssues(projectId: ID!, sprintId:String): [Issue] @auth @role(requires:[Contributor, Admin, Viewer])
+    getAllIssues(projectId: ID!, sprintId:String, page: Int!, pageSize:Int!): [Issue] @auth @role(requires:[Contributor, Admin, Viewer])
 
     getAllSprints(projectId: ID!): [Sprint] @auth
     getActiveSprint(projectId: ID!): Sprint @auth @role(requires:[Contributor, Admin, Viewer])
