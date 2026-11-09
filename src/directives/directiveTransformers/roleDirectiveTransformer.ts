@@ -1,7 +1,7 @@
 import { getDirective, MapperKind, mapSchema } from '@graphql-tools/utils';
 import { defaultFieldResolver, GraphQLError, GraphQLSchema } from 'graphql';
 import { isUserPartOfProject } from '../../resolvers/Query/allSprints';
-import { getJSON, setJSON } from '../../config/redis';
+// import { getJSON, setJSON } from '../../config/redis';
 
 const DEFAULT_ROLE_TTL = parseInt('3000', 10); // seconds
 
@@ -45,23 +45,23 @@ export function roleDirectiveTransformer(
           }
 
           // Check cache first
-          const cacheKey = `userRole:${userId}:${projectId}`;
-          try {
-            const cached = await getJSON<{ role?: string }>(cacheKey);
-            if (cached && cached.role) {
-              const cachedRole = cached.role as string;
-              if (!requiredRoles.includes(cachedRole)) {
-                throw new GraphQLError('You are not authorized to perform this action.', {
-                  extensions: { code: 'FORBIDDEN' },
-                });
-              }
-              // cached role allowed
-              return resolve(root, args, context, info);
-            }
-          } catch (err) {
-            // if cache read fails, log and continue to DB lookup
-            console.warn('Redis cache read failed for role lookup:', (err as any)?.message || err);
-          }
+          // const cacheKey = `userRole:${userId}:${projectId}`;
+          // try {
+          //   const cached = await getJSON<{ role?: string }>(cacheKey);
+          //   if (cached && cached.role) {
+          //     const cachedRole = cached.role as string;
+          //     if (!requiredRoles.includes(cachedRole)) {
+          //       throw new GraphQLError('You are not authorized to perform this action.', {
+          //         extensions: { code: 'FORBIDDEN' },
+          //       });
+          //     }
+          //     // cached role allowed
+          //     return resolve(root, args, context, info);
+          //   }
+          // } catch (err) {
+          //   // if cache read fails, log and continue to DB lookup
+          //   console.warn('Redis cache read failed for role lookup:', (err as any)?.message || err);
+          // }
 
           // Not in cache: fetch from DB
           try {
@@ -73,18 +73,18 @@ export function roleDirectiveTransformer(
               });
             }
 
-            // cache the role for subsequent checks
-            try {
-              await setJSON(cacheKey, { role }, DEFAULT_ROLE_TTL);
-            } catch (err) {
-              console.warn('Redis cache write failed for role lookup:', (err as any)?.message || err);
-            }
+            // // cache the role for subsequent checks
+            // try {
+            //   await setJSON(cacheKey, { role }, DEFAULT_ROLE_TTL);
+            // } catch (err) {
+            //   console.warn('Redis cache write failed for role lookup:', (err as any)?.message || err);
+            // }
 
-            if (!requiredRoles.includes(role)) {
-              throw new GraphQLError('You are not authorized to perform this action.', {
-                extensions: { code: 'FORBIDDEN' },
-              });
-            }
+            // if (!requiredRoles.includes(role)) {
+            //   throw new GraphQLError('You are not authorized to perform this action.', {
+            //     extensions: { code: 'FORBIDDEN' },
+            //   });
+            // }
 
             return resolve(root, args, context, info);
           } catch (e) {

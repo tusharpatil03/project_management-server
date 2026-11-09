@@ -1,7 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import PrismaManager from '../utility/dbConnectivity';
 
-export const client = new PrismaClient();
+export const client = new PrismaClient({
+  transactionOptions: { timeout: 15_000 },
+});
 export type PrismaClientType = PrismaClient;
 export type TransactionClient = Parameters<Parameters<PrismaClient['$transaction']>[0]>[0];
 
@@ -20,6 +22,7 @@ export function getPrismaClient(): PrismaClient {
   if (!prismaClient) {
     prismaClient = new PrismaClient({
       datasourceUrl: process.env.DATABASE_URL,
+      transactionOptions: { timeout: 15_000 },
     }
     );
   }

@@ -12,6 +12,7 @@ class PrismaManager {
             {
                 log: ['query', 'info', 'warn', 'error'],
                 errorFormat: "pretty",
+                transactionOptions: { timeout: 15_000 },
             }
         );
     }

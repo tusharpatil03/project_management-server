@@ -99,8 +99,9 @@ const server = new ApolloServer({
 async function startServer() {
   try {
     await initializePrisma();
+    
     //connect to redis
-    await connectRedis();
+    //await connectRedis();
 
     await server.start();
 
