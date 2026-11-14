@@ -2,11 +2,13 @@ import express, { NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import { express as voyagerMiddleware } from 'graphql-voyager/middleware';
 
+const origin = process.env.CLIENT_URL || 'http://localhost:3000';
+
 const app = express();
 app.use(express.json());
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: String(origin),
   credentials: true
 }));
 
