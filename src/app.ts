@@ -17,6 +17,14 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/voyager', voyagerMiddleware({ endpointUrl: '/graphql' }));
 
+//health check endpoint
+app.get('/health', (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.status(200).json({ status: 'ok' });
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 export default app;
